@@ -15,7 +15,7 @@ Les probes sont des fonctions implémenté dans "vfcwrapper" qui
 est linker avec le programme par la partie compilation de veificarlo.
 
 Celle des instructions vectorielles:
-    - Ne supporte pas les instructions de 512 bits (256)
+    - Ne supporte pas les vecteurs de 512 bits (256)
     - defont le vecteur et appel les versions scalaires
 
 A l’execution le *wrapper* charge (load) les librairie dynamique (.so)
@@ -39,7 +39,7 @@ informations plus petites
    
 Les changements sont à faire dans les *wrappers* et les *backends*.
 
-   1. Support des instructions vectorielles 512 bits
+   1. Support des vecteurs de 512 bits
    2. Ajout de probes vectorielles appellant les fonctions de
       *backend* vectorielles
       - Ajout des fonctions dans l'interfaces (par pointeurs)

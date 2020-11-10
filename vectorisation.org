@@ -1,0 +1,49 @@
+#+title: Support de la vectorisation dans Verificarlo
+#+author: Safecarlo
+#+date: 2020
+
+* Vectorisation
+
+** Résumé des besoins
+
+Aujourd’hui `vfcinstrument` insert des probes, y compris pour les instruction vectorielles.
+
+Les probes sont des fonctions implementer dans ```vfcwrapper``` qui
+est linker avec le programme par la partie compilation de veificarlo.
+
+Celle des instructions vectorielles:
+    - Ne supporte pas les instructions de 512 bits (256)
+    - defont le vecteur et appel les versions scalaires
+
+A l’execution le *wrapper* charge (load) les librairie dynamique (.so)
+correspondant au(x) backend(s) verificarlo utilisé (vprec, mca).
+
+** Définitions de certains termes technique
+
+_probes :_ Les probes sont des fonctions implementer dans `vfcwrapper` qui
+est linker avec le programme par la partie compilation de veificarlo.
+
+_backend :_  
+
+_wrapper :_
+
+_link :_ lien
+
+_sérialisation :_ consiste à coder de façon à envelopper les
+informations plus petites 
+
+** TODO
+   
+Les changements sont à faire dans les *wrappers* et les *backends*.
+
+   1. Support des instructions vectorielles 512 bits
+   2. Ajout de probes vectorielles appellant les fonctions de
+      *backend* vectorielles
+      - Ajout des fonctions dans l'interfaces (par pointeurs)
+   3. Implémenter ces fonctions pour chaque *backend*
+      - Faire une première implémentation sérialisé (dummy)
+   4. Implémenter la version vectorielle des opérations de base dans
+      le backends *vprec*
+      - Prendre en compte les cas spéciaux
+      - Tester la performance sur les NAS (mpi et openMP)
+   5. Pareil pour le *backend* *mca*

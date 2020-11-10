@@ -39,7 +39,7 @@ informations plus petites
    
 Les changements sont à faire dans les *wrappers* et les *backends*.
 
-   1. Support des vecteurs de 512 bits
+   1. Support des vecteurs de 512 et 256 bits
    2. Ajout de probes vectorielles appellant les fonctions de
       *backend* vectorielles
       - Ajout des fonctions dans l'interfaces (par pointeurs)
@@ -50,3 +50,87 @@ Les changements sont à faire dans les *wrappers* et les *backends*.
       - Prendre en compte les cas spéciaux
       - Tester la performance sur les NAS (mpi et openMP)
    5. Pareil pour le *backend* *mca*
+
+** Wrapper
+
+*** Support des vecteurs 512 / 256 bits
+
+**** Première approche
+
+Nous avons remarqués que dans le fichier "src/vfcwrapper/main.c" il y
+avait différentes définitions pour les opération aritméthiques tel
+que:
+
+#+BEGIN_SRC c
+define_arithmetic_wrapper(float, add, +);
+define_arithmetic_wrapper(float, sub, -);
+define_arithmetic_wrapper(float, mul, *);
+define_arithmetic_wrapper(float, div, /);
+define_arithmetic_wrapper(double, add, +);
+define_arithmetic_wrapper(double, sub, -);
+define_arithmetic_wrapper(double, mul, *);
+define_arithmetic_wrapper(double, div, /);
+#+END_SRC
+
+Plus loin nous avons remarqué qu'on utilisais des vecteur d'une
+certaines tailles mais à ce moment on ne savait pas à quoi cela
+correspondait :
+
+#+BEGIN_SRC c
+#define define_2x_wrapper(precision, operation)                                \
+  precision##2 _2x##precision##operation(precision##2 a, precision##2 b) {     \
+    precision##2 c;                                                            \
+    c[0] = _##precision##operation(a[0], b[0]);                                \
+    c[1] = _##precision##operation(a[1], b[1]);                                \
+    return c;                                                                  \
+  }
+
+#define define_4x_wrapper(precision, operation)                                \
+  precision##4 _4x##precision##operation(precision##4 a, precision##4 b) {     \
+    precision##4 c;                                                            \
+    c[0] = _##precision##operation(a[0], b[0]);                                \
+    c[1] = _##precision##operation(a[1], b[1]);                                \
+    c[2] = _##precision##operation(a[2], b[2]);                                \
+    c[3] = _##precision##operation(a[3], b[3]);                                \
+    return c;                                                                  \
+  }
+#+END_SRC
+
+où bien :
+
+#+BEGIN_SRC c
+define_2x_wrapper(float, add);
+define_2x_wrapper(float, sub);
+define_2x_wrapper(float, mul);
+define_2x_wrapper(float, div);
+define_2x_wrapper(double, add);
+define_2x_wrapper(double, sub);
+define_2x_wrapper(double, mul);
+define_2x_wrapper(double, div);
+#+END_SRC
+
+Nous nous somme demander à quoi correspondait les valeurs. Dans un
+premier temps nous avons réfléchis et nous nous sommes dit que par
+exemple *define_2x_wrapper(float, add);* correspondait à un vecteur de
+2 float donc un vecteur de taille *2 x 32 = 64*.
+
+Sauf qu'avec ce raisonnement les vecteurs de tailles 256 et 512 était
+déjà implémenté.
+
+**** La solution
+
+En cherchant sur internet nous sommes tombé sur ce post
+[[https://stackoverflow.com/questions/38750994/what-is-ext-vector-type-and-simd][stackoverflow]] qui nous à ramener sur la doumentation sur les
+[[https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html][instructions vectorielles dans gcc]].
+
+Dans ce lien nous avons vu que gcc utilisais une fonction
+*vector_size(number)* qui prenait en paramètre un entier qui
+correspondait au nombre de *byte (octet)* du vecteur. 
+
+Or dans verificarlo on utilise une fonction
+*ext_vector_type(number)*. Dans le même post nous avons trouvé le lien
+pour [[https://gcc.gnu.org/bugzilla/show_bug.cgi?id=88602][clang]] qui nous explique que cette fonction est la même que pour
+gcc.
+
+**** Implémentation
+

@@ -2,6 +2,9 @@
 #+author: Safecarlo
 #+date: 2020
 
+* Verificarlo
+** Résumé
+* Support MPI / OpenMP
 * Vectorisation
 
 ** Résumé des besoins

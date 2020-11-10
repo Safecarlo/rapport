@@ -6,9 +6,9 @@
 
 ** Résumé des besoins
 
-Aujourd’hui `vfcinstrument` insert des probes, y compris pour les instruction vectorielles.
+Aujourd’hui "vfcinstrument" insert des probes, y compris pour les instruction vectorielles.
 
-Les probes sont des fonctions implementer dans ```vfcwrapper``` qui
+Les probes sont des fonctions implémenté dans "vfcwrapper" qui
 est linker avec le programme par la partie compilation de veificarlo.
 
 Celle des instructions vectorielles:
@@ -16,23 +16,23 @@ Celle des instructions vectorielles:
     - defont le vecteur et appel les versions scalaires
 
 A l’execution le *wrapper* charge (load) les librairie dynamique (.so)
-correspondant au(x) backend(s) verificarlo utilisé (vprec, mca).
+correspondant au(x) *backend(s)* verificarlo utilisé (vprec, mca).
 
 ** Définitions de certains termes technique
 
-_probes :_ Les probes sont des fonctions implementer dans `vfcwrapper` qui
+*probes :* Les probes sont des fonctions implémenté dans "vfcwrapper" qui
 est linker avec le programme par la partie compilation de veificarlo.
 
-_backend :_  
+*backend :*
 
-_wrapper :_
+*wrapper :*
 
-_link :_ lien
+*link :* lien
 
-_sérialisation :_ consiste à coder de façon à envelopper les
+*sérialisation :* consiste à coder de façon à envelopper les
 informations plus petites 
 
-** TODO
+** Objectifs
    
 Les changements sont à faire dans les *wrappers* et les *backends*.
 

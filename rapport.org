@@ -28,7 +28,7 @@ est linker avec le programme par la partie compilation de veificarlo.
 
 *backend :*
 
-*wrapper :*
+*wrapper :* fonctions qui enveloppe l'appel à d'autres fonctions
 
 *link :* lien
 

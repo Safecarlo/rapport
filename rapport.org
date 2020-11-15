@@ -52,9 +52,7 @@ Les changements sont à faire dans les *wrappers* et les *backends*.
    5. Pareil pour le *backend* *mca*
 
 ** Wrapper
-
 *** Support des vecteurs 512 / 256 bits
-
 **** Première approche
 
 Nous avons remarqués que dans le fichier "src/vfcwrapper/main.c" il y
@@ -135,7 +133,8 @@ pas un nombre de *bytes* mais un nombre d'éléments.
 
 **** Implémentation
 
-Il se trouve que l'implémentation est déjà faites.
+Il se trouve que l'implémentation est déjà faites. Mais elle appelle
+les probes scalaires.
 
 ***** Définition des types
 
@@ -282,8 +281,158 @@ int16 _16xfloatcmp(enum FCMP_PREDICATE p, float16 a, float16 b) {
 }
 #+END_SRC
 
-***** Question
+**** Réimplémentation vectorielles
 
-La définitions des vecteurs de int ont été défini mais les opérations
-sur ces vecteurs n'ont pas été défini. Il se pourrai qu'on devrait les
-faires.
+     Les probes vectorielles apelle les probes scalaires. Il
+     faut donc les refaire et apour ppeler les fonctions vectorielles de
+     l'interface comme décrit dans la prochaine section.
+
+     Un exemple :
+
+     #+BEGIN_SRC c
+     
+     #define define_2x_wrapper(precision, operation)                                \
+       precision##2 _2x##precision##operation(precision##2 a, precision##2 b) {     \
+         precision##2 c;                                                            \
+	 ddebug(operator);                                                          \
+	 for (unsigned char i = 0; i < loaded_backends; i++) {                      \
+	   if (backends[i].interflop_##operation##_##precision) {                   \
+	     interflop_##operation##_##precision##_##2x(a, b, c, context[i]);         \
+           }                                                                        \
+         }                                                                          \
+	 return c;                                                                  \
+     }
+     
+     #+END_SRC
+
+** Ajout des fonctions vectorielles dans l'interface
+
+Il faut d'abord identifier quelle est l'interface et où la trouver.
+On a facilement trouver où et comment la modifier. Le fichier se
+trouve dans *src/common/inteflop.h*.
+
+*** Strucure
+
+#+BEGIN_SRC c
+
+struct interflop_backend_interface_t {
+  void (*interflop_add_float)(float a, float b, float *c, void *context);
+  void (*interflop_sub_float)(float a, float b, float *c, void *context);
+  void (*interflop_mul_float)(float a, float b, float *c, void *context);
+  void (*interflop_div_float)(float a, float b, float *c, void *context);
+  void (*interflop_cmp_float)(enum FCMP_PREDICATE p, float a, float b, int *c,
+                              void *context);
+
+  void (*interflop_add_double)(double a, double b, double *c, void *context);
+  void (*interflop_sub_double)(double a, double b, double *c, void *context);
+  void (*interflop_mul_double)(double a, double b, double *c, void *context);
+  void (*interflop_div_double)(double a, double b, double *c, void *context);
+  void (*interflop_cmp_double)(enum FCMP_PREDICATE p, double a, double b,
+                               int *c, void *context);
+
+  void (*interflop_enter_function)(interflop_function_stack_t *stack,
+                                   void *context, int nb_args, va_list ap);
+
+  void (*interflop_exit_function)(interflop_function_stack_t *stack,
+                                  void *context, int nb_args, va_list ap);
+
+  /* interflop_finalize: called at the end of the instrumented program
+   * execution */
+  void (*interflop_finalize)(void *context);
+};
+
+#+END_SRC
+
+*** Ajout à faire
+
+Il faut donc ajouter dans cette strucure les fonction vectorielles des
+backends (pointeur de fonction).
+
+On peut par exemple faire la macro suivante :
+
+#+BEGIN_SRC c
+
+#define define_interflop_arithmetic_vector(precision, operation, size)
+  void (*interflop_##operation##_##precision##_##size##x)(const precision *a, const precision *b, precision *c, void *context);
+
+#+END_SRC
+
+Et ensuite dans la structure de l'interface faire appel à :
+
+#+BEGIN_SRC c
+
+define_interflop_arithmetic_vector(float, add, 2);
+define_interflop_arithmetic_vector(float, add, 4);
+define_interflop_arithmetic_vector(float, add, 8);
+define_interflop_arithmetic_vector(float, add, 16);
+
+#+END_SRC
+
+Pour les vecteur d'additions de float.
+Dans le wrapper on aura donc à appeler *interflop_add_float_2x* au
+lieu de faire appel au fonction scalaire des backends.
+
+** Fonctions vectorielles dans les *backends*
+
+*** Fonctions
+
+Dans tous les *backends* il faudra définir et implémenter ces
+fonctions dans des fonctions *static* comme pour les opérations
+arithmétiques comme par exemple :
+
+#+BEGIN_SRC c
+
+static void _interflop_add_float(const float a, const float b, float *c,
+                                 void *context) {
+  *c = a + b;
+  debug_print_float(context, ARITHMETIC, "+", a, b, *c);
+}
+
+static void _interflop_sub_float(const float a, const float b, float *c,
+                                 void *context) {
+  *c = a - b;
+  debug_print_float(context, ARITHMETIC, "-", a, b, *c);
+}
+
+#+END_SRC
+
+Par exemple on aura :
+
+#+BEGIN_SRC c
+
+static void _interflop_add_float_2x(const float2 a, const float2 b, float2 c,
+                                 void *context) {
+  c[0] = a[0] + b[0];
+  debug_print_float(context, ARITHMETIC, "+", a[0], b[0], c[0]);
+  c[1] = a[1] + b[1];
+  debug_print_float(context, ARITHMETIC, "+", a[1], b[1], c[1]);
+}
+
+#+END_SRC
+
+*** Interfaces internes des backends
+
+Et il faudra aussi ajouter dans la strucure du backend le pointeur de
+cette fonction à la ligne correspondante de la fonction générale
+*interflop_add_float_2x* qui se trouve dans *src/common/interflop.h*.
+
+Par exemple pour le backend *iee* :
+
+#+BEGIN_SRC c
+
+struct interflop_backend_interface_t interflop_backend_iee =  {
+  ...,
+  _interflop_add_float_2x,
+  ...
+};
+
+#+END_SRC
+** Information
+
+   Nous avons encore rien coder pour cette partie.
+
+** Question
+
+   - Pour les tests devons-nous en faire comme ce qui est déjà fait
+     dans verificarlo, c'est-à-dire des test en *bash + c* ?
+   - 

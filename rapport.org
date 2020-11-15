@@ -427,6 +427,13 @@ struct interflop_backend_interface_t interflop_backend_iee =  {
 };
 
 #+END_SRC
+** Schéma
+
+Voici un schéma qui explique les différents processus pour établir la
+vectorisations dans verificarlo :
+
+[[./scheme.png]]
+
 ** Information
 
    Nous avons encore rien coder pour cette partie.
@@ -437,3 +444,8 @@ struct interflop_backend_interface_t interflop_backend_iee =  {
      dans verificarlo, c'est-à-dire des test en *bash + c* ?
    - Pouvez-vous nous réexpliquer les termes techniques tel que les
      *wrappers* et les *backends* dans verificalo ?
+   - Pouvez vous nous dire si le schéma est correcte et si on a besoin
+     de faire des modification dans *vfcinstrument* car on a un peu
+     regardé son contenu, et c'est un peu compliqué. Normalement
+     d'après le schéma on devrait le modifier si jamais il n'appelle
+     pas les probes vectorielles.

@@ -52,9 +52,7 @@ Les changements sont à faire dans les *wrappers* et les *backends*.
    5. Pareil pour le *backend* *mca*
 
 ** Wrapper
-
 *** Support des vecteurs 512 / 256 bits
-
 **** Première approche
 
 Nous avons remarqués que dans le fichier "src/vfcwrapper/main.c" il y
@@ -135,7 +133,8 @@ pas un nombre de *bytes* mais un nombre d'éléments.
 
 **** Implémentation
 
-Il se trouve que l'implémentation est déjà faites.
+Il se trouve que l'implémentation est déjà faites. Mais elle appelle
+les probes scalaires.
 
 ***** Définition des types
 
@@ -284,8 +283,8 @@ int16 _16xfloatcmp(enum FCMP_PREDICATE p, float16 a, float16 b) {
 
 **** Réimplémentation vectorielles
 
-     Ces implémentations appelles les fonctions scalaires des backends il
-     faut donc les refaires et appeler les fonctions vectorielles de
+     Les probes vectorielles apelle les probes scalaires. Il
+     faut donc les refaire et apour ppeler les fonctions vectorielles de
      l'interface comme décrit dans la prochaine section.
 
      Un exemple :
@@ -306,13 +305,13 @@ int16 _16xfloatcmp(enum FCMP_PREDICATE p, float16 a, float16 b) {
      
      #+END_SRC
 
-*** Ajout des fonctions vectorielles dans l'interfaces
+** Ajout des fonctions vectorielles dans l'interface
 
 Il faut d'abord identifier quelle est l'interface et où la trouver.
 On a facilement trouver où et comment la modifier. Le fichier se
 trouve dans *src/common/inteflop.h*.
 
-**** Strucure
+*** Strucure
 
 #+BEGIN_SRC c
 
@@ -344,6 +343,8 @@ struct interflop_backend_interface_t {
 
 #+END_SRC
 
+*** Ajout à faire
+
 Il faut donc ajouter dans cette strucure les fonction vectorielles des
 backends (pointeur de fonction).
 
@@ -370,3 +371,68 @@ define_interflop_arithmetic_vector(float, add, 16);
 Pour les vecteur d'additions de float.
 Dans le wrapper on aura donc à appeler *interflop_add_float_2x* au
 lieu de faire appel au fonction scalaire des backends.
+
+** Fonctions vectorielles dans les *backends*
+
+*** Fonctions
+
+Dans tous les *backends* il faudra définir et implémenter ces
+fonctions dans des fonctions *static* comme pour les opérations
+arithmétiques comme par exemple :
+
+#+BEGIN_SRC c
+
+static void _interflop_add_float(const float a, const float b, float *c,
+                                 void *context) {
+  *c = a + b;
+  debug_print_float(context, ARITHMETIC, "+", a, b, *c);
+}
+
+static void _interflop_sub_float(const float a, const float b, float *c,
+                                 void *context) {
+  *c = a - b;
+  debug_print_float(context, ARITHMETIC, "-", a, b, *c);
+}
+
+#+END_SRC
+
+Par exemple on aura :
+
+#+BEGIN_SRC c
+
+static void _interflop_add_float_2x(const float2 a, const float2 b, float2 c,
+                                 void *context) {
+  c[0] = a[0] + b[0];
+  debug_print_float(context, ARITHMETIC, "+", a[0], b[0], c[0]);
+  c[1] = a[1] + b[1];
+  debug_print_float(context, ARITHMETIC, "+", a[1], b[1], c[1]);
+}
+
+#+END_SRC
+
+*** Interfaces internes des backends
+
+Et il faudra aussi ajouter dans la strucure du backend le pointeur de
+cette fonction à la ligne correspondante de la fonction générale
+*interflop_add_float_2x* qui se trouve dans *src/common/interflop.h*.
+
+Par exemple pour le backend *iee* :
+
+#+BEGIN_SRC c
+
+struct interflop_backend_interface_t interflop_backend_iee =  {
+  ...,
+  _interflop_add_float_2x,
+  ...
+};
+
+#+END_SRC
+** Information
+
+   Nous avons encore rien coder pour cette partie.
+
+** Question
+
+   - Pour les tests devons-nous en faire comme ce qui est déjà fait
+     dans verificarlo, c'est-à-dire des test en *bash + c* ?
+   - 

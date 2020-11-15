@@ -435,4 +435,5 @@ struct interflop_backend_interface_t interflop_backend_iee =  {
 
    - Pour les tests devons-nous en faire comme ce qui est déjà fait
      dans verificarlo, c'est-à-dire des test en *bash + c* ?
-   - 
+   - Pouvez-vous nous réexpliquer les termes techniques tel que les
+     *wrappers* et les *backends* dans verificalo ?

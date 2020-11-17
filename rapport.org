@@ -26,14 +26,13 @@ correspondant au(x) *backend(s)* verificarlo utilisé (vprec, mca).
 *probes :* Les probes sont des fonctions implémenté dans "vfcwrapper" qui
 est linker avec le programme par la partie compilation de veificarlo.
 
-*backend :*
+*backend :* Dans le cadre de verifcarlo, c'est la/les librairie dynamique qui seront appeler par wrapper dans les probes. Dans le cadre d'un compilateur c'est la derniere phase qui descend de la representation intermediaire vers le binaires (en general)
 
 *wrapper :* fonctions qui enveloppe l'appel à d'autres fonctions
 
-*link :* lien
+*link :* c'est la phase de compilation qui consiste a aller chercher toute les librairie externe appeler par l'application pour les lie au programe utilisateur afin de resoudre les reference non defini. 
 
-*sérialisation :* consiste à coder de façon à envelopper les
-informations plus petites 
+*sérialisation :* dans le contexte de l'utilisation de vecteur il s'agit d'executer en sequence les elements du vecteur
 
 ** Objectifs
    

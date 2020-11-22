@@ -46,10 +46,11 @@
 #+END_SRC
 
 ** Interface dans interflop.h
+*** Avant
 
-   Strucutre *sans* les interfaces des fonctions vectorielles des backends :
+    Strucutre *sans* les interfaces des fonctions vectorielles des backends :
 
-   #+BEGIN_SRC c
+    #+BEGIN_SRC c
 
 struct interflop_backend_interface_t {
   void (*interflop_add_float)(float a, float b, float *c, void *context);
@@ -77,11 +78,13 @@ struct interflop_backend_interface_t {
   void (*interflop_finalize)(void *context);
 };
 
-   #+END_SRC
+    #+END_SRC
 
-   Strucutre *avec* les interfaces des fonctions vectorielles des backends :
+*** Après
 
-   #+BEGIN_SRC c
+    Strucutre *avec* les interfaces des fonctions vectorielles des backends :
+
+    #+BEGIN_SRC c
 
 struct interflop_backend_interface_t {
   void (*interflop_add_float)(float a, float b, float *c, void *context);
@@ -91,11 +94,11 @@ struct interflop_backend_interface_t {
   void (*interflop_cmp_float)(enum FCMP_PREDICATE p, float a, float b, int *c,
                               void *context);
 
-  void (*interflop_add_float_vector)(int size, float a, float b, float *c, void *context);
-  void (*interflop_sub_float_vector)(int size, float a, float b, float *c, void *context);
-  void (*interflop_mul_float_vector)(int size, float a, float b, float *c, void *context);
-  void (*interflop_div_float_vector)(int size, float a, float b, float *c, void *context);
-  void (*interflop_cmp_float_vector)(int size, enum FCMP_PREDICATE p, float a, float b, 
+  void (*interflop_add_float_vector)(int size, float *a, float *b, float *c, void *context);
+  void (*interflop_sub_float_vector)(int size, float *a, float *b, float *c, void *context);
+  void (*interflop_mul_float_vector)(int size, float *a, float *b, float *c, void *context);
+  void (*interflop_div_float_vector)(int size, float *a, float *b, float *c, void *context);
+  void (*interflop_cmp_float_vector)(int size, enum FCMP_PREDICATE p, float *a, float *b, 
                                      int *c, void *context);
 
   void (*interflop_add_double)(double a, double b, double *c, void *context);
@@ -105,11 +108,11 @@ struct interflop_backend_interface_t {
   void (*interflop_cmp_double)(enum FCMP_PREDICATE p, double a, double b,
                                int *c, void *context);
 
-  void (*interflop_add_double_vector)(int size, double a, double b, double *c, void *context);
-  void (*interflop_sub_double_vector)(int size, double a, double b, double *c, void *context);
-  void (*interflop_mul_double_vector)(int size, double a, double b, double *c, void *context);
-  void (*interflop_div_double_vector)(int size, double a, double b, double *c, void *context);
-  void (*interflop_cmp_double_vector)(int size, enum FCMP_PREDICATE p, double a, double b,
+  void (*interflop_add_double_vector)(int size, double *a, double *b, double *c, void *context);
+  void (*interflop_sub_double_vector)(int size, double *a, double *b, double *c, void *context);
+  void (*interflop_mul_double_vector)(int size, double *a, double *b, double *c, void *context);
+  vonid (*interflop_div_double_vector)(int size, double *a, double *b, double *c, void *context);
+  void (*interflop_cmp_double_vector)(int size, enum FCMP_PREDICATE p, double *a, double *b,
                                       int *c, void *context);
 
   void (*interflop_enter_function)(interflop_function_stack_t *stack,
@@ -123,11 +126,11 @@ struct interflop_backend_interface_t {
   void (*interflop_finalize)(void *context);
 };
 
-   #+END_SRC
+    #+END_SRC
 
-   Nous avons ajouté des interfaces pour les vecteurs en général en
-   rajoutant un paramètre qui est la taille du vecteur. Il faudra donc
-   vérifier la taille dans les fonctions vectorielles des backends.
+    Nous avons ajouté des interfaces pour les vecteurs en général en
+    rajoutant un paramètre qui est la taille du vecteur. Il faudra donc
+    vérifier la taille dans les fonctions vectorielles des backends.
 
 ** Backends
 *** Structure
@@ -219,3 +222,60 @@ struct interflop_backend_interface_t {
    #+END_SRC
 
 *** Fonctions
+**** ieee
+
+     Voici 2 exemples :
+
+     #+begin_src c
+static void _interflop_add_float_vector(const int size, const float *a, const float *b, float *c,
+                                        void *context) {
+  for(int i = 0; i < size; ++i) {
+    c[i] = a[i] + b[i];
+    debug_print_float(context, ARITHMETIC, "+", a[i], b[i], c[i]);
+  }
+}
+
+static void _interflop_div_double_vector(const int size, const double *a, const double *b, double *c,
+                                  void *context) {
+  for(int i = 0; i < size; ++i) {
+    c[i] = a[i] / b[i];
+    debug_print_double(context, ARITHMETIC, "/", a[i], b[i], c[i]);
+  }
+}
+     #+end_src
+
+**** vprec
+
+     Voici 2 exemples :
+
+     #+begin_src c
+static void _interflop_sub_float_vector(int size, float *a, float *b, float *c, void *context) {
+  for(int i = 0; i < size; ++i) {
+    c[i] = _vprec_binary32_binary_op(a[i], b[i], vprec_sub, context);
+  }
+}
+
+static void _interflop_mul_double_vector(int size, double *a, double *b, double *c, void *context) {
+  for(int i = 0; i < size; ++i) {
+    c[i] = _vprec_binary64_binary_op(a[i], b[i], vprec_mul, context);
+  }
+}
+     #+end_src
+
+**** mca
+
+     Voici 2 exemples :
+
+     #+begin_src c
+static void _interflop_add_float_vector(int size, float *a, float *b, float *c, void *context) {
+  for (int i = 0; i < size; ++i) {
+    c[i] = _mca_binary32_binary_op(a[i], b[i], mca_add, context);
+  }
+}
+
+static void _interflop_div_double_vector(int size, double *a, double *b, double *c, void *context) {
+  for (int i = 0; i < size; ++i) {
+    c[i] = _mca_binary64_binary_op(a[i], b[i], mca_div, context);
+  }
+}
+    #+end_src

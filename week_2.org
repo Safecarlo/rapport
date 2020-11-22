@@ -49,7 +49,7 @@
 
    Strucutre *sans* les interfaces des fonctions vectorielles des backends :
 
-#+BEGIN_SRC c
+   #+BEGIN_SRC c
 
 struct interflop_backend_interface_t {
   void (*interflop_add_float)(float a, float b, float *c, void *context);
@@ -77,11 +77,11 @@ struct interflop_backend_interface_t {
   void (*interflop_finalize)(void *context);
 };
 
-#+END_SRC
+   #+END_SRC
 
    Strucutre *avec* les interfaces des fonctions vectorielles des backends :
 
-#+BEGIN_SRC c
+   #+BEGIN_SRC c
 
 struct interflop_backend_interface_t {
   void (*interflop_add_float)(float a, float b, float *c, void *context);
@@ -123,12 +123,99 @@ struct interflop_backend_interface_t {
   void (*interflop_finalize)(void *context);
 };
 
-#+END_SRC
+   #+END_SRC
 
-Nous avons ajouté des interfaces pour les vecteurs en général en
-rajoutant un paramètre qui est la taille du vecteur. Il faudra donc
-vérifier la taille dans les fonctions vectorielles des backends.
+   Nous avons ajouté des interfaces pour les vecteurs en général en
+   rajoutant un paramètre qui est la taille du vecteur. Il faudra donc
+   vérifier la taille dans les fonctions vectorielles des backends.
 
 ** Backends
 *** Structure
+**** ieee
+
+   #+BEGIN_SRC c
+  struct interflop_backend_interface_t interflop_backend_ieee = {
+      _interflop_add_float,
+      _interflop_sub_float,
+      _interflop_mul_float,
+      _interflop_div_float,
+      _interflop_cmp_float,
+      _interflop_add_float_vector,
+      _interflop_sub_float_vector,
+      _interflop_mul_float_vector,
+      _interflop_div_float_vector,
+      _interflop_cmp_float_vector,
+      _interflop_add_double,
+      _interflop_sub_double,
+      _interflop_mul_double,
+      _interflop_div_double,
+      _interflop_cmp_double,
+      _interflop_add_double_vector,
+      _interflop_sub_double_vector,
+      _interflop_mul_double_vector,
+      _interflop_div_double_vector,
+      _interflop_cmp_double_vector,
+      NULL,
+      NULL,
+      NULL};
+   #+END_SRC
+
+**** vprec
+
+   #+BEGIN_SRC c
+  struct interflop_backend_interface_t interflop_backend_vprec = {
+      _interflop_add_float,
+      _interflop_sub_float,
+      _interflop_mul_float,
+      _interflop_div_float,
+      NULL;
+      _interflop_add_float_vector,
+      _interflop_sub_float_vector,
+      _interflop_mul_float_vector,
+      _interflop_div_float_vector,
+      NULL;
+      _interflop_add_double,
+      _interflop_sub_double,
+      _interflop_mul_double,
+      _interflop_div_double,
+      NULL;
+      _interflop_add_double_vector,
+      _interflop_sub_double_vector,
+      _interflop_mul_double_vector,
+      _interflop_div_double_vector,
+      NULL;
+      NULL,
+      NULL,
+      NULL};
+   #+END_SRC
+
+**** mca
+
+   #+BEGIN_SRC c
+  struct interflop_backend_interface_t interflop_backend_mca = {
+      _interflop_add_float,
+      _interflop_sub_float,
+      _interflop_mul_float,
+      _interflop_div_float,
+      NULL;
+      _interflop_add_float_vector,
+      _interflop_sub_float_vector,
+      _interflop_mul_float_vector,
+      _interflop_div_float_vector,
+      NULL;
+      _interflop_add_double,
+      _interflop_sub_double,
+      _interflop_mul_double,
+      _interflop_div_double,
+      NULL;
+      _interflop_add_double_vector,
+      _interflop_sub_double_vector,
+      _interflop_mul_double_vector,
+      _interflop_div_double_vector,
+      NULL;
+      NULL,
+      NULL,
+      NULL};
+   #+END_SRC
+
 *** Fonctions

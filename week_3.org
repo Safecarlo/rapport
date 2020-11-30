@@ -2,6 +2,27 @@
 #+author: Safecarlo
 #+date: 2020
 
+* Correction wrapper
+** Exemple
+
+     #+BEGIN_SRC c
+     
+     #define define_2x_wrapper(precision, operation, operator)                 
+       precision##2 _2x##precision##operation(precision##2 a, precision##2 b) {
+         precision##2 c;
+	 c[0] = NAN;
+	 c[1] = NAN;
+	 ddebug(operator);                                                     
+	 for (unsigned char i = 0; i < loaded_backends; i++) {                 
+	   if (backends[i].interflop_##operation##_##precision##_##vector) {              
+	     backends[i].interflop_##operation##_##precision##_##vector(2, a, b, c, context[i]);  
+           }                                                                   
+         }                                                                     
+	 return c;                                                             
+     }
+     
+     #+END_SRC
+
 * Récapitulatif
 
   Nous avonc vectorisé les probes et les fonctions interfaces des

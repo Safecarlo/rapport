@@ -27,6 +27,31 @@ precision##2 _2x##precision##operation(precision##2 a, precision##2 b) {
   backends. Il ne nous manque plus qu'a vectorisé les petites
   opération dans les backends.
 
+* ieee
+
+  Une idée pour vectorisé les opérations :
+
+#+begin_src c
+static void _interflop_add_float_vector(const int size, const float *a, const float *b, float *c,
+                                        void *context) {
+  switch (size) {
+    case 2:
+    c[0] = a[0] + b[0];
+    c[1] = a[1] + b[1];
+    debug_print_float(context, ARITHMETIC, "+", *(a + 0), *(b + 0), (c + 0));
+    debug_print_float(context, ARITHMETIC, "+", *(a + 1), *(b + 1), (c + 1));
+    case 4:
+    ...
+    case 8:
+    ...
+    case 16:
+    ...
+    default:
+      exit(1);
+  }
+}
+#+end_src
+
 * vprec
 ** Petite opérations vectorielles
 
@@ -182,3 +207,10 @@ static void _interflop_mul_double_vector(int size, double *a, double *b, double 
 * mca
 
   A faire
+* Question
+
+  - Par rapport a la finalité de la vectorisation, est-ce qu'il faut
+    déroulé les opérations d'un même types pour laissé le compilateur
+    revectorisé derrière ou il y a-t-il une meilleur solution ?
+  - Par rapport au fonction qui ajoute du bruit, si on opte pour cette
+    solution alors le code sera gigantesque

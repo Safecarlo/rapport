@@ -25,7 +25,7 @@
 
 * Récapitulatif
 
-  Nous avonc vectorisé les probes et les fonctions interfaces des
+  Nous avons vectorisé les probes et les fonctions interfaces des
   backends. Il ne nous manque plus qu'a vectorisé les petites
   opération dans les backends.
 

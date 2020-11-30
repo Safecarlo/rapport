@@ -182,3 +182,10 @@ static void _interflop_mul_double_vector(int size, double *a, double *b, double 
 * mca
 
   A faire
+* Question
+
+  - Par rapport a la finalité de la vectorisation, est-ce qu'il faut
+    déroulé les opérations d'un même types pour laissé le compilateur
+    revectorisé derrière ou il y a-t-il une meilleur solution ?
+  - Par rapport au fonction qui ajoute du bruit, si on opte pour cette
+    solution alors le code sera gigantesque

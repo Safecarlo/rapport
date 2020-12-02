@@ -1,0 +1,53 @@
+#+title: Vectorisation
+#+author: Safecarlo
+#+date: 2020
+
+* vprec
+** Effectuer les opérations binaires en mode vectorielles
+*** Intrinsics
+
+    Pour vectorisé ces opérations, nous allons utilisé les *intrinsics
+    x86 d'intel* car c'est l'architecture la plus utilisé, et nous
+    allons prévoir une version scalaire pour les architectures que ne
+    supporte pas le *x86*.
+
+*** Flags
+
+    Différent flags de cpu existe pour savoir qu'elle registre et
+    instructions vectorielles sont sur le processeurs.
+
+    Par exemple :
+    
+    - *sse*    : instructions et registres 128 bits
+    - *avx*    : instructions et registres 256 bits
+    - *avx512* : instructions et registres 512 bits
+
+*** Constantes C
+
+    Dans le languages C, il existe des constantes pour savoir si
+    l'architecture utilisé supporte les différentes instructions
+    *sse*, *avx* et *avx512* tel que :
+
+    #+begin_src c
+#ifdef __SSE__
+// sse is availabe
+#else
+// sse is unavailable
+#endif
+    #+end_src
+
+    #+begin_src c
+#ifdef __AVX__
+// avx is availabe
+#else
+// avx is unavailable
+#endif
+    #+end_src
+
+    #+begin_src c
+#ifdef __AVX512__
+// avx512 is availabe
+#else
+// avx512 is unavailable
+#endif
+    #+end_src

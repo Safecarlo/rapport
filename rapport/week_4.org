@@ -51,3 +51,75 @@
 // avx512 is unavailable
 #endif
     #+end_src
+*** Nouvelles définintions
+
+    Nous avons décidé de séparer en deux définition pour évité d'avoir
+    trop de branchement.
+
+    #+begin_src c
+/* perform_float_vector_bin_op: applies the binary operator (op) to vectors (a) and (b) */
+/* and stores the result in vector (res) */
+#define perform_float_vector_binary_op(size, op, res, a, b)
+ switch (size) {
+ case 2:
+   switch (op) {
+   case vprec_add:
+     res[0] = a[0] + b[0];
+     res[1] = a[1] + b[1];
+   case vprec_mul:
+     res[0] = a[0] * b[0];
+     res[1] = a[1] * b[1];
+   case vprec_sub:
+     res[0] = a[0] - b[0];
+     res[1] = a[1] - b[1];
+   case vprec_div:
+     res[0] = a[0] / b[0];
+     res[1] = a[1] / b[1];
+   default:
+     logger_error("invalid operator %c", op);
+   };
+ case 4:
+   switch (op) {
+   case vprec_add:
+     res = _mm_add_ps(a, b);
+   case vprec_mul:
+     res = _mm_mul_ps(a, b);
+   case vprec_sub:
+     res = _mm_sub_ps(a, b);
+   case vprec_div:
+     res = _mm_div_ps(a, b);
+   default:
+     logger_error("invalid operator %c", op);
+   }:
+ case 8:
+   switch (op) {
+   case vprec_add:
+     res = _mm256_add_ps(a, b);
+   case vprec_mul:
+     res = _mm256_mul_ps(a, b);
+   case vprec_sub:
+     res = _mm256_sub_ps(a, b);
+   case vprec_div:
+     res = _mm256_div_ps(a, b);
+   default:
+     logger_error("invalid operator %c", op);
+   }:
+ case 16:
+   switch (op) {
+   case vprec_add:
+     res = _mm512_add_ps(a, b);
+   case vprec_mul:
+     res = _mm512_mul_ps(a, b);
+   case vprec_sub:
+     res = _mm512_sub_ps(a, b);
+   case vprec_div:
+     res = _mm512_div_ps(a, b);
+   default:
+     logger_error("invalid operator %c", op);
+   }:
+ default:
+   logger_error("invalid size %d", size);
+ };
+    #+end_src
+
+

@@ -1,19 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <emmintrin.h>
+#include <immintrin.h>
 
 // Vector type
-typedef double double2 __attribute__((ext_vector_type(2)));
+typedef double double4 __attribute__((ext_vector_type(4)));
 
 // Simple test for vector type and intrinsics
 int main()
-{
+{  
   // Init
-  double2 a = {0.56125898, 0.6797};
-  double2 b = {0.96769, 0.66456343};
+  double4 a = {0.56125898, 0.1};
+  double4 b = {0.96769, 0.66456343};
 
   // Compute
-  __m128d res = _mm_add_pd(*(double2 *)(void *)&a, *(double2 *)(void *)&b);
+#ifdef __AVX__
+  __m256d res = _mm256_add_pd(*(__m256d *)(void *)&a, *(__m256d *)(void *)&b);
+#else
+  __m256d res;
+  res[0] = a[0] + b[0];
+  res[1] = a[1] + b[1];
+#endif
 
   // Print value
   printf("first  : %lf\n", res[0]);

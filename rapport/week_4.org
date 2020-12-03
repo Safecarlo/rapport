@@ -2,6 +2,46 @@
 #+author: Safecarlo
 #+date: 2020
 
+* wrapper
+** Probes
+
+   Ajout de l'affectation vectorielle à *NAN* au vecteur résultat :
+
+   #+begin_src c
+#define define_float_2x_wrapper(operation, operator)                 
+float2 _2xfloat##operation(float2 a, float2 b) {
+  float2 c;
+  c[0] = NAN;
+  c[1] = NAN;
+  ddebug(operator);                                                     
+  for (unsigned char i = 0; i < loaded_backends; i++) {                 
+    if (backends[i].interflop_##operation##_float_##vector) {              
+      backends[i].interflop_##operation##_float_##vector(2, a, b, c, context[i]);  
+    }                                                                   
+  }                                                                     
+  return c;                                                             
+}
+
+#define define_float_2x_wrapper(operation, operator)                 
+float4 _4xfloat##operation(float4 a, float4 b) {
+  float4 c;
+#ifdef __SSE__
+  c = _mm_set1_ps(NAN);
+#else
+  for (int i = 0; i < 4; ++i) {
+    c[i] = NAN;
+  }
+#endif
+  ddebug(operator);                                                     
+  for (unsigned char i = 0; i < loaded_backends; i++) {                 
+    if (backends[i].interflop_##operation##_float_##vector) {              
+      backends[i].interflop_##operation##_float_##vector(4, a, b, c, context[i]);  
+    }                                                                   
+  }                                                                     
+  return c;                                                             
+}
+   #+end_src
+
 * vprec
 ** Effectuer les opérations binaires en mode vectorielles
 *** Intrinsics

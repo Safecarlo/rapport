@@ -42,6 +42,45 @@ float4 _4xfloat##operation(float4 a, float4 b) {
 }
    #+end_src
 
+** Check if at least one backend is load
+*** Define general function
+
+    #+begin_src c
+/* Checks that a least one of the loaded backend implements the chosen
+ * operation at a given precision for vector */
+#define check_backends_implements_vector(precision, operation)                 \
+  do {                                                                         \
+    int res = 0;                                                               \
+    for (unsigned char i = 0; i < loaded_backends; i++) {                      \
+      if (backends[i].interflop_##operation##_##precision##_##vector) {        \
+        res = 1;                                                               \
+        break;                                                                 \
+      }                                                                        \
+    }                                                                          \
+    if (res == 0)                                                              \
+      logger_error("No backend instruments " #operation " for " #precision     \
+                   ".\n"                                                       \
+                   "Include one backend in VFC_BACKENDS that provides it");    \
+  } while (0)
+    #+end_src
+
+*** Unroll all possibility
+
+    #+begin_src c
+  check_backends_implements_vector(float, add);
+  check_backends_implements_vector(float, sub);
+  check_backends_implements_vector(float, mul);
+  check_backends_implements_vector(float, div);
+  check_backends_implements_vector(double, add);
+  check_backends_implements_vector(double, sub);
+  check_backends_implements_vector(double, mul);
+  check_backends_implements_vector(double, div);
+#ifdef INST_FCMP
+  check_backends_implements_vector(float, cmp);
+  check_backends_implements_vector(double, cmp);
+#endif
+    #+end_src
+
 * vprec
 ** Effectuer les opérations binaires en mode vectorielles
 *** Intrinsics

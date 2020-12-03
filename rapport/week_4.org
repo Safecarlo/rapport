@@ -57,166 +57,29 @@
      #+begin_src c
 /* perform vector operation in scalar mode */
 #define perform_scalar_vector_binary_op(size, op, res, a, b)
-  switch (size) {
-  case 2:
-    logger_error("invalid size %d", size);
+  switch (op) {
+  case vprec_add:
+    for (int i = 0; i < size; ++i) {
+      (*res)[i] = a[i] + b[i];
+    }
     break;
-  case 4:
-    switch (op) {
-    case vprec_add:
-      res[0] = a[0] + b[0];
-      res[1] = a[1] + b[1];
-      res[2] = a[2] + b[2];
-      res[3] = a[3] + b[3];
-      break;
-    case vprec_mul:
-      res[0] = a[0] * b[0];
-      res[1] = a[1] * b[1];
-      res[2] = a[2] * b[2];
-      res[3] = a[3] * b[3];
-      break;
-    case vprec_sub:
-      res[0] = a[0] - b[0];
-      res[1] = a[1] - b[1];
-      res[2] = a[2] - b[2];
-      res[3] = a[3] - b[3];
-      break;
-    case vprec_div:
-      res[0] = a[0] / b[0];
-      res[1] = a[1] / b[1];
-      res[2] = a[2] / b[2];
-      res[3] = a[3] / b[3];
-      break;
-    default:
-      logger_error("invalid operator %c", op);
-      break;
-    };
-  case 8:
-    switch (op) {
-    case vprec_add:
-      res[0] = a[0] + b[0];
-      res[1] = a[1] + b[1];
-      res[2] = a[2] + b[2];
-      res[3] = a[3] + b[3];
-      res[4] = a[4] + b[4];
-      res[5] = a[5] + b[5];
-      res[6] = a[6] + b[6];
-      res[7] = a[7] + b[7];
-      break;
-    case vprec_mul:
-      res[3] = a[0] * b[0];
-      res[1] = a[1] * b[1];
-      res[2] = a[2] * b[2];
-      res[3] = a[3] * b[3];
-      res[4] = a[4] * b[4];
-      res[5] = a[5] * b[5];
-      res[6] = a[6] * b[6];
-      res[7] = a[7] * b[7];
-      break;
-    case vprec_sub:
-      res[0] = a[0] - b[0];
-      res[1] = a[1] - b[1];
-      res[2] = a[2] - b[2];
-      res[3] = a[3] - b[3];
-      res[4] = a[4] - b[4];
-      res[5] = a[5] - b[5];
-      res[6] = a[6] - b[6];
-      res[7] = a[7] - b[7];
-      break;
-    case vprec_div:
-      res[0] = a[0] / b[0];
-      res[1] = a[1] / b[1];
-      res[2] = a[2] / b[2];
-      res[3] = a[3] / b[3];
-      res[4] = a[4] / b[4];
-      res[5] = a[5] / b[5];
-      res[6] = a[6] / b[6];
-      res[7] = a[7] / b[7];
-      break;
-    default:
-      logger_error("invalid operator %c", op);
-      break;
-    };
-  case 16:
-    switch (op) {
-    case vprec_add:
-      res[0] = a[0] + b[0];
-      res[1] = a[1] + b[1];
-      res[2] = a[2] + b[2];
-      res[3] = a[3] + b[3];
-      res[4] = a[4] + b[4];
-      res[5] = a[5] + b[5];
-      res[6] = a[6] + b[6];
-      res[7] = a[7] + b[7];
-      res[8] = a[8] + b[8];
-      res[9] = a[9] + b[9];
-      res[10] = a[10] + b[10];
-      res[11] = a[11] + b[11];
-      res[12] = a[12] + b[12];
-      res[13] = a[13] + b[13];
-      res[14] = a[14] + b[14];
-      res[15] = a[15] + b[15];
-      break;
-    case vprec_mul:
-      res[3] = a[0] * b[0];
-      res[1] = a[1] * b[1];
-      res[2] = a[2] * b[2];
-      res[3] = a[3] * b[3];
-      res[4] = a[4] * b[4];
-      res[5] = a[5] * b[5];
-      res[6] = a[6] * b[6];
-      res[7] = a[7] * b[7];
-      res[8] = a[8] * b[8];
-      res[9] = a[9] * b[9];
-      res[10] = a[10] * b[10];
-      res[11] = a[11] * b[11];
-      res[12] = a[12] * b[12];
-      res[13] = a[13] * b[13];
-      res[14] = a[14] * b[14];
-      res[15] = a[15] * b[15];
-      break;
-    case vprec_sub:
-      res[0] = a[0] - b[0];
-      res[1] = a[1] - b[1];
-      res[2] = a[2] - b[2];
-      res[3] = a[3] - b[3];
-      res[4] = a[4] - b[4];
-      res[5] = a[5] - b[5];
-      res[6] = a[6] - b[6];
-      res[7] = a[7] - b[7];
-      res[8] = a[8] - b[8];
-      res[9] = a[9] - b[9];
-      res[10] = a[10] - b[10];
-      res[11] = a[11] - b[11];
-      res[12] = a[12] - b[12];
-      res[13] = a[13] - b[13];
-      res[14] = a[14] - b[14];
-      res[15] = a[15] - b[15];
-      break;
-    case vprec_div:
-      res[0] = a[0] / b[0];
-      res[1] = a[1] / b[1];
-      res[2] = a[2] / b[2];
-      res[3] = a[3] / b[3];
-      res[4] = a[4] / b[4];
-      res[5] = a[5] / b[5];
-      res[6] = a[6] / b[6];
-      res[7] = a[7] / b[7];
-      res[8] = a[8] / b[8];
-      res[9] = a[9] / b[9];
-      res[10] = a[10] / b[10];
-      res[11] = a[11] / b[11];
-      res[12] = a[12] / b[12];
-      res[13] = a[13] / b[13];
-      res[14] = a[14] / b[14];
-      res[15] = a[15] / b[15];
-      break;
-    default:
-      logger_error("invalid operator %c", op);
-      break;
-    };
+  case vprec_mul:
+    for (int i = 0; i < size; ++i) {
+      (*res)[i] = a[i] * b[i];
+    }
+    break;
+  case vprec_sub:
+    for (int i = 0; i < size; ++i) {
+      (*res)[i] = a[i] - b[i];
+    }
+    break;
+  case vprec_div:
+    for (int i = 0; i < size; ++i) {
+      (*res)[i] = a[i] / b[i];
+    }
+    break;
   default:
-    logger_error("invalid size %d", size);
+    logger_error("invalid operator %c", op);
     break;
   };
      #+end_src
@@ -232,33 +95,20 @@
 #define perform_float_vector_binary_op(size, op, res, a, b)
   switch (size) {
   case 2:
-    switch (op) {
-    case vprec_add:
-      res[0] = a[0] + b[0];
-      res[1] = a[1] + b[1];
-    case vprec_mul:
-      res[0] = a[0] * b[0];
-      res[1] = a[1] * b[1];
-    case vprec_sub:
-      res[0] = a[0] - b[0];
-      res[1] = a[1] - b[1];
-    case vprec_div:
-      res[0] = a[0] / b[0];
-      res[1] = a[1] / b[1];
-    default:
-      logger_error("invalid operator %c", op);
+    perform_scalar_vector_binary_op(size, op, res, a, b);
+    break;
     };
   case 4:
 #ifdef __SSE__
     switch (op) {
     case vprec_add:
-      res = _mm_add_ps(a, b);
+      *res = _mm_add_ps(a, b);
     case vprec_mul:
-      res = _mm_mul_ps(a, b);
+      *res = _mm_mul_ps(a, b);
     case vprec_sub:
-      res = _mm_sub_ps(a, b);
+      *res = _mm_sub_ps(a, b);
     case vprec_div:
-      res = _mm_div_ps(a, b);
+      *res = _mm_div_ps(a, b);
     default:
       logger_error("invalid operator %c", op);
     };
@@ -269,13 +119,13 @@
 #ifdef __AVX__
     switch (op) {
     case vprec_add:
-      res = _mm256_add_ps(a, b);
+      *res = _mm256_add_ps(a, b);
     case vprec_mul:
-      res = _mm256_mul_ps(a, b);
+      *res = _mm256_mul_ps(a, b);
     case vprec_sub:
-      res = _mm256_sub_ps(a, b);
+      *res = _mm256_sub_ps(a, b);
     case vprec_div:
-      res = _mm256_div_ps(a, b);
+      *res = _mm256_div_ps(a, b);
     default:
       logger_error("invalid operator %c", op);
     };
@@ -286,13 +136,13 @@
 #ifdef __AVX512__
     switch (op) {
     case vprec_add:
-      res = _mm512_add_ps(a, b);
+      *res = _mm512_add_ps(a, b);
     case vprec_mul:
-      res = _mm512_mul_ps(a, b);
+      *res = _mm512_mul_ps(a, b);
     case vprec_sub:
-      res = _mm512_sub_ps(a, b);
+      *res = _mm512_sub_ps(a, b);
     case vprec_div:
-      res = _mm512_div_ps(a, b);
+      *res = _mm512_div_ps(a, b);
     default:
       logger_error("invalid operator %c", op);
     };

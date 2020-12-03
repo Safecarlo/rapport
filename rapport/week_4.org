@@ -22,7 +22,7 @@ float2 _2xfloat##operation(float2 a, float2 b) {
   return c;                                                             
 }
 
-#define define_float_2x_wrapper(operation, operator)                 
+#define define_float_4x_wrapper(operation, operator)                 
 float4 _4xfloat##operation(float4 a, float4 b) {
   float4 c;
 #ifdef __SSE__

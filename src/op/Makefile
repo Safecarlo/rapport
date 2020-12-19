@@ -1,8 +1,15 @@
+# Compiler
 CC=verificarlo-c
 EXE=app
-REAL=double2
 
-.PHONY: clean main run_env
+# Verificarlo
+FLOAT=double
+SIZE=2
+REAL=$(FLOAT)$(SIZE)
+OP="+"
+
+# Makefile
+.PHONY: clean main run
 
 all: main
 
@@ -10,8 +17,8 @@ main: main.c
 	@echo "$(REAL) is chosen"
 	$(CC) -DREAL=$(REAL) -march=native -O3 -fno-slp-vectorize main.c -o $(EXE)
 
-run_env:
-	VFC_BACKENDS="libinterflop_ieee.so"
+run:
+	./$(EXE) $(FLOAT) $(OP) $(SIZE) 1.1 1.1
 
 clean:
 	rm -Rf *~ *.o $(EXE) *.asm

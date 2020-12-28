@@ -4,9 +4,10 @@ EXE=app
 
 # Verificarlo
 FLOAT=double
-SIZE=4
+SIZE=2
 REAL=$(FLOAT)$(SIZE)
 OP="+"
+OP_NAME=add
 
 # Makefile
 .PHONY: clean main run
@@ -20,6 +21,9 @@ main: main.c
 
 run:
 	./$(EXE) $(FLOAT) $(OP) $(SIZE) 1.1 1.1
+
+checkinstru:
+	@cat main.*.2.ll | grep -zoe '@main.*{' | grep -aoe 'call.*$(FLOAT)$(OP_NAME)'
 
 clean:
 	rm -Rf *~ *.o $(EXE) *.asm *.ll

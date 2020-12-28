@@ -45,9 +45,9 @@ int main(int argc, char **argv)
   REAL b = strtod(argv[5], NULL);
 
   REAL res = perform_vector_binary_op(size, op, a, b);
-
+  
   for (int i = 0; i < size; i++)
     printf("%lf\n", res[i]);
-
+  
   return 0;
 }

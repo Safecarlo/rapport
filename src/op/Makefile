@@ -4,7 +4,7 @@ EXE=app
 
 # Verificarlo
 FLOAT=double
-SIZE=2
+SIZE=4
 REAL=$(FLOAT)$(SIZE)
 OP="+"
 OP_NAME=add
@@ -23,7 +23,11 @@ run:
 	./$(EXE) $(FLOAT) $(OP) $(SIZE) 1.1 1.1
 
 checkinstru:
-	@cat main.*.2.ll | grep 'call.*perform' && cat main.*.2.ll | grep 'call.*$(FLOAT)$(OP_NAME)'
+	@if grep 'call.*perform' main.*.2.ll && grep 'call.*$(FLOAT)$(OP_NAME)' main.*.2.ll; then \
+		echo "PASS"; \
+	else \
+		echo "FAIL"; \
+	fi
 
 clean:
 	rm -Rf *~ *.o $(EXE) *.asm *.ll

@@ -41,8 +41,8 @@ int main(int argc, char **argv)
   char op = argv[2][0];
   unsigned long long size = strtoll(argv[3], NULL, 10);
 
-  REAL a = strtod(argv[4], NULL);
-  REAL b = strtod(argv[5], NULL);
+  REAL a = (REAL)(strtod(argv[4], NULL));
+  REAL b = (REAL)(strtod(argv[5], NULL));
 
   REAL res = perform_vector_binary_op(size, op, a, b);
   

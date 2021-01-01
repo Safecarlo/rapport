@@ -19,8 +19,8 @@
 * Problèmes
 
   - On a toujours le bug lorsque l'on veut initialisé les vecteurs
-    dynamiquement avec un `strtod()` pour les vecteurs *AVX* et
-    *AVX512*par exemple :
+    dynamiquement avec un ~strtod()~ pour les
+    vecteurs *AVX* et *AVX512*par exemple :
     - supporte le faite d'avoir une seule opération vecorielles et
       quelle soit connu statiquement sinon dans tout les autres cas
       cela plante, c'est à dire :
@@ -60,18 +60,18 @@ else
     - soit ajouter en brut sans condition la verification, au quel cas
       cela impliquerai que tous les backends implémente les opérations
       vectorielles
-    - soit ajouter une option `--vector` ou `--inst-vector` comme pour
-      `--inst-cmp` ou `--inst-func` pour pourvoir faire une condition
-      avec un `#ifdef INST_FVECTOR` mais on ne sait pas encore comment 
-      *Verificarlo* défini les constantes `INST_FCMP` mais on a vu
+    - soit ajouter une option ~--vector~ ou ~--inst-vector~ comme pour
+      ~--inst-cmp~ ou ~--inst-func~ pour pourvoir faire une condition
+      avec un ~#ifdef INST_FVECTOR~ mais on ne sait pas encore comment 
+      *Verificarlo* défini les constantes ~INST_FCMP~ mais on a vu
       qu'il y avais un sorte de création de classe dans le fichier
-      `libVFCinstrument.cpp`.
+      ~libVFCinstrument.cpp~.
 
   - Pour faire passé notre test qui vérifie que le code assembleurs
     des backends utilise bien les instructions et registres
     vectorielles on a besoin qu'il compile les backends avec l'option
-    `-march=native` or dans le fichier `configure.ac` nous avons
-    ajouté comme pour l'option `-Wall` un `AC_ARG_ENABLE` :
+    ~-march=native~ or dans le fichier ~configure.ac~ nous avons
+    ajouté comme pour l'option ~-Wall~ un ~AC_ARG_ENABLE~ :
 
 #+begin_src asm
 AC_ARG_ENABLE(march=native, AC_HELP_STRING([--enable-march=native], [Enable -march=native compilation flag]), [MARCH_NATIVE_CFLAGS="yes"])
@@ -82,7 +82,7 @@ if test "x$MARCH_NATIVE_CFLAGS" = "xyes"; then
 fi
 #+end_src
 
-    et dans le `Makefile.am` du backend ieee :
+    et dans le ~Makefile.am~ du backend ieee :
 
 #+begin_src asm
 if MARCH_NATIVE_CFLAGS

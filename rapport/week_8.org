@@ -136,3 +136,13 @@ static void _interflop_add_float_vector(const int size, const float *a, const fl
 #+end_src
 
   cela donne le bon résultat car notre test passe.
+* Question
+  
+  - Pour le rapport devons nous mettre que les points que nous avons
+    réussis à faire où bien tout ce qu'on a compris même si nous
+    n'avons pas réussis à le faire ?
+  - Pour la présentation j'avais pensé a faire des benchmark entre
+    deux code un qui n'utilise pas les opérations vectorielles et un
+    qui les utilise pour voir si on a gagné du temps (mais pour
+    l'instant ca tombe à l'eau car les opération vectorielles ne sont
+    pas complètement implémenté)

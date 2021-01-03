@@ -91,4 +91,48 @@ endif
 #+end_src
 
     mais cela ne marche pas, il continu a utilisé les instruction *sse*
-    au lieu des instruction *avx*
+    au lieu des instruction *avx*.
+
+    Nous avons mis ce bout de code dans le backend *ieee* pour gérer
+    les opérations vectorielles car il faut recasté dans le types
+    vectorielles de *clang* pour pouvoir effectuer l'opération
+    vectorielle:
+
+#+begin_src c
+#define define_vector_binary_operation(precision, size, op, a, b, c)	\
+  switch (size) {							\
+  case 2:								\
+    (*(precision##2 *)c) = (*(precision##2 *)a)				\
+      op (*(precision##2 *)b);						\
+    break;								\
+  case 4:								\
+    (*(precision##4 *)c) = (*(precision##4 *)a)				\
+      op (*(precision##4 *)b);						\
+    break;								\
+  case 8:								\
+    (*(precision##8 *)c) = (*(precision##8 *)a)				\
+      op (*(precision##8 *)b);						\
+    break;								\
+  case 16:								\
+    (*(precision##16 *)c) = (*(precision##16 *)a)			\
+      op (*(precision##16 *)b);						\
+    break;								\
+  default:								\
+    fprintf(stderr, "ERROR: Bad size %d\n", size);			\
+    break;								\
+  }
+#+end_src
+
+  et un exemple de fonction :
+
+#+begin_src c
+static void _interflop_add_float_vector(const int size, const float *a, const float *b,
+					float *c, void *context) {
+  define_vector_binary_operation(float, size, +, a, b, c);
+  for (int i = 0; i < size; ++i) {
+    debug_print_float(context, ARITHMETIC, "+", a[i], b[i], c[i]);
+  }
+}
+#+end_src
+
+  cela donne le bon résultat car notre test passe.

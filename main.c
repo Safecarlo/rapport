@@ -1,26 +1,36 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <mpi.h>
 
-double dot_prod(double *restrict a, double *restrict b, int count)
+double reduc_somme(double in)
 {
-  double sum=0.0;
+  int rang,taille,root;
+  double sum,*all_in;
 
-  for (int i = 0; i < count; i++)
+  MPI_Comm_rank(MPI_COMM_WORLD, &rang);
+  MPI_Comm_size(MPI_COMM_WORLD, &taille);
+
+  root=0;
+  if(rang == root)
   {
-    sum+=a[i] * b[i];
+    all_in= (double*)malloc(taille*sizeof(double));
+  }else
+  {
+    all_sum=NULL;
   }
-  return sum;
+
+  sum=0.0;
+
+  for (int i = 0; i < taille; i++)
+  {
+    sum+=all_in[i];
+  }
+  free(all_in);
 }
+
 int main(int argc, char const *argv[])
 {
-  int rank, size;
 
-  MPI_Init(&argc, &argv);
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-  
-  MPI_Finalize();
   return 0;
 }

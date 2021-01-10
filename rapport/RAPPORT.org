@@ -1,0 +1,152 @@
+#+title: Support MPI/OpenMP et de la vectorisation dans Verificarlo
+#+author: Safecarlo
+#+date: 2020
+
+* Verificarlo
+** Résumé
+* Support MPI / OpenMP
+* Vectorisation
+** Résumé des besoins
+
+   Aujourd’hui *vfcinstrument* insert des probes, y compris pour les instruction vectorielles.
+
+   Les probes sont des fonctions implémenté dans *vfcwrapper* qui
+   est linker avec le programme par la partie compilation de veificarlo.
+
+   Celles des instructions vectorielles:
+   - defont le vecteur et appel les versions scalaires
+
+   A l’exécution le *wrapper* charge (load) les librairies dynamiques (.so)
+   correspondantes au(x) *backend(s)* verificarlo utilisé (vprec, mca).
+
+** Définitions de certains termes technique
+
+   *probes :* Les probes sont des fonctions implémenté dans
+   "vfcwrapper" qui est linker avec le programme par la partie
+   compilation de veificarlo.
+
+   *backend :* Dans le cadre de verifcarlo, c'est la/les librairie(s)
+   dynamique(s) qui seront appelées par le wrapper dans les
+   probes. Dans le cadre d'un compilateur c'est la derniere phase qui
+   descend de la représentation intermédiaire vers le binaires (en
+   général).
+
+   *wrapper :* ce sont des fonctions qui enveloppent l'appel à
+   d'autres fonctions.
+
+   *link :* c'est la phase de compilation qui consiste à aller
+   chercher toute les librairies externes appelé par l'application
+   pour les liées au programe utilisateur afin de resoudre les
+   références non défini.
+
+   *sérialisation :* dans le contexte de l'utilisation de vecteur il
+   s'agit d'éxécuter en séquence les éléments du vecteur.
+
+** Objectifs
+   
+   Les changements sont à faire essentiellement dans les *wrappers* et
+   les *backends*:
+
+   1. Support des vecteurs de 512 et 256 bits
+   2. Ajout de *probes* vectorielles appellant les fonctions de
+      *backend* vectorielles
+      - Ajout des fonctions dans l'interfaces (par pointeurs)
+   3. Implémenter ces fonctions pour chaque *backend*
+      - Faire une première implémentation sérialisé
+   4. Implémenter la version vectorielle des opérations de base dans
+      le backends *vprec*
+      - Prendre en compte les cas spéciaux (dénormaux)
+      - Tester la performance sur les NAS (mpi et openMP)
+   5. Pareil pour le *backend* *mca*
+
+** Schéma
+
+   Voici un schéma qui explique les différents processus pour établir
+   la vectorisations dans verificarlo :
+
+   [[./scheme.png]]
+
+** Support des vecteurs 512 / 256 bits
+
+   Les vecteurs 512 / 256 bits était déjà supporté.
+
+   Verificarlo utilise les types vectorielles de [[https://clang.llvm.org/docs/LanguageExtensions.html#vectors-and-extended-vectors][clang]].
+
+** Ajout de probes vectorielles
+
+   Les probes vectorielles était déjà implémenté mais appelais les
+   probes scalaires.
+
+   Nous avons donc dû modifié les probes en appelant les fonctions
+   vectorielles des backends.
+
+   De plus nous avont factoriser la macro qui permet de définir les
+   probes vecorielles en *1* macro au lieu de *4*, une pour chaque
+   taille, en passant la taille en paramètre.
+
+** Ajout des fonctions vectorielles dans l'interface
+
+   Il faut d'abord identifier quelle est l'interface et où la trouver.
+   On a facilement trouver où et comment la modifier. Le fichier se
+   trouve dans *src/common/inteflop.h*.
+
+#+BEGIN_SRC c
+
+struct interflop_backend_interface_t {
+  //...
+  void (*interflop_add_float_vector)(const int size, const float *a, const float *b,
+				     float *c, void *context);
+  void (*interflop_sub_float_vector)(const int size, const float *a, const float *b,
+				     float *c, void *context);
+  void (*interflop_mul_float_vector)(const int size, const float *a, const float *b,
+				     float *c, void *context);
+  void (*interflop_div_float_vector)(const int size, const float *a, const float *b,
+				     float *c, void *context);
+  void (*interflop_cmp_float_vector)(enum FCMP_PREDICATE p, const int size,
+				     const float *a, const float *b, int *c,
+				     void *context);
+  //...
+  void (*interflop_add_double_vector)(const int size, const double *a, const double *b,
+				      double *c, void *context);
+  void (*interflop_sub_double_vector)(const int size, const double *a, const double *b,
+				      double *c, void *context);
+  void (*interflop_mul_double_vector)(const int size, const double *a, const double *b,
+				      double *c, void *context);
+  void (*interflop_div_double_vector)(const int size, const double *a, const double *b,
+				      double *c, void *context);
+  void (*interflop_cmp_double_vector)(enum FCMP_PREDICATE p, const int size,
+				      const double *a, const double *b, int *c,
+				      void *context);
+  //...
+};
+
+#+END_SRC
+
+   Nous avons décidé de mettre la taille en argument pour évité de
+   faire une fonction pour chaque taille en plus d'une fonction pour
+   chaque opération et pour chaque précision. Ce qui nous fait un
+   total de 8 fonctions à ajouté au lieu de 32.
+
+   Comme nous passons la taille en argument, il faudrait testé la
+   taille pour permettre à clang de d'effectuer une opération
+   vectorielle en castant notre tableau dans le bon type vectorielles
+   de clang.
+
+   Par exemple si nous avons une opération flottante avec une
+   précision *double*, avec l'opération *add* et un taille de vecteur
+   de *4* nous devrons faire l'instruction suivante:
+
+#+BEGIN_SRC c
+
+(*(double4 *)c) = (*(double4 *)a) + (*(double4 *)b);
+
+#+END_SRC
+
+** Fonctions vectorielles en mode scalaire dans les *backends*
+*** Backend ieee
+*** backend vprec
+*** Backend mca
+** Fonctions vectorielles en mode vectorielles dans les *backends*
+*** Backend ieee
+*** backend vprec
+*** Backend mca

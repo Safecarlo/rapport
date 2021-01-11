@@ -28,7 +28,30 @@
 ** Parralélisme dans le calcul scientifique
 ** Vectorisation dans le calcul scientifique
 
-   
+   Dans le domaine du calcul scientifique il est important de faire
+   des codes propres (c'est à dire pas d'erreur à l'éxécution) et
+   optimizé.
+
+   Nous avons vu que le parrallélisme permettait d'optimizé notre code
+   mais ce n'est pas le seul moyens.
+
+   Dans nos cpu modernes, des jeux d'isntructions vectorielles sont
+   apparus. Ils ont une taille de 128, 256 ou 512 bits suivant le jeu
+   d'instruction qui correspond respectivement au jeu d'instruction
+   *sse*, *avx* et *avx512*. Ce dernier n'est disponible que sur
+   certains processeurs d'*Intel*. Ils permettent d'effectuer
+   plusieurs opérations en même temps sur le même coeur de calcul.
+
+   Dans notre cas, nous nous intéressont uniquement au type *float* et
+   *double* qui ont respectivement une taille de 32 bits et de 64
+   bits.
+
+   Nous pouvons donc effectuer 4 additions en même temps pour le type
+   *float* et le jeu d'instruction *sse*. Ce qui théoriquement
+   multiplie par *4* la vitesse de calcul. D'où l'intérêt particulier
+   que l'on parte au support de la vectorisation dans
+   Verificarlo. Dans le but de pouvoir l'utiliser sur des codes dans
+   des centres de calculs.
 
 * Organisation
 ** Groupe

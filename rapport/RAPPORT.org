@@ -4,7 +4,7 @@
 
 * Verificarlo
 
-  Verificarlo est un compilateur basé sur *clang* et *llvm*. Il
+  [[https://github.com/verificarlo/verificarlo][Verificarlo]] est un compilateur basé sur *clang* et *llvm*. Il
   permet d'intercepter toutes les opérations flottantes et de les
   analyser. Ce qui permet dans le cadre du calcul scientifique et de
   la simulation de pouvoir débugger, valider et optimiser ces

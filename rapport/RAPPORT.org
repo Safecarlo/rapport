@@ -54,25 +54,25 @@
 
 ** Définitions de certains termes technique
 
-   *probes :* Les probes sont des fonctions implémenté dans
+   *probes:* Les probes sont des fonctions implémenté dans
    *vfcwrapper* qui est linker avec le programme par la partie
    compilation de veificarlo.
 
-   *backend :* Dans le cadre de verifcarlo, c'est la/les librairie(s)
+   *backend:* Dans le cadre de verifcarlo, c'est la/les librairie(s)
    dynamique(s) qui seront appelées par le wrapper dans les
    probes. Dans le cadre d'un compilateur c'est la derniere phase qui
    descend de la représentation intermédiaire vers le binaires (en
    général).
 
-   *wrapper :* Ce sont des fonctions qui enveloppent l'appel à
+   *wrapper:* Ce sont des fonctions qui enveloppent l'appel à
    d'autres fonctions.
 
-   *link :* Il s'agit de la phase de compilation qui consiste à aller
+   *link:* Il s'agit de la phase de compilation qui consiste à aller
    chercher toute les librairies externes appelé par l'application
    pour les liées au programe utilisateur afin de resoudre les
    références non défini.
 
-   *sérialisation :* Dans le contexte de l'utilisation de vecteur il
+   *sérialisation:* Dans le contexte de l'utilisation de vecteur il
    s'agit d'éxécuter en séquence les éléments du vecteur.
 
 ** Objectifs
@@ -98,7 +98,57 @@
    Voici un schéma qui explique les différents processus pour établir
    la vectorisations dans verificarlo :
 
-   [[./scheme.png]]
+   [[./scheme_2.png]]
+
+** Test
+
+   Pour les test, nous avons décidé de suivre le fonctionnement de
+   test que verificarlo à commencé à implémenter. C'est-à-dire que
+   nous ne ferons pas de *tests unitaires* mais nous testerons si les
+   résultatus obtenu lors de la *compilation* et de l'exécution sont
+   exactes.
+
+   Les *tests* sont principalement écrit en *bash* et un code
+   *c*. Les *tests* se trouvent dans le répertoire
+   =tests/test_vector_instrumentation/=. 
+
+   Nous devons testé 3 choses:
+   - le bon résultat des opérations vecorielles
+   - l'appel aux *probes vectorielles*
+   - l'utilisation des jeux d'instructions vectorielles suivant l'arhitecture
+
+*** Bon résultat des opérations vectorielles
+
+    Pour ce faire nous devons itérer sur tout les backends, toutes les
+    précisions et toutes les tailles de vecteurs et s'assurer du bon
+    résultat à l'aide d'un fichier contenat le résultat attendu.
+
+*** Appel aux probes vectorielles
+
+    Pour ce faire nous devons récupérer les fichiers *.ll* en
+    compilant avec *--save-temps* qui sont la représentations
+    intermédiaires de notre programme de test.
+
+    Un fois récupérer il nous suffit de vérifier si l'appel aux
+    *probes vectorielles* sont bien effectué.
+
+*** Utilisation des jeux d'instructions vectorielles suivant l'arhitecture
+
+    Pour ce dernier sous-test, nous supposont que le test s'effectue
+    sur une machine *x86_64* tournant sur *Linux*.
+
+    Suivant les jeux d'instructions disponnible sur la machine, le
+    test vérifie si les jeux d'instructions sont bien utilisés.
+
+    _Par exemple:_ si nous avons uniquement les jeux d'instruction
+    *sse* et *avx*, nous devrions avoir des instructions *sse* pour
+    les types vectorielles *float2*, *float4* et *double2*. Et des
+    instruction *avx* pour tous les autres types vecorielles.
+
+    Cependant notre test, test uniquement si ces instructions sont
+    utilisé au moins une fois et ne compte pas exactement combien de
+    fois elles sont utilisé. Nous supposons donc que *clang* et *llvm*
+    vectorisent bien nos opérations.
 
 ** Support des vecteurs 512 / 256 bits
 

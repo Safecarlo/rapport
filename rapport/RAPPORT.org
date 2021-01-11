@@ -1,4 +1,4 @@
-#+title: Support MPI/OpenMP et de la vectorisation dans Verificarlo
+#+title: Support de MPI/OpenMP et de la vectorisation dans Verificarlo
 #+author: Safecarlo
 #+date: 2020
 
@@ -7,8 +7,28 @@
   [[https://github.com/verificarlo/verificarlo][Verificarlo]] est un compilateur basé sur *clang* et *llvm*. Il
   permet d'intercepter toutes les opérations flottantes et de les
   analyser. Ce qui permet dans le cadre du calcul scientifique et de
-  la simulation de pouvoir débugger, valider et optimiser ces
+  la simulation de pouvoir déboguer, valider et optimiser ces
   opérations ainsi que leurs formats.
+
+  Les opérations flottantes ont un intérêt particulier dans le monde
+  du *HPC* (High Performance Computing). Elles peuvent être source
+  d'erreur sans pour autant être un problème mathématiques. En effet
+  dans le domaine de l'informatique, les ordinateurs ont une
+  limitation matérielle qui ne leur permet pas d'atteindre une
+  certaine précision.
+
+  C'est là qu'intervient *Verificarlo*, cet outil permet par
+  instumentation des opérations flottantes, de pouvoir déboguer 
+  les erreurs dû à la précision machine. Par exemple de pouvoir
+  modifier la taille maximale de l'exposant ou bien de la mantise. Ou
+  bien même de pour voir effectuer des opérations flottantes en
+  ajoutant du bruit au résultat afin de simuler une précision machine
+  plus élevé.
+
+** Parralélisme dans le calcul scientifique
+** Vectorisation dans le calcul scientifique
+
+   
 
 * Organisation
 ** Groupe
@@ -245,5 +265,5 @@
    fonctions d'initialisations des *probes* le fait de vérifier si au
    moins un *backend* utilisé implémente les opérations vectorielles.
 
-   Ceci bloque tout les backends qui ne les implémentes pas. Mais une
+   Ceci bloque tout les backends qui ne les implémentent pas. Mais une
    sérialisation peut très vite être faites.

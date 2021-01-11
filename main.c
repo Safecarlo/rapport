@@ -1,36 +1,76 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <mpi.h>
+//#include <mpi.h>
 
-double reduc_somme(double in)
+/*lecture du fichier de donnee*/
+void read_file(const char *file, double *vec, int n)
 {
-  int rang,taille,root;
-  double sum,*all_in;
+  FILE *fd;
+  double val;
 
-  MPI_Comm_rank(MPI_COMM_WORLD, &rang);
-  MPI_Comm_size(MPI_COMM_WORLD, &taille);
-
-  root=0;
-  if(rang == root)
+  fd=fopen(file, "r");
+  vec=malloc(n*sizeof(double));
+  if(fd==NULL)
   {
-    all_in= (double*)malloc(taille*sizeof(double));
+    puts("Erreur d'ouverture du fichier");
+    exit(0);
   }else
   {
-    all_sum=NULL;
+    /*recuperation des valeur du tableau*/
+    for (int i = 0; i < n; i++)
+    {
+      fscanf(fd, "%lf", &val);
+      vec[i]=val;
+    }
   }
 
-  sum=0.0;
+  for (int i = 0; i < n; i++)
+  {
+    printf("%lf\n",vec[i] );
+  }
 
-  for (int i = 0; i < taille; i++)
+  free(vec);
+  fclose(fd);
+}
+/*Creation de la fonction de reduction*/
+double reduc_somme(double *restrict all_in, int n)
+{
+  double sum;
+
+    all_in = NULL;
+    all_in = (double*)malloc(n*sizeof(double));
+
+      if(all_in==NULL)
+      {
+        puts("Allocation impossible");
+        exit(0);
+      }
+
+  sum=0;
+
+  for (int i = 0; i < n; i++)
   {
     sum+=all_in[i];
   }
+
   free(all_in);
+  return sum;
 }
 
-int main(int argc, char const *argv[])
+int main(int argc, char **argv)
 {
+  int nelmt,rang;
+  char *name;
+  double *x,sum;
+
+  name = argv[1];
+  nelmt = atoi(argv[2]);
+
+  read_file(name, x, nelmt);
+
+  sum=reduc_somme(x,nelmt);
+  printf("Somme = %lf\n",sum);
 
   return 0;
 }

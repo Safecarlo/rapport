@@ -14,7 +14,7 @@
 ** Groupe
 
    Nous nous somme répartis en 2 groupe:
-   - un groupe sur la partie MPI / OpenMP ainsi que la génération de
+   - un groupe sur la partie [[https://www.mpich.org/][MPI]] / [[https://www.openmp.org/][OpenMP]] ainsi que la génération de
      nombre aléatoire (Hery Andrianantenaina / Julien Even)
    - un groupe sur le support de la vectorisation dans Verificarlo
      (Nicolas Bouton / Ali Lakbal)
@@ -34,13 +34,15 @@
 * Vectorisation
 ** Résumé des besoins
 
-   Aujourd’hui *vfcinstrument* insert des probes, y compris pour les instruction vectorielles.
+   Aujourd’hui *vfcinstrument* insert des probes, y compris pour les
+   instruction vectorielles.
 
    Les probes sont des fonctions implémenté dans *vfcwrapper* qui
    est linker avec le programme par la partie compilation de veificarlo.
 
    Celles des instructions vectorielles defont le vecteur et appel les
-   versions scalaires.
+   versions scalaires au lieu d'appeler les fonctions vectorielles des
+   backends.
 
    A l’exécution le *wrapper* charge (load) les librairies dynamiques (.so)
    correspondantes au(x) *backend(s)* verificarlo utilisé (vprec, mca).
@@ -83,7 +85,7 @@
    4. Implémenter la version vectorielle des opérations de base dans
       le backends *vprec*
       - Prendre en compte les cas spéciaux (dénormaux)
-      - Tester la performance sur les NAS (MPI et OpenMP)
+      - Tester la performance sur les [[https://www.nas.nasa.gov/publications/npb.html][NAS]] (MPI et OpenMP)
    5. Faire de même pour le *backend mca*
 
 ** Schéma
@@ -107,57 +109,25 @@
    Nous avons donc dû modifié les probes en appelant les fonctions
    vectorielles des backends.
 
-   De plus nous avont factoriser la macro qui permet de définir les
-   probes vecorielles en *1* macro au lieu de *4*, une pour chaque
-   taille, en passant la taille en paramètre.
+   De plus nous avons factorisé la macro qui permet de définir les
+   probes vecorielles en *1* macro au lieu de *4* (une pour chaque
+   taille) en passant la taille en paramètre.
 
 ** Ajout des fonctions vectorielles dans l'interface
 
-   Il faut d'abord identifier quelle est l'interface et où la trouver.
-   On a facilement trouver où et comment la modifier. Le fichier se
-   trouve dans *src/common/inteflop.h*.
-
-#+BEGIN_SRC c
-
-struct interflop_backend_interface_t {
-  //...
-  void (*interflop_add_float_vector)(const int size, const float *a, const float *b,
-				     float *c, void *context);
-  void (*interflop_sub_float_vector)(const int size, const float *a, const float *b,
-				     float *c, void *context);
-  void (*interflop_mul_float_vector)(const int size, const float *a, const float *b,
-				     float *c, void *context);
-  void (*interflop_div_float_vector)(const int size, const float *a, const float *b,
-				     float *c, void *context);
-  void (*interflop_cmp_float_vector)(enum FCMP_PREDICATE p, const int size,
-				     const float *a, const float *b, int *c,
-				     void *context);
-  //...
-  void (*interflop_add_double_vector)(const int size, const double *a, const double *b,
-				      double *c, void *context);
-  void (*interflop_sub_double_vector)(const int size, const double *a, const double *b,
-				      double *c, void *context);
-  void (*interflop_mul_double_vector)(const int size, const double *a, const double *b,
-				      double *c, void *context);
-  void (*interflop_div_double_vector)(const int size, const double *a, const double *b,
-				      double *c, void *context);
-  void (*interflop_cmp_double_vector)(enum FCMP_PREDICATE p, const int size,
-				      const double *a, const double *b, int *c,
-				      void *context);
-  //...
-};
-
-#+END_SRC
+   Il nous faut d'abord identifier quelle est l'interface et où la
+   trouver. Nous avons facilement trouver où et comment la
+   modifier. L'interface se trouve dans le fichier
+   *src/common/inteflop.h*.
 
    Nous avons décidé de mettre la taille en argument pour évité de
    faire une fonction pour chaque taille en plus d'une fonction pour
    chaque opération et pour chaque précision. Ce qui nous fait un
    total de 8 fonctions à ajouté au lieu de 32.
 
-   Comme nous passons la taille en argument, il faudrait testé la
-   taille pour permettre à clang de d'effectuer une opération
-   vectorielle en castant notre tableau dans le bon type vectorielles
-   de clang.
+   Comme nous passons la taille en argument, il faudra testé la
+   taille pour permettre à clang d'effectuer une opération vectorielle
+   en castant notre tableau dans le bon type vectorielles de clang.
 
    Par exemple si nous avons une opération flottante avec une
    précision *double*, avec l'opération *add* et un taille de vecteur

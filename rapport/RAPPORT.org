@@ -121,7 +121,8 @@
 
     Pour ce faire nous devons itérer sur tout les backends, toutes les
     précisions et toutes les tailles de vecteurs et s'assurer du bon
-    résultat à l'aide d'un fichier contenat le résultat attendu.
+    résultat à l'aide d'un fichier contenat le résultat attendu que
+    l'on comparera avec la sortie de notre programme.
 
 *** Appel aux probes vectorielles
 
@@ -214,5 +215,35 @@
 
 ** Fonctions vectorielles en mode vectorielles dans les *backends*
 *** Backend ieee
+
+    Pour le *backend* ieee, il n'y pas de traitement particulier sur
+    les opérations. Le *backend* effectue l'opération et la debug.
+
+    Pour vectorisé l'opération comme di précedement il faut recasté le
+    pointeur de la *precision* flottante en type vectorielles de
+    clang. Pour cela nous avons créer une macro c qui nous le
+    permet. Le seul désavantage est que l'on effectue un branchement à
+    cause de la condition.
+
+    Pour la fonction de debuggage, elle est essentiellement composé de
+    sortie standart ou dans un fichier ce qui n'est pas
+    vectorisable. Donc nous avons laisser la boucle qui appelle la
+    fonction de debug pour chaque élément du tableau.
+
 *** backend vprec
 *** Backend mca
+** Vérification si au moins un backend utilisé implémente les opérations vectorielles
+
+   Pour l'instant seul les backends *ieee*, *vprec* et *mca* ont été
+   modifié et implémente les opérations vectorielles de façons
+   scalaire ou vectorielles.
+
+   Pour les autres backends, la version scalaire n'est même pas
+   implémenté.
+
+   Comme pour les opérations scalaires, nous avons ajoutés dans la
+   fonctions d'initialisations des *probes* le fait de vérifier si au
+   moins un *backend* utilisé implémente les opérations vectorielles.
+
+   Ceci bloque tout les backends qui ne les implémentes pas. Mais une
+   sérialisation peut très vite être faites.

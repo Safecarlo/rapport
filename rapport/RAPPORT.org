@@ -100,6 +100,19 @@
 
    [[./scheme.png]]
 
+** Test
+
+   Pour les test, nous avons décidé de suivre le fonctionnement de
+   test que verificarlo à commencé à implémenter. C'est-à-dire que
+   nous ne ferons pas de *tests unitaires* mais nous testerons si les
+   résultatus obtenu lors de la *compilation* et de l'exécution sont
+   exactes.
+
+   Nous devons testé 3 choses:
+   - le bon résultat des opérations vecorielles
+   - l'appel aux *probes vectorielles*
+   - l'utilisation des jeux d'instructions vectorielles suivant l'arhitecture
+
 ** Support des vecteurs 512 / 256 bits
 
    Les vecteurs 512 / 256 bits était déjà supporté.

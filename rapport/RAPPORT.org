@@ -3,8 +3,34 @@
 #+date: 2020
 
 * Verificarlo
-** Résumé
+
+  Verificarlo est un compilateur basé sur *clang* et *llvm*. Il
+  permet d'intercepter toutes les opérations flottantes et de les
+  analyser. Ce qui permet dans le cadre du calcul scientifique et de
+  la simulation de pouvoir débugger, valider et optimiser ces
+  opérations ainsi que leurs formats.
+
+* Organisation
+** Groupe
+
+   Nous nous somme répartis en 2 groupe:
+   - un groupe sur la partie MPI / OpenMP ainsi que la génération de
+     nombre aléatoire (Hery Andrianantenaina / Julien Even)
+   - un groupe sur le support de la vectorisation dans Verificarlo
+     (Nicolas Bouton / Ali Lakbal)
+
+** Git
+
+   Etant donné que *Verificarlo* est un logiciel ayant un dépôt
+   distant sur le site [[https://github.com][GitHub]]. Nous avons décidé de créer une
+   Organisation sur *GitHub* et de *fork* Verificarlo dans notre
+   Organisation. Nous avons également chacun *fork* Verificarlo depuis
+   notre le *fork* de notre Organisation.
+
+   Lien vers notre fork de verificarlo: [[https://github.com/Safecarlo/verificarlo/tree/vectorization][Safecarlo]]
+   
 * Support MPI / OpenMP
+* Génération de nombre aléatoire
 * Vectorisation
 ** Résumé des besoins
 
@@ -13,8 +39,8 @@
    Les probes sont des fonctions implémenté dans *vfcwrapper* qui
    est linker avec le programme par la partie compilation de veificarlo.
 
-   Celles des instructions vectorielles:
-   - defont le vecteur et appel les versions scalaires
+   Celles des instructions vectorielles defont le vecteur et appel les
+   versions scalaires.
 
    A l’exécution le *wrapper* charge (load) les librairies dynamiques (.so)
    correspondantes au(x) *backend(s)* verificarlo utilisé (vprec, mca).
@@ -31,15 +57,15 @@
    descend de la représentation intermédiaire vers le binaires (en
    général).
 
-   *wrapper :* ce sont des fonctions qui enveloppent l'appel à
+   *wrapper :* Ce sont des fonctions qui enveloppent l'appel à
    d'autres fonctions.
 
-   *link :* c'est la phase de compilation qui consiste à aller
+   *link :* Il s'agit de la phase de compilation qui consiste à aller
    chercher toute les librairies externes appelé par l'application
    pour les liées au programe utilisateur afin de resoudre les
    références non défini.
 
-   *sérialisation :* dans le contexte de l'utilisation de vecteur il
+   *sérialisation :* Dans le contexte de l'utilisation de vecteur il
    s'agit d'éxécuter en séquence les éléments du vecteur.
 
 ** Objectifs
@@ -50,14 +76,15 @@
    1. Support des vecteurs de 512 et 256 bits
    2. Ajout de *probes* vectorielles appellant les fonctions de
       *backend* vectorielles
-      - Ajout des fonctions dans l'interfaces (par pointeurs)
+      - Ajout des fonctions vectorielles dans l'interfaces (par
+        pointeurs)
    3. Implémenter ces fonctions pour chaque *backend*
       - Faire une première implémentation sérialisé
    4. Implémenter la version vectorielle des opérations de base dans
       le backends *vprec*
       - Prendre en compte les cas spéciaux (dénormaux)
-      - Tester la performance sur les NAS (mpi et openMP)
-   5. Pareil pour le *backend* *mca*
+      - Tester la performance sur les NAS (MPI et OpenMP)
+   5. Faire de même pour le *backend mca*
 
 ** Schéma
 

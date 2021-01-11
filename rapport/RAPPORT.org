@@ -55,7 +55,7 @@
 ** Définitions de certains termes technique
 
    *probes :* Les probes sont des fonctions implémenté dans
-   "vfcwrapper" qui est linker avec le programme par la partie
+   *vfcwrapper* qui est linker avec le programme par la partie
    compilation de veificarlo.
 
    *backend :* Dans le cadre de verifcarlo, c'est la/les librairie(s)
@@ -144,10 +144,24 @@
 
 #+END_SRC
 
+   En ce qui concerne le type des opérandes, nous avons décidé de
+   casté le type vectorielles en son pointeur sur sa
+   précision. Reprenons l'exemple ci-dessus, pour un type *double4*
+   nous le casterons sont pointeur en un pointeur de *double*.
+
+   _Règle:_ adr precision##size -> adr precision
+
+   Nous pouvons faire cela car lors de la définitions des types
+   vectorielles, il est précisé qu'un type *precision##size* est de type
+   *precission*.
+
 ** Fonctions vectorielles en mode scalaire dans les *backends*
-*** Backend ieee
-*** backend vprec
-*** Backend mca
+
+   Pour les fonctions *vectorielles* en mode scalaire, il suffit de
+   prendre le code des fonctions *scalaires* et de faire un boucle sur
+   chaque élément du tableau. Ceci est applicable pour tout les
+   *backends*.
+
 ** Fonctions vectorielles en mode vectorielles dans les *backends*
 *** Backend ieee
 *** backend vprec

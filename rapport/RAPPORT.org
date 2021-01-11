@@ -29,6 +29,11 @@
 
    Lien vers notre fork de verificarlo: [[https://github.com/Safecarlo/verificarlo/tree/vectorization][Safecarlo]]
    
+** Réunion avec l'encadrant
+
+   Nous avoins une réunions toutes les semaines le mardi matin avec
+   notre encadrant pour faire le point sur l'avancement de la semaine.
+
 * Support MPI / OpenMP
 * Génération de nombre aléatoire
 * Vectorisation

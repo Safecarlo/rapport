@@ -109,11 +109,29 @@
   s'agit d'éxécuter en séquence les éléments du vecteur.
 * Résumé des besoins
 
+  A l'heure actuel, les codes *multithreadés* (parallèle),
+  particulièrement pour OOpenMP, et *vectorisés* nécessite une 
+  sérialisation des opérations ce qui entraîne un surcoût qui peut
+  être évitable.
+
+  Il faudra donc proposer des opérateurs vectorisés dans *Verificarlo*
+  pour les deux outils d'analyse *VPREC* et *MCA*.
+
+  L'aspect thread-safe de ces opérateurs devra être assurés.
+
+  De plus il faudra généré des nombres aléatoires indépendant pour
+  l'outil d'analyse *MCA* et la gestion des entrées sortie.
+
+  Une fois ces outils en place, il sera possible d'étudier l'impact
+  sudr la stabilité des codes des environements MPI et OpenMP. Ainsi
+  que de proposer d'éventuelles ananyles.
+
+** MPI/OpenMP
+** Génération de nombre aléatoire
+** Vectorisation
+
   Aujourd’hui *vfcinstrument* insert des probes, y compris pour les
   instruction vectorielles.
-
-  Les probes sont des fonctions implémenté dans *vfcwrapper* qui
-  est linker avec le programme par la partie compilation de veificarlo.
 
   Celles des instructions vectorielles défont le vecteur et appel les
   versions scalaires au lieu d'appeler les fonctions vectorielles des

@@ -201,7 +201,10 @@
    test et un code python qui permet uniquement de capturer les lignes
    où commencent et finissent les fonctions vectorielles des backends
    dans l'assembleurs généré. Les *tests* se trouvent dans le
-   répertoire =tests/test_vector_instrumentation/=. 
+   répertoire =tests/test_vector_instrumentation/=.
+
+   Les *tests* ne testent pas les conditions, mais uniquement les
+   opérations *arithmétiques*.
 
    Nous devons testés 3 choses:
    - le bon résultat des opérations vecorielles
@@ -227,7 +230,11 @@ float + 4
 2.100000
 2.100000
 
-#+END_SRC    
+#+END_SRC
+
+    Il s'agit de la sortie attendu pour l'addition du type vectorielle float4 qui
+    est un vecteur de 4 float. (addition d'un vecteur composé de 1.0
+    avec un vecteur composé de 1.1).
 
 *** Appel aux probes vectorielles
 
@@ -250,7 +257,11 @@ float + 4
   ...
   %77 = call <4 x float> @_4xfloatdiv(<4 x float> %73, <4 x float> %74)
 
-#+END_SRC    
+#+END_SRC
+
+    Il s'agit de la représentation intermédiare de notre code de
+    test. Nous pouvons voir les différents appels aux fonctions
+    vectorielles pour une vecteur de 4 float.
 
 *** Utilisation des jeux d'instructions vectorielles suivant l'arhitecture
 
@@ -269,6 +280,20 @@ float + 4
     utilisé au moins une fois et ne compte pas exactement combien de
     fois elles sont utilisé. Nous supposons donc que *clang* et *llvm*
     vectorisent bien toutes nos opérations.
+
+    De plus il faut savoir que pour les processeurs x86_64, les
+    instructions vectorielles pour les opérations arithmétiques
+    vectorielles se compose avec la règle suivante:
+    *opération##vectoriel##presision*.
+    - *##:* signifie la concaténation
+    - *opération:* add, mul, sub, div
+    - *vectoriel:* *p* pour *package* si instructions vectorielles,
+      *s* pour *scalar* sinon
+    - *précision:* *d* pour double présision (double), *s* pour simple
+      précision (float)
+
+    Par exemple, *addps* avec un registre *xmm* est une instruction
+    vectorisé tandis que *addss* avec un registre *xmm* ne l'est pas.
 
     Exemples de résultat attendu pour le type vectorielles *float4*:
 
@@ -289,6 +314,11 @@ Instruction subps and register xmm INSTRUMENTED
 Instruction divps and register xmm INSTRUMENTED
 
 #+END_SRC
+
+    Il s'agit de bout de code de l'assembleur du backend *ieee*. Et
+    nous remarquons bien que les instructions vectorielles
+    *ps* (package simple) sont bien utilisé avec les registres *xmm*
+    qui font 128 bits.
 
 ** Support des vecteurs 512 / 256 bits
 

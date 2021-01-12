@@ -191,17 +191,19 @@
 * Vectorisation
 ** Test
 
-   Pour les test, nous avons décidé de suivre le fonctionnement de
-   test que verificarlo à commencé à implémenter. C'est-à-dire que
+   Pour les test, nous avons décidés de suivre le fonctionnement de
+   test que *Verificarlo* a commencé à implémenter. C'est-à-dire que
    nous ne ferons pas de *tests unitaires* mais nous testerons si les
-   résultatus obtenu lors de la *compilation* et de l'exécution sont
+   résultats obtenus lors de la *compilation* et de l'exécution sont
    exactes.
 
-   Les *tests* sont principalement écrit en *bash* et un code
-   *c*. Les *tests* se trouvent dans le répertoire
-   =tests/test_vector_instrumentation/=. 
+   Les *tests* sont principalement écrient en *bash*, un code *c* de
+   test et un code python qui permet uniquement de capturer les lignes
+   où commencent et finissent les fonctions vectorielles des backends
+   dans l'assembleurs généré. Les *tests* se trouvent dans le
+   répertoire =tests/test_vector_instrumentation/=. 
 
-   Nous devons testé 3 choses:
+   Nous devons testés 3 choses:
    - le bon résultat des opérations vecorielles
    - l'appel aux *probes vectorielles*
    - l'utilisation des jeux d'instructions vectorielles suivant l'arhitecture
@@ -213,18 +215,46 @@
     résultat à l'aide d'un fichier contenat le résultat attendu que
     l'on comparera avec la sortie de notre programme.
 
+    Ce sous test utilise la sortie du code c.
+
+    Exemple de sortie:
+
+#+BEGIN_SRC c
+
+float + 4
+2.100000
+2.100000
+2.100000
+2.100000
+
+#+END_SRC    
+
 *** Appel aux probes vectorielles
 
     Pour ce faire nous devons récupérer les fichiers *.ll* en
-    compilant avec *--save-temps* qui sont la représentations
-    intermédiaires de notre programme de test.
+    compilant notre fichier *c* avec *--save-temps* qui sont la
+    représentation intermédiaire de notre programme de test.
 
     Un fois récupérer il nous suffit de vérifier si l'appel aux
     *probes vectorielles* sont bien effectué.
 
+    Exemplpe d'appel des *probes vectorielles*:
+
+#+BEGIN_SRC asm
+
+  %59 = call <4 x float> @_4xfloatadd(<4 x float> %55, <4 x float> %56)
+  ...
+  %65 = call <4 x float> @_4xfloatmul(<4 x float> %61, <4 x float> %62)
+  ...
+  %71 = call <4 x float> @_4xfloatsub(<4 x float> %67, <4 x float> %68)
+  ...
+  %77 = call <4 x float> @_4xfloatdiv(<4 x float> %73, <4 x float> %74)
+
+#+END_SRC    
+
 *** Utilisation des jeux d'instructions vectorielles suivant l'arhitecture
 
-    Pour ce dernier sous-test, nous supposont que le test s'effectue
+    Pour ce dernier sous-test, nous supposons que le test s'effectue
     sur une machine *x86_64* tournant sur *Linux*.
 
     Suivant les jeux d'instructions disponnible sur la machine, le
@@ -238,7 +268,27 @@
     Cependant notre test, test uniquement si ces instructions sont
     utilisé au moins une fois et ne compte pas exactement combien de
     fois elles sont utilisé. Nous supposons donc que *clang* et *llvm*
-    vectorisent bien nos opérations.
+    vectorisent bien toutes nos opérations.
+
+    Exemples de résultat attendu pour le type vectorielles *float4*:
+
+#+BEGIN_SRC asm
+
+float4
+2c24:c5 f8 58 c1          vaddps %xmm1,%xmm0,%xmm0
+2c43:c4 c1 78 58 07       vaddps (%r15),%xmm0,%xmm0
+Instruction addps and register xmm INSTRUMENTED
+3024:c5 f8 59 c1          vmulps %xmm1,%xmm0,%xmm0
+3043:c4 c1 78 59 07       vmulps (%r15),%xmm0,%xmm0
+Instruction mulps and register xmm INSTRUMENTED
+2e24:c5 f8 5c c1          vsubps %xmm1,%xmm0,%xmm0
+2e43:c4 c1 78 5c 07       vsubps (%r15),%xmm0,%xmm0
+Instruction subps and register xmm INSTRUMENTED
+3224:c5 f8 5e c1          vdivps %xmm1,%xmm0,%xmm0
+3243:c4 c1 78 5e 07       vdivps (%r15),%xmm0,%xmm0
+Instruction divps and register xmm INSTRUMENTED
+
+#+END_SRC
 
 ** Support des vecteurs 512 / 256 bits
 

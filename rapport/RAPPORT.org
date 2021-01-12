@@ -284,7 +284,9 @@ float + 4
     De plus il faut savoir que pour les processeurs x86_64, les
     instructions vectorielles pour les opérations arithmétiques
     vectorielles se compose avec la règle suivante:
-    *opération##vectoriel##presision*.
+    *opération##vectoriel##presision*. Et il s'utilise avec un
+    registre vectoriel: *xmm*, *ymm* et *zmm* respectivement pour les
+    instruction *sse*, *avx* et *avx512*.
     - *##:* signifie la concaténation
     - *opération:* add, mul, sub, div
     - *vectoriel:* *p* pour *package* si instructions vectorielles,

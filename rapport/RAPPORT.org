@@ -1,6 +1,6 @@
-#+title: Support de MPI/OpenMP et de la vectorisation dans Verificarlo
-#+author: Safecarlo
-#+date: 2020
+#+TITLE: Support de MPI/OpenMP et de la vectorisation dans Verificarlo
+#+AUTHOR: Safecarlo
+#+DATE: 2020
 
 * Verificarlo
 
@@ -53,6 +53,26 @@
    Verificarlo. Dans le but de pouvoir l'utiliser sur des codes dans
    des centres de calculs.
 
+** Compilation avec Verificarlo
+
+   Voici le comportement d'un compilateur:
+   
+   #+CAPTION: Fonctionnement de base d'un compilateur
+   #+NAME: fig:fonctionnement_base_compilateur
+   #+ATTR_LATEX: :width 150px
+   [[../ressources/compilation.png]]
+
+   Son but est de produire un binaire pour notre architecture à partir
+   d'un fichier source.
+
+   *Verificarlo* est un compilateur. Voici les principales étape de la
+   compilation:
+
+   #+CAPTION: Fonctionnement de Verificarlo
+   #+NAME: fig:fonctionnement_de_verificarlo
+   #+ATTR_LATEX: :width 250px
+   [[../ressources/verificarlo_works.png]]
+
 * Organisation
 ** Groupe
 
@@ -65,16 +85,16 @@
 ** Git
 
    Etant donné que *Verificarlo* est un logiciel ayant un dépôt
-   distant sur le site [[https://github.com][GitHub]]. Nous avons décidé de créer une
+   distant sur le site [[https://github.com][GitHub]]. Nous avons décidés de créer une
    Organisation sur *GitHub* et de *fork* Verificarlo dans notre
    Organisation. Nous avons également chacun *fork* Verificarlo depuis
-   notre le *fork* de notre Organisation.
+   le *fork* de notre Organisation.
 
    Lien vers notre fork de verificarlo: [[https://github.com/Safecarlo/verificarlo/tree/vectorization][Safecarlo]]
    
 ** Réunion avec l'encadrant
 
-   Nous avoins une réunions toutes les semaines le mardi après-midi
+   Nous avions une réunion toutes les semaines le mardi après-midi
    avec notre encadrant pour faire le point sur l'avancement de la
    semaine.
 
@@ -136,13 +156,6 @@
       - Prendre en compte les cas spéciaux (dénormaux)
       - Tester la performance sur les [[https://www.nas.nasa.gov/publications/npb.html][NAS]] (MPI et OpenMP)
    5. Faire de même pour le *backend mca*
-
-** Schéma
-
-   Voici un schéma qui explique les différents processus pour établir
-   la vectorisations dans verificarlo :
-
-   [[./scheme_2.png]]
 
 ** Test
 

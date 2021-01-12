@@ -85,6 +85,64 @@
    #+ATTR_LATEX: :width 250px
    [[../ressources/verificarlo_works.png]]
 
+* Définitions de certains termes technique
+
+  *probes:* Les probes sont des fonctions implémenté dans
+  *vfcwrapper* qui est linker avec le programme par la partie
+  compilation de veificarlo.
+
+  *backend:* Dans le cadre de verifcarlo, c'est la/les librairie(s)
+  dynamique(s) qui seront appelées par le wrapper dans les
+  probes. Dans le cadre d'un compilateur c'est la derniere phase qui
+  descend de la représentation intermédiaire vers le binaires (en
+  général).
+
+  *wrapper:* Ce sont des fonctions qui enveloppent l'appel à
+  d'autres fonctions.
+
+  *link:* Il s'agit de la phase de compilation qui consiste à aller
+  chercher toute les librairies externes appelé par l'application
+  pour les liées au programe utilisateur afin de resoudre les
+  références non défini.
+
+  *sérialisation:* Dans le contexte de l'utilisation de vecteur il
+  s'agit d'éxécuter en séquence les éléments du vecteur.
+* Résumé des besoins
+
+  Aujourd’hui *vfcinstrument* insert des probes, y compris pour les
+  instruction vectorielles.
+
+  Les probes sont des fonctions implémenté dans *vfcwrapper* qui
+  est linker avec le programme par la partie compilation de veificarlo.
+
+  Celles des instructions vectorielles défont le vecteur et appel les
+  versions scalaires au lieu d'appeler les fonctions vectorielles des
+  backends.
+
+  A l’exécution le *wrapper* charge les librairies dynamiques (.so)
+  correspondantes au(x) *backend(s)* verificarlo utilisé (vprec, mca).
+
+* Objectifs
+** MPI/OpenMP
+** Génération aléatoire
+** Vectorisation
+   
+  Les changements sont à faire essentiellement dans les *wrappers* et
+  les *backends*:
+
+  1. Support des vecteurs de 512 et 256 bits
+  2. Ajout de *probes* vectorielles appellant les fonctions de
+     *backend* vectorielles
+     - Ajout des fonctions vectorielles dans l'interfaces (par
+       pointeurs)
+  3. Implémenter ces fonctions pour chaque *backend*
+     - Faire une première implémentation sérialisé
+  4. Implémenter la version vectorielle des opérations de base dans
+     le backend *vprec*
+     - Prendre en compte les cas spéciaux (dénormaux)
+     - Tester la performance sur les [[https://www.nas.nasa.gov/publications/npb.html][NAS]] (MPI et OpenMP)
+  5. Faire de même pour le *backend mca*
+
 * Organisation
 ** Groupe
 
@@ -113,62 +171,6 @@
 * Support MPI / OpenMP
 * Génération de nombre aléatoire
 * Vectorisation
-** Résumé des besoins
-
-   Aujourd’hui *vfcinstrument* insert des probes, y compris pour les
-   instruction vectorielles.
-
-   Les probes sont des fonctions implémenté dans *vfcwrapper* qui
-   est linker avec le programme par la partie compilation de veificarlo.
-
-   Celles des instructions vectorielles defont le vecteur et appel les
-   versions scalaires au lieu d'appeler les fonctions vectorielles des
-   backends.
-
-   A l’exécution le *wrapper* charge (load) les librairies dynamiques (.so)
-   correspondantes au(x) *backend(s)* verificarlo utilisé (vprec, mca).
-
-** Définitions de certains termes technique
-
-   *probes:* Les probes sont des fonctions implémenté dans
-   *vfcwrapper* qui est linker avec le programme par la partie
-   compilation de veificarlo.
-
-   *backend:* Dans le cadre de verifcarlo, c'est la/les librairie(s)
-   dynamique(s) qui seront appelées par le wrapper dans les
-   probes. Dans le cadre d'un compilateur c'est la derniere phase qui
-   descend de la représentation intermédiaire vers le binaires (en
-   général).
-
-   *wrapper:* Ce sont des fonctions qui enveloppent l'appel à
-   d'autres fonctions.
-
-   *link:* Il s'agit de la phase de compilation qui consiste à aller
-   chercher toute les librairies externes appelé par l'application
-   pour les liées au programe utilisateur afin de resoudre les
-   références non défini.
-
-   *sérialisation:* Dans le contexte de l'utilisation de vecteur il
-   s'agit d'éxécuter en séquence les éléments du vecteur.
-
-** Objectifs
-   
-   Les changements sont à faire essentiellement dans les *wrappers* et
-   les *backends*:
-
-   1. Support des vecteurs de 512 et 256 bits
-   2. Ajout de *probes* vectorielles appellant les fonctions de
-      *backend* vectorielles
-      - Ajout des fonctions vectorielles dans l'interfaces (par
-        pointeurs)
-   3. Implémenter ces fonctions pour chaque *backend*
-      - Faire une première implémentation sérialisé
-   4. Implémenter la version vectorielle des opérations de base dans
-      le backends *vprec*
-      - Prendre en compte les cas spéciaux (dénormaux)
-      - Tester la performance sur les [[https://www.nas.nasa.gov/publications/npb.html][NAS]] (MPI et OpenMP)
-   5. Faire de même pour le *backend mca*
-
 ** Test
 
    Pour les test, nous avons décidé de suivre le fonctionnement de

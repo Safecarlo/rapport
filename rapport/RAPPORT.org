@@ -53,7 +53,7 @@
    Verificarlo. Dans le but de pouvoir l'utiliser sur des codes dans
    des centres de calculs.
 
-** Compilation avec Verificarlo
+** Compilation
 
    Voici le comportement d'un compilateur:
    
@@ -65,8 +65,20 @@
    Son but est de produire un binaire pour notre architecture à partir
    d'un fichier source.
 
-   *Verificarlo* est un compilateur. Voici les principales étape de la
-   compilation:
+   Le [[https://sifflez.org/lectures/compil/week1/3-compiler-anatomy.pdf][compilateur]] est généralement décomposé en 3 étape:
+
+   #+CAPTION: Etape d'un compilateur
+   #+NAME: fig:etape_compilateur
+   #+ATTR_LATEX: :width 250px
+   [[../ressources/compiler_step.png]]
+
+   *Verificarlo* est un compilateur. Comme vu précédement, il suit la
+   décomposition en 3 étape car il est basé sur *clang* et
+   *llvm*. Les *modifications* qu'apporte verificarlo ce font au
+   *middle-end* avant la phase d'optimisation qui se déroule aussi
+   dans le *middle-end* de *llvm*.
+
+   Voici les principales étapes de la compilation avec *Verificarlo*:
 
    #+CAPTION: Fonctionnement de Verificarlo
    #+NAME: fig:fonctionnement_de_verificarlo

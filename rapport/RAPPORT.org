@@ -35,12 +35,13 @@
    Nous avons vu que le parrallélisme permettait d'optimizé notre code
    mais ce n'est pas le seul moyens.
 
-   Dans nos cpu modernes, des jeux d'isntructions vectorielles sont
-   apparus. Ils ont une taille de 128, 256 ou 512 bits suivant le jeu
-   d'instruction qui correspond respectivement au jeu d'instruction
-   *sse*, *avx* et *avx512*. Ce dernier n'est disponible que sur
-   certains processeurs d'*Intel*. Ils permettent d'effectuer
-   plusieurs opérations en même temps sur le même coeur de calcul.
+   Dans nos processeurs modernes, des jeux d'instructions vectorielles
+   sont apparus. Ils ont une taille de 128, 256 ou 512 bits suivant le
+   jeu d'instruction qui correspond respectivement au jeu
+   d'instruction *sse*, *avx* et *avx512*. Ce dernier n'est disponible
+   que sur certains processeurs d'*Intel*. Ces jeux d'instructions
+   permettent d'effectuer plusieurs opérations en même temps sur le
+   même coeur de calcul.
 
    Dans notre cas, nous nous intéressont uniquement au type *float* et
    *double* qui ont respectivement une taille de 32 bits et de 64
@@ -49,7 +50,7 @@
    Nous pouvons donc effectuer 4 additions en même temps pour le type
    *float* et le jeu d'instruction *sse*. Ce qui théoriquement
    multiplie par *4* la vitesse de calcul. D'où l'intérêt particulier
-   que l'on parte au support de la vectorisation dans
+   que l'on porte au support de la vectorisation dans
    Verificarlo. Dans le but de pouvoir l'utiliser sur des codes dans
    des centres de calculs.
 
@@ -73,10 +74,10 @@
    [[../ressources/compiler_step.png]]
 
    *Verificarlo* est un compilateur. Comme vu précédement, il suit la
-   décomposition en 3 étape car il est basé sur *clang* et
+   décomposition en 3 étapes car il est basé sur *clang* et
    *llvm*. Les *modifications* qu'apporte verificarlo ce font au
    *middle-end* avant la phase d'optimisation qui se déroule aussi
-   dans le *middle-end* de *llvm*.
+   dans le *middle-end* au niveau de *llvm*.
 
    Voici les principales étapes de la compilation avec *Verificarlo*:
 
@@ -110,7 +111,7 @@
 * Résumé des besoins
 
   A l'heure actuel, les codes *multithreadés* (parallèle),
-  particulièrement pour OOpenMP, et *vectorisés* nécessite une 
+  particulièrement pour OpenMP, et *vectorisés* nécessite une 
   sérialisation des opérations ce qui entraîne un surcoût qui peut
   être évitable.
 
@@ -176,9 +177,12 @@
    distant sur le site [[https://github.com][GitHub]]. Nous avons décidés de créer une
    Organisation sur *GitHub* et de *fork* Verificarlo dans notre
    Organisation. Nous avons également chacun *fork* Verificarlo depuis
-   le *fork* de notre Organisation.
+   notre Organisation.
 
-   Lien vers notre fork de verificarlo: [[https://github.com/Safecarlo/verificarlo/tree/vectorization][Safecarlo]]
+   Voici le lien vers notre *fork* de verificarlo: [[https://github.com/Safecarlo/verificarlo/tree/vectorization][Safecarlo]]
+
+   Il s'agit de la branche où nous avons réunis les modifications
+   apportés au cours du projet.
    
 ** Réunion avec l'encadrant
 
@@ -194,14 +198,15 @@
    Pour les test, nous avons décidés de suivre le fonctionnement de
    test que *Verificarlo* a commencé à implémenter. C'est-à-dire que
    nous ne ferons pas de *tests unitaires* mais nous testerons si les
-   résultats obtenus lors de la *compilation* et de l'exécution sont
+   résultats obtenus lors de la *compilation* et de l'*exécution* sont
    exactes.
 
-   Les *tests* sont principalement écrient en *bash*, un code *c* de
-   test et un code python qui permet uniquement de capturer les lignes
-   où commencent et finissent les fonctions vectorielles des backends
-   dans l'assembleurs généré. Les *tests* se trouvent dans le
-   répertoire =tests/test_vector_instrumentation/=.
+   Les *tests* sont principalement écrient en *bash*, avec un code de
+   test écris en *c* et un code python qui permet uniquement de
+   capturer les lignes où commencent et finissent les fonctions
+   vectorielles des backends dans l'assembleurs généré à la
+   compilation du compilateur Verificarlo par clang. Les *tests* se
+   trouvent dans le répertoire =tests/test_vector_instrumentation/=.
 
    Les *tests* ne testent pas les conditions, mais uniquement les
    opérations *arithmétiques*.
@@ -209,14 +214,16 @@
    Nous devons testés 3 choses:
    - le bon résultat des opérations vecorielles
    - l'appel aux *probes vectorielles*
-   - l'utilisation des jeux d'instructions vectorielles suivant l'arhitecture
+   - l'utilisation des jeux d'instructions vectorielles (suivant
+     l'arhitecture) dans les backends
 
 *** Bon résultat des opérations vectorielles
 
     Pour ce faire nous devons itérer sur tout les backends, toutes les
-    précisions et toutes les tailles de vecteurs et s'assurer du bon
-    résultat à l'aide d'un fichier contenat le résultat attendu que
-    l'on comparera avec la sortie de notre programme.
+    précisions, toutes les tailles de vecteurs et touts les types
+    d'opérations aritmétiques en s'assurant du bon résultat à l'aide
+    d'un fichier contenant le résultat attendu que l'on comparera avec
+    la sortie de notre programme.
 
     Ce sous test utilise la sortie du code c.
 
@@ -239,10 +246,10 @@ float + 4
 *** Appel aux probes vectorielles
 
     Pour ce faire nous devons récupérer les fichiers *.ll* en
-    compilant notre fichier *c* avec *--save-temps* qui sont la
-    représentation intermédiaire de notre programme de test.
+    compilant notre fichier *c* avec *--save-temps* qui sont les
+    représentations intermédiaires de notre programme de test.
 
-    Un fois récupérer il nous suffit de vérifier si l'appel aux
+    Un fois récupérer, il nous suffit de vérifier si l'appel aux
     *probes vectorielles* sont bien effectué.
 
     Exemplpe d'appel des *probes vectorielles*:
@@ -260,7 +267,7 @@ float + 4
 #+END_SRC
 
     Il s'agit de la représentation intermédiare de notre code de
-    test. Nous pouvons voir les différents appels aux fonctions
+    test. Nous pouvons voir les différents appels aux probes
     vectorielles pour une vecteur de 4 float.
 
 *** Utilisation des jeux d'instructions vectorielles suivant l'arhitecture
@@ -271,31 +278,32 @@ float + 4
     Suivant les jeux d'instructions disponnible sur la machine, le
     test vérifie si les jeux d'instructions sont bien utilisés.
 
-    _Par exemple:_ si nous avons uniquement les jeux d'instruction
-    *sse* et *avx*, nous devrions avoir des instructions *sse* pour
-    les types vectorielles *float2*, *float4* et *double2*. Et des
-    instruction *avx* pour tous les autres types vecorielles.
-
-    Cependant notre test, test uniquement si ces instructions sont
-    utilisé au moins une fois et ne compte pas exactement combien de
-    fois elles sont utilisé. Nous supposons donc que *clang* et *llvm*
-    vectorisent bien toutes nos opérations.
-
     De plus il faut savoir que pour les processeurs x86_64, les
-    instructions vectorielles pour les opérations arithmétiques
-    vectorielles se compose avec la règle suivante:
-    *opération##vectoriel##presision*. Et il s'utilise avec un
-    registre vectoriel: *xmm*, *ymm* et *zmm* respectivement pour les
-    instruction *sse*, *avx* et *avx512*.
-    - *##:* signifie la concaténation
+    instructions vectorielles pour les opérations arithmétiques 
+    se compose avec la règle suivante:
+    *opération##vectoriel##presision*.
+    Et il s'utilise avec un registre vectoriel: *xmm*, *ymm* et *zmm*
+    respectivement pour les jeux instruction *sse*, *avx* et *avx512*.
+    - *##:* signifie la concaténation des chaînes de caractères
     - *opération:* add, mul, sub, div
-    - *vectoriel:* *p* pour *package* si instructions vectorielles,
+    - *vectoriel:* *p* pour *packed* si instructions vectorielles,
       *s* pour *scalar* sinon
-    - *précision:* *d* pour double présision (double), *s* pour simple
-      précision (float)
+    - *précision:* *d* pour double precision (double précision), *s* pour simgle
+      precision (simple précision)
 
     Par exemple, *addps* avec un registre *xmm* est une instruction
     vectorisé tandis que *addss* avec un registre *xmm* ne l'est pas.
+
+    A noter que si nous avons uniquement les jeux d'instructions
+    *sse* et *avx*, nous devrions avoir des instructions *sse* pour
+    les types vectorielles *float2*, *float4* et *double2*. Et des
+    instructions *avx* pour tous les autres types vecorielles.
+
+    Cependant notre test, test uniquement si ces instructions sont
+    utilisé au moins une fois et ne compte pas exactement combien de
+    fois elles sont utilisé ce qui rendrait le test encore plus
+    fiable. Nous supposons donc que *clang* et *llvm* vectorisent bien
+    toutes nos opérations.
 
     Exemples de résultat attendu pour le type vectorielles *float4*:
 
@@ -317,9 +325,9 @@ Instruction divps and register xmm INSTRUMENTED
 
 #+END_SRC
 
-    Il s'agit de bout de code de l'assembleur du backend *ieee*. Et
+    Il s'agit d'un bout de code de l'assembleur du backend *ieee*. Et
     nous remarquons bien que les instructions vectorielles
-    *ps* (package simple) sont bien utilisé avec les registres *xmm*
+    *ps* (packed simgle) sont bien utilisés avec les registres *xmm*
     qui font 128 bits.
 
 ** Support des vecteurs 512 / 256 bits
@@ -329,14 +337,14 @@ Instruction divps and register xmm INSTRUMENTED
    Verificarlo utilise les types vectorielles de [[https://clang.llvm.org/docs/LanguageExtensions.html#vectors-and-extended-vectors][clang]].
 
 ** Ajout de probes vectorielles
-
-   Les probes vectorielles était déjà implémenté mais appelais les
+   
+   Les probes vectorielles étaient déjà implémentés mais appelaient les
    probes scalaires.
 
-   Nous avons donc dû modifié les probes en appelant les fonctions
+   Nous avons donc dû modifier les probes en appelant les fonctions
    vectorielles des backends.
 
-   De plus nous avons factorisé la macro qui permet de définir les
+   De plus nous avons factorisés la macro qui permet de définir les
    probes vecorielles en *1* macro au lieu de *4* (une pour chaque
    taille) en passant la taille en paramètre.
 
@@ -347,18 +355,18 @@ Instruction divps and register xmm INSTRUMENTED
    modifier. L'interface se trouve dans le fichier
    *src/common/inteflop.h*.
 
-   Nous avons décidé de mettre la taille en argument pour évité de
-   faire une fonction pour chaque taille en plus d'une fonction pour
-   chaque opération et pour chaque précision. Ce qui nous fait un
-   total de 8 fonctions à ajouté au lieu de 32.
+   Nous avons décidés de mettre la taille en argument pour éviter de
+   faire une fonction pour chaque tailles en plus d'une fonction pour
+   chaque opérations et pour chaque précisions. Ce qui nous fait un
+   total de 8 fonctions à ajouter au lieu de 32.
 
-   Comme nous passons la taille en argument, il faudra testé la
+   Comme nous passons la taille en argument, il faudra tester la
    taille pour permettre à clang d'effectuer une opération vectorielle
    en castant notre tableau dans le bon type vectorielles de clang.
 
    Par exemple si nous avons une opération flottante avec une
    précision *double*, avec l'opération *add* et un taille de vecteur
-   de *4* nous devrons faire l'instruction suivante:
+   de *4* nous devrons faire l'opération suivante:
 
 #+BEGIN_SRC c
 
@@ -367,36 +375,36 @@ Instruction divps and register xmm INSTRUMENTED
 #+END_SRC
 
    En ce qui concerne le type des opérandes, nous avons décidé de
-   casté le type vectorielles en son pointeur sur sa
+   caster le type vectorielles en son pointeur sur sa
    précision. Reprenons l'exemple ci-dessus, pour un type *double4*
    nous le casterons sont pointeur en un pointeur de *double*.
 
-   _Règle:_ adr precision##size -> adr precision
+   _Règle:_ @precision##size -> @precision
 
    Nous pouvons faire cela car lors de la définitions des types
    vectorielles, il est précisé qu'un type *precision##size* est de type
-   *precission*.
+   *precision*.
 
 ** Fonctions vectorielles en mode scalaire dans les *backends*
 
    Pour les fonctions *vectorielles* en mode scalaire, il suffit de
    prendre le code des fonctions *scalaires* et de faire un boucle sur
-   chaque élément du tableau. Ceci est applicable pour tout les
+   chaque élément du tableau. Ceci est appliquable pour tout les
    *backends*.
 
 ** Fonctions vectorielles en mode vectorielles dans les *backends*
 *** Backend ieee
 
     Pour le *backend* ieee, il n'y pas de traitement particulier sur
-    les opérations. Le *backend* effectue l'opération et la debug.
+    les opérations. Le *backend* effectue l'opération et la debogue.
 
-    Pour vectorisé l'opération comme di précedement il faut recasté le
-    pointeur de la *precision* flottante en type vectorielles de
-    clang. Pour cela nous avons créer une macro c qui nous le
+    Pour vectoriser l'opération comme dit précedement il faut recaster le
+    pointeur de la *precision* flottante en son type vectorielles de
+    clang. Pour cela nous avons créés une macro *c* qui nous le
     permet. Le seul désavantage est que l'on effectue un branchement à
     cause de la condition.
 
-    Pour la fonction de debuggage, elle est essentiellement composé de
+    Pour la fonction de debogguage, elle est essentiellement composé de
     sortie standart ou dans un fichier ce qui n'est pas
     vectorisable. Donc nous avons laisser la boucle qui appelle la
     fonction de debug pour chaque élément du tableau.
@@ -406,11 +414,11 @@ Instruction divps and register xmm INSTRUMENTED
 ** Vérification si au moins un backend utilisé implémente les opérations vectorielles
 
    Pour l'instant seul les backends *ieee*, *vprec* et *mca* ont été
-   modifié et implémente les opérations vectorielles de façons
+   modifié et implémentent les opérations vectorielles de façons
    scalaire ou vectorielles.
 
    Pour les autres backends, la version scalaire n'est même pas
-   implémenté.
+   implémentés.
 
    Comme pour les opérations scalaires, nous avons ajoutés dans la
    fonctions d'initialisations des *probes* le fait de vérifier si au

@@ -4,7 +4,7 @@
 
 * Verificarlo
 
-  [[https://github.com/verificarlo/verificarlo][Verificarlo]] est un compilateur basé sur *clang* et *llvm*. Il
+  [[https://github.com/verificarlo/verificarlo][Verificarlo]] est un compilateur basé sur [[https://clang.llvm.org/][clang]] et [[https://llvm.org/][llvm]]. Il
   permet d'intercepter toutes les opérations flottantes et de les
   analyser. Ce qui permet dans le cadre du calcul scientifique et de
   la simulation de pouvoir déboguer, valider et optimiser ces
@@ -493,6 +493,10 @@ Instruction divps and register xmm INSTRUMENTED
 
    Ceci bloque tout les backends qui ne les implémentent pas. Mais une
    sérialisation peut très vite être faites.
+** Compilation
+
+
+
 ** Problèmes rencontrés
 
    Nous avons rencontrés plusieurs problèmes. La plupart ont pu être résolu mais
@@ -528,3 +532,28 @@ Instruction divps and register xmm INSTRUMENTED
    - soit c'est un problème de *llvm* du fait que comme ce sont des modules
      différent et compilé séparément, il ne fait pas d'optimisation mais passe
      le vecteur pas registre et donc cast (change le type) du vecteur
+** Conclusion vectorisation
+
+   La vectorisation étant un thème que nous avons beacoup abordé dans le cours
+   *architecture parralèlle*, cela nous a permis de bien comprendre le sujet et
+   d'essayer de venir à bout de cette partis.
+
+   Néanmoins il reste beacoup de chose à accomplir comme le support des
+   conditions (branchement) que nous n'avons absolument pas abordés que ce soit
+   au niveua des tests ainsi qu'au niveau du support dans verificarlo.
+
+   Récapitulatif de ce que nous avons fait:
+   - rendre les *probes vectorielles*
+   - implémentation des fonctions vectorielles dans les backends en mode
+     scalaire (bitmask, cancellation, mca, mca_mpfr)
+   - implémentation des fonctions vectorielles dans les backends en mode
+     vectorielles (ieee, vprec)
+   - compilation avec les jeux d'instructions disponible sur la machine de test
+
+   Récapitulatif de ce qu'il nous reste à faire:
+   - faire les tests sur les branchements vectorielles
+   - faire des tests spécifiques sur les backends pour des opérations
+     vectorielles
+   - vectoriser les backends manquant (en priorité la backend *mca*)
+
+* Conclusion

@@ -190,6 +190,11 @@
    avec notre encadrant pour faire le point sur l'avancement de la
    semaine.
 
+** Discord
+
+   Nous nous sommes créer un discord pour pouvoir échanger entre nous et avec
+   l'encadrant.
+
 * Support MPI / OpenMP
 * Génération de nombre aléatoire
 * Vectorisation

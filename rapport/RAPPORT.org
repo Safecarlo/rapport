@@ -190,6 +190,11 @@
    avec notre encadrant pour faire le point sur l'avancement de la
    semaine.
 
+** Discord
+
+   Nous nous sommes créer un discord pour pouvoir échanger entre nous et avec
+   l'encadrant.
+
 * Support MPI / OpenMP
 * Génération de nombre aléatoire
 * Vectorisation
@@ -202,13 +207,13 @@
    exactes.
 
    Les *tests* sont principalement écrient en *bash*, avec un code de
-   test écris en *c* et un code python qui permet uniquement de
+   test écris en *c* et un code *python* qui permet uniquement de
    capturer les lignes où commencent et finissent les fonctions
    vectorielles des backends dans l'assembleurs généré à la
    compilation du compilateur Verificarlo par clang. Les *tests* se
    trouvent dans le répertoire =tests/test_vector_instrumentation/=.
 
-   Les *tests* ne testent pas les conditions, mais uniquement les
+   Les *tests* ne testent pas les *conditions*, mais uniquement les
    opérations *arithmétiques*.
 
    Nous devons testés 3 choses:
@@ -217,15 +222,20 @@
    - l'utilisation des jeux d'instructions vectorielles (suivant
      l'arhitecture) dans les backends
 
+   Nous testons tous les backends pour les 3 sous tests, sauf pour le backend
+   *cancellation* ou nous testons pas le bon résultat car il y a beacoup
+   d'*annultion* détectés et le résultat est modifié avec du bruit.
+
 *** Bon résultat des opérations vectorielles
 
-    Pour ce faire nous devons itérer sur tout les backends, toutes les
-    précisions, toutes les tailles de vecteurs et touts les types
+    Pour ce faire nous devons itérer sur tout les backends, sur toutes les
+    précisions, sur toutes les tailles de vecteurs et sur touts les types
     d'opérations aritmétiques en s'assurant du bon résultat à l'aide
-    d'un fichier contenant le résultat attendu que l'on comparera avec
+    d'un fichier généré automatiquement suivant les jeux d'instruction
+    disponible contenant le résultat attendu que l'on comparera avec
     la sortie de notre programme.
 
-    Ce sous test utilise la sortie du code c.
+    Ce sous-test utilise la sortie du code c.
 
     Exemple de sortie:
 
@@ -239,20 +249,20 @@ float + 4
 
 #+END_SRC
 
-    Il s'agit de la sortie attendu pour l'addition du type vectorielle float4 qui
-    est un vecteur de 4 float. (addition d'un vecteur composé de 1.0
-    avec un vecteur composé de 1.1).
+    Il s'agit de la sortie attendu pour l'addition du type vectorielle *float4* qui
+    est un vecteur de 4 flotant simple précision. (addition d'un vecteur
+    composé de 1.0 avec un vecteur composé de 1.1).
 
 *** Appel aux probes vectorielles
 
-    Pour ce faire nous devons récupérer les fichiers *.ll* en
-    compilant notre fichier *c* avec *--save-temps* qui sont les
+    Pour ce faire nous devons récupérer les fichiers *.ll*, en
+    compilant notre fichier *c* avec *--save-temps*, qui sont les
     représentations intermédiaires de notre programme de test.
 
-    Un fois récupérer, il nous suffit de vérifier si l'appel aux
+    Un fois récupéré, il nous suffit de vérifier si l'appel aux
     *probes vectorielles* sont bien effectué.
 
-    Exemplpe d'appel des *probes vectorielles*:
+    Exemple d'appel des *probes vectorielles*:
 
 #+BEGIN_SRC asm
 
@@ -266,9 +276,9 @@ float + 4
 
 #+END_SRC
 
-    Il s'agit de la représentation intermédiare de notre code de
+    Il s'agit de la représentation intermédiaire de notre code de
     test. Nous pouvons voir les différents appels aux probes
-    vectorielles pour une vecteur de 4 float.
+    vectorielles pour une vecteur de 4 flotant simple précision.
 
 *** Utilisation des jeux d'instructions vectorielles suivant l'arhitecture
 
@@ -278,11 +288,11 @@ float + 4
     Suivant les jeux d'instructions disponnible sur la machine, le
     test vérifie si les jeux d'instructions sont bien utilisés.
 
-    De plus il faut savoir que pour les processeurs x86_64, les
+    De plus il faut savoir que pour les processeurs *x86_64*, les
     instructions vectorielles pour les opérations arithmétiques 
     se compose avec la règle suivante:
     *opération##vectoriel##presision*.
-    Et il s'utilise avec un registre vectoriel: *xmm*, *ymm* et *zmm*
+    Et s'utilise avec un registre vectoriel: *xmm*, *ymm* et *zmm*
     respectivement pour les jeux instruction *sse*, *avx* et *avx512*.
     - *##:* signifie la concaténation des chaînes de caractères
     - *opération:* add, mul, sub, div
@@ -325,10 +335,10 @@ Instruction divps and register xmm INSTRUMENTED
 
 #+END_SRC
 
-    Il s'agit d'un bout de code de l'assembleur du backend *ieee*. Et
-    nous remarquons bien que les instructions vectorielles
-    *ps* (packed simgle) sont bien utilisés avec les registres *xmm*
-    qui font 128 bits.
+    Il s'agit de la sortie de notre test qui afiiche des bouts de code de
+    l'assembleur du backend *ieee*. Et nous remarquons bien que les instructions
+    vectorielles *ps* (packed simgle) sont bien utilisés avec les registres
+    *xmm* qui font 128 bits.
 
 ** Support des vecteurs 512 / 256 bits
 
@@ -362,10 +372,10 @@ Instruction divps and register xmm INSTRUMENTED
 
    Comme nous passons la taille en argument, il faudra tester la
    taille pour permettre à clang d'effectuer une opération vectorielle
-   en castant notre tableau dans le bon type vectorielles de clang.
+   en changeant le type de notre tableau dans le bon type vectorielles de clang.
 
    Par exemple si nous avons une opération flottante avec une
-   précision *double*, avec l'opération *add* et un taille de vecteur
+   précision *double*, l'opération *add* et un taille de vecteur
    de *4* nous devrons faire l'opération suivante:
 
 #+BEGIN_SRC c
@@ -375,9 +385,9 @@ Instruction divps and register xmm INSTRUMENTED
 #+END_SRC
 
    En ce qui concerne le type des opérandes, nous avons décidé de
-   caster le type vectorielles en son pointeur sur sa
+   changer le type vectorielles en son pointeur sur sa
    précision. Reprenons l'exemple ci-dessus, pour un type *double4*
-   nous le casterons sont pointeur en un pointeur de *double*.
+   nous casterons sont pointeur en un pointeur de *double*.
 
    _Règle:_ @precision##size -> @precision
 
@@ -385,32 +395,89 @@ Instruction divps and register xmm INSTRUMENTED
    vectorielles, il est précisé qu'un type *precision##size* est de type
    *precision*.
 
-** Fonctions vectorielles en mode scalaire dans les *backends*
+   De plus nous avons déplacés la définitions des types vectorielles dans le
+   fichier *src/common/inteflop.h*. Car nous avons besoins de ces types dans les
+   *wrappers* et les *backends*. Et comme ils ont besoin tout les deux de
+   l'interface et que ce fichier est déjà inclu dans les *wrappers* et les
+   *backends*, il nous a paru judicieux de les déplacés ici.
+
+** Fonctions vectorielles en mode scalaire dans les backends
 
    Pour les fonctions *vectorielles* en mode scalaire, il suffit de
    prendre le code des fonctions *scalaires* et de faire un boucle sur
    chaque élément du tableau. Ceci est appliquable pour tout les
    *backends*.
 
-** Fonctions vectorielles en mode vectorielles dans les *backends*
+   Nous avons implémenté les fonctions vectorielles en mode scalaire pour tout
+   les *backends*.
+
+** Fonctions vectorielles en mode vectorielles dans les backends
 *** Backend ieee
 
-    Pour le *backend* ieee, il n'y pas de traitement particulier sur
-    les opérations. Le *backend* effectue l'opération et la debogue.
+    Pour le *backend ieee*, il n'y pas de traitement particulier sur
+    les opérations. Le *backend* effectue l'opération et la débogue.
 
-    Pour vectoriser l'opération comme dit précedement il faut recaster le
-    pointeur de la *precision* flottante en son type vectorielles de
+    Pour vectoriser l'opération, comme dit précedement il faut changer le type
+    du pointeur de sa *precision* flottante en son type vectorielles de
     clang. Pour cela nous avons créés une macro *c* qui nous le
     permet. Le seul désavantage est que l'on effectue un branchement à
     cause de la condition.
 
-    Pour la fonction de debogguage, elle est essentiellement composé de
+    Pour la fonction de déboguage, elle est essentiellement composé de
     sortie standart ou dans un fichier ce qui n'est pas
     vectorisable. Donc nous avons laisser la boucle qui appelle la
-    fonction de debug pour chaque élément du tableau.
+    fonction de débogue pour chaque élément du tableau.
 
-*** backend vprec
+*** Backend vprec
+    
+    Pour le *backend vprec*, nous avons commencé à le vectorisé. Pour l'instant
+    il n'y a que les opérations qui sont vectorisé comme pour le *backend ieee*.
+
+    Ce *backend* permet de gérer les nombre *dénormaux* (c'est-à-dire les
+    nombres qui ont un exposant nul).
+
+    Voici un schéma qui montre la représentation d'un nombre flottant simple
+    précision:
+    
+    #+CAPTION: Représentation d'un nombre flottant simple précision
+    #+NAME: fig:representation__nombre_flottant_simple_precision
+    #+ATTR_LATEX: :width 150px
+    [[../ressources/IEEE754_simple_precision.png]]
+
+    source: https://fr.wikipedia.org/wiki/IEEE_754
+
+    Revenons à notre cas, le *backend vprec* fait différentes opérations suivant
+    si le nombre floattant est fini, infini, dénormal ou encore normal.
+
+    Nous avons commencé à réfléchir sur comment gérer les comparaisons et essayé
+    de faire un prototype mais il n'est pas vraimment abouti et ne l'avons pas
+    pousser sur le dépot.
+
+    Si vous êtes intéressé, le prototype se trouve ici:
+    [[https://github.com/Sholde/verificarlo/tree/vectorize-vprec][vectorisation de vprec]].
+
+    Il faudrai créer des structures *binary32* et *binary64* pour les types
+    vectorielles avec des macros ce que nous avons réussis à faire.
+    
+    Ensuite pour toutes les opérations cité si dessus il faudrai testé:
+    1. si tout les éléments satifont la condition
+    2. si il y en a au moins un qui satisfait la condition
+    3. si il n'y en a aucun.
+
+    Après avoir testé la condition il faudrai faire les opérations. Pour le cas
+    où tous les éléments satisfont ou non la condition, nous pouvons vectorisé
+    les opérations. Pour le cas où il y a au moins un (et pas tous) qui
+    satisfait la condition il faudrai faire les opérations en sérialisé car le
+    comportement ne sera pas le même pour tout les éléments du vecteur.
+
+    De plus pour testé si il a au moins un élément du vecteur qui satisfait la
+    condition, il faudrai le testé en dernier, car nous ne voyons pas d'autres
+    moyen que de testé séparement tous les éléments du tableaux pour le moment.
+
 *** Backend mca
+
+    Nous n'avons pas eu le temps de vectorisé le *backend mca*.
+
 ** Vérification si au moins un backend utilisé implémente les opérations vectorielles
 
    Pour l'instant seul les backends *ieee*, *vprec* et *mca* ont été
@@ -426,3 +493,38 @@ Instruction divps and register xmm INSTRUMENTED
 
    Ceci bloque tout les backends qui ne les implémentent pas. Mais une
    sérialisation peut très vite être faites.
+** Problèmes rencontrés
+
+   Nous avons rencontrés plusieurs problèmes. La plupart ont pu être résolu mais
+   il en reste un où nous n'avons pas réussis à corrigé. Il s'agit de
+   l'optimisation de la vectorisation que permet *llvm*.
+
+   C'est-à-dire que si on compile un programme avec *clang* et que nous avons
+   *uniquement* le jeu d'instruction vectorielle *sse* et que nous utilisons des
+   vecteurs qui normallement représente des vecteurs *avx512* comme par exemple un
+   vecteur de 8 éléments double précision, clang reconnait que nous n'avons pas
+   *avx* et utilise 4 instructions *sse* à la place.
+
+#+BEGIN_SRC asm
+
+    12e0:       66 0f 58 c4             addpd  %xmm4,%xmm0
+    12e4:       66 0f 58 cd             addpd  %xmm5,%xmm1
+    12e8:       66 0f 58 d6             addpd  %xmm6,%xmm2
+    12ec:       66 0f 58 df             addpd  %xmm7,%xmm3
+
+#+END_SRC
+
+   Ceci est le code que clang a généré pour notre vecteur *double8* sur une
+   machine qui n'a que *sse*.
+
+   Le problème étant que aujourd'hui, *Verificarlo* ne détecte pas 4 opérations
+   mais qu'une seule.
+
+   Nous avons donc 2 hypothèses:
+   - soit la phase de la détection de jeu d'instruction et de réarrangement des
+     opérations s'effectue dans la phase d'optimisation du compilateur (ce que
+     nous avons vu plus tôt), et donc il appelle tout de même les probes
+     vectorielles pour des vecteurs *avx512*
+   - soit c'est un problème de *llvm* du fait que comme ce sont des modules
+     différent et compilé séparément, il ne fait pas d'optimisation mais passe
+     le vecteur pas registre et donc cast (change le type) du vecteur

@@ -193,7 +193,7 @@
 ** Discord
 
    Nous nous sommes créer un discord pour pouvoir échanger entre nous et avec
-   l'encadrant.
+   notre encadrant.
 
 * Support MPI / OpenMP
 * Génération de nombre aléatoire
@@ -214,7 +214,13 @@
    trouvent dans le répertoire =tests/test_vector_instrumentation/=.
 
    Les *tests* ne testent pas les *conditions*, mais uniquement les
-   opérations *arithmétiques*.
+   opérations *arithmétiques* sur un exemple basique. Un vecteur contient que
+   des *1.0* et l'autre que des *1.1*. Nous avons décidés de ne pas mettre dans
+   ce test les cas spécifiques de tout les *backends*, mais seulement s'assurer
+   du fonctionnement pour un cas simple des opérations arithmétiques
+   vectorielles. Pour les cas spécifiques nous pensons qu'il serais judicieux de
+   les rajoutés dans les autres tests qui le test pour les types de bases comme
+   le types *float* et *double*.
 
    Nous devons testés 3 choses:
    - le bon résultat des opérations vecorielles
@@ -507,9 +513,10 @@ Instruction divps and register xmm INSTRUMENTED
    Nous l'avons rajouté pour la compilation des *wrappers* et des *backends*.
 
    Nous avons aussi décidé de ne pas mettre une règle pour activer ou non le
-   drapeau, comme pour le drapeau =-Wall=, car il nous le faut absolument pour
-   pouvoir activer le support des opérations vectorielles, sinon il utilise
-   uniquement le jeu d'instruction *sse*.
+   drapeau, comme pour le drapeau =-Wall= dans le fichier de configuration de
+   *autoconf*, car il nous le faut absolument pour pouvoir activer le support
+   des opérations vectorielles, sinon il utilise uniquement le jeu d'instruction
+   *sse*.
 
 ** Problèmes rencontrés
 
@@ -545,11 +552,14 @@ Instruction divps and register xmm INSTRUMENTED
      vectorielles pour des vecteurs *avx512*
    - soit c'est un problème de *llvm* du fait que comme ce sont des modules
      différent et compilé séparément, il ne fait pas d'optimisation mais passe
-     le vecteur pas registre et donc cast (change le type) du vecteur
+     le vecteur par registre et donc cast (change le type) du vecteur
+
 ** Connaissance acquise
 
    Durant notre projet, nous avons acquis quelques bases sur différent logiciel
    ou librairie.
+
+*** gdb
 
    Tout d'abord avec l'aide de notre encadrant nous avons réussis à comprendre
    et excécuter un programme dans [[https://www.gnu.org/software/gdb/][gdb]], qui est un outils de débogue. Nous
@@ -557,6 +567,8 @@ Instruction divps and register xmm INSTRUMENTED
    des instructions *sse* pour des opérations sur des vecteurs de 8 flottants
    simple précision par exemple, qui est un vecteur normalement utilisé avec le
    jeu d'instruction *avx* avec un *addpd* sur des registres *ymm* par exemple.
+
+*** llvm
 
    De plus durant notre exploration de *Verificarlo*, nous somme tombé sur des
    codes écrient en *c++* utilisant les librairies de *llvm* pour pouvoir
@@ -620,5 +632,18 @@ Instruction divps and register xmm INSTRUMENTED
    - faire des tests spécifiques sur les backends pour des opérations
      vectorielles
    - vectoriser les backends manquant (en priorité la backend *mca*)
+   - tester la performance sur des *NAS*
+
+*** Performance attendu
+
+   Pour les tests sur les *NAS*, cela pourrait être intéressant de tester les
+   opérations vectorielles avec des communications MPI ou OpenMP car nous ferons
+   moins de communications comparé à des opérations scalaire et donc les
+   résultats devront normalement être au rendez vous.
+
+   Pour ce qui est de la comparaison entre l'implémentation des opérations
+   vectorielles *avant* et *après* notre projet, nous devrions avoir des gains
+   car nous faisons moins d'appelle de fonction et nous avons vectorisé les
+   opérations arithméthiques de base dans le cas de *ieee* et *vprec*.
 
 * Conclusion

@@ -1,0 +1,535 @@
+#+TITLE: Support de MPI/OpenMP et de la vectorisation dans Verificarlo
+#+AUTHOR: Safecarlo
+#+DATE: 2020
+
+* Verificarlo
+
+  [[https://github.com/verificarlo/verificarlo][Verificarlo]] est un compilateur basé sur *clang* et *llvm*. Il
+  permet d'intercepter toutes les opérations flottantes et de les
+  analyser. Ce qui permet dans le cadre du calcul scientifique et de
+  la simulation de pouvoir déboguer, valider et optimiser ces
+  opérations ainsi que leurs formats.
+
+  Les opérations flottantes ont un intérêt particulier dans le monde
+  du *HPC* (High Performance Computing). Elles peuvent être source
+  d'erreur sans pour autant être un problème mathématiques. En effet
+  dans le domaine de l'informatique, les ordinateurs ont une
+  limitation matérielle qui ne leur permet pas d'atteindre une
+  certaine précision.
+
+  C'est là qu'intervient *Verificarlo*, cet outil permet par
+  instumentation des opérations flottantes, de pouvoir déboguer
+  les erreurs dû à la précision machine. Par exemple de pouvoir
+  modifier la taille maximale de l'exposant ou bien de la mantise. Ou
+  bien même de pour voir effectuer des opérations flottantes en
+  ajoutant du bruit au résultat afin de simuler une précision machine
+  plus élevé.
+
+** Parralélisme dans le calcul scientifique
+** Vectorisation dans le calcul scientifique
+
+   Dans le domaine du calcul scientifique il est important de faire
+   des codes propres (c'est à dire pas d'erreur à l'éxécution) et
+   optimizé.
+
+   Nous avons vu que le parrallélisme permettait d'optimizé notre code
+   mais ce n'est pas le seul moyens.
+
+   Dans nos processeurs modernes, des jeux d'instructions vectorielles
+   sont apparus. Ils ont une taille de 128, 256 ou 512 bits suivant le
+   jeu d'instruction qui correspond respectivement au jeu
+   d'instruction *sse*, *avx* et *avx512*. Ce dernier n'est disponible
+   que sur certains processeurs d'*Intel*. Ces jeux d'instructions
+   permettent d'effectuer plusieurs opérations en même temps sur le
+   même coeur de calcul.
+
+   Dans notre cas, nous nous intéressont uniquement au type *float* et
+   *double* qui ont respectivement une taille de 32 bits et de 64
+   bits.
+
+   Nous pouvons donc effectuer 4 additions en même temps pour le type
+   *float* et le jeu d'instruction *sse*. Ce qui théoriquement
+   multiplie par *4* la vitesse de calcul. D'où l'intérêt particulier
+   que l'on porte au support de la vectorisation dans
+   Verificarlo. Dans le but de pouvoir l'utiliser sur des codes dans
+   des centres de calculs.
+
+** Compilation
+
+   Voici le comportement d'un compilateur:
+
+   #+CAPTION: Fonctionnement de base d'un compilateur
+   #+NAME: fig:fonctionnement_base_compilateur
+   #+ATTR_LATEX: :width 150px
+   [[../ressources/compilation.png]]
+
+   Son but est de produire un binaire pour notre architecture à partir
+   d'un fichier source.
+
+   Le [[https://sifflez.org/lectures/compil/week1/3-compiler-anatomy.pdf][compilateur]] est généralement décomposé en 3 étape:
+
+   #+CAPTION: Etape d'un compilateur
+   #+NAME: fig:etape_compilateur
+   #+ATTR_LATEX: :width 250px
+   [[../ressources/compiler_step.png]]
+
+   *Verificarlo* est un compilateur. Comme vu précédement, il suit la
+   décomposition en 3 étapes car il est basé sur *clang* et
+   *llvm*. Les *modifications* qu'apporte verificarlo ce font au
+   *middle-end* avant la phase d'optimisation qui se déroule aussi
+   dans le *middle-end* au niveau de *llvm*.
+
+   Voici les principales étapes de la compilation avec *Verificarlo*:
+
+   #+CAPTION: Fonctionnement de Verificarlo
+   #+NAME: fig:fonctionnement_de_verificarlo
+   #+ATTR_LATEX: :width 250px
+   [[../ressources/verificarlo_works.png]]
+
+* Définitions de certains termes technique
+
+  *probes:* Les probes sont des fonctions implémenté dans
+  *vfcwrapper* qui est linker avec le programme par la partie
+  compilation de veificarlo.
+
+  *backend:* Dans le cadre de verifcarlo, c'est la/les librairie(s)
+  dynamique(s) qui seront appelées par le wrapper dans les
+  probes. Dans le cadre d'un compilateur c'est la derniere phase qui
+  descend de la représentation intermédiaire vers le binaires (en
+  général).
+
+  *wrapper:* Ce sont des fonctions qui enveloppent l'appel à
+  d'autres fonctions.
+
+  *link:* Il s'agit de la phase de compilation qui consiste à aller
+  chercher toute les librairies externes appelé par l'application
+  pour les liées au programe utilisateur afin de resoudre les
+  références non défini.
+
+  *sérialisation:* Dans le contexte de l'utilisation de vecteur il
+  s'agit d'éxécuter en séquence les éléments du vecteur.
+* Résumé des besoins
+
+  A l'heure actuel, les codes *multithreadés* (parallèle),
+  particulièrement pour OpenMP, et *vectorisés* nécessite une
+  sérialisation des opérations ce qui entraîne un surcoût qui peut
+  être évitable.
+
+  Il faudra donc proposer des opérateurs vectorisés dans *Verificarlo*
+  pour les deux outils d'analyse *VPREC* et *MCA*.
+
+  L'aspect thread-safe de ces opérateurs devra être assurés.
+
+  De plus il faudra généré des nombres aléatoires indépendant pour
+  l'outil d'analyse *MCA* et la gestion des entrées sortie.
+
+  Une fois ces outils en place, il sera possible d'étudier l'impact
+  sudr la stabilité des codes des environements MPI et OpenMP. Ainsi
+  que de proposer d'éventuelles ananyles.
+
+** MPI/OpenMP
+** Génération de nombre aléatoire
+** Vectorisation
+
+  Aujourd’hui *vfcinstrument* insert des probes, y compris pour les
+  instruction vectorielles.
+
+  Celles des instructions vectorielles défont le vecteur et appel les
+  versions scalaires au lieu d'appeler les fonctions vectorielles des
+  backends.
+
+  A l’exécution le *wrapper* charge les librairies dynamiques (.so)
+  correspondantes au(x) *backend(s)* verificarlo utilisé (vprec, mca).
+
+* Objectifs
+** MPI/OpenMP
+** Génération aléatoire
+** Vectorisation
+
+  Les changements sont à faire essentiellement dans les *wrappers* et
+  les *backends*:
+
+  1. Support des vecteurs de 512 et 256 bits
+  2. Ajout de *probes* vectorielles appellant les fonctions de
+     *backend* vectorielles
+     - Ajout des fonctions vectorielles dans l'interfaces (par
+       pointeurs)
+  3. Implémenter ces fonctions pour chaque *backend*
+     - Faire une première implémentation sérialisé
+  4. Implémenter la version vectorielle des opérations de base dans
+     le backend *vprec*
+     - Prendre en compte les cas spéciaux (dénormaux)
+     - Tester la performance sur les [[https://www.nas.nasa.gov/publications/npb.html][NAS]] (MPI et OpenMP)
+  5. Faire de même pour le *backend mca*
+
+* Organisation
+** Groupe
+
+   Nous nous somme répartis en 2 groupe:
+   - un groupe sur la partie [[https://www.mpich.org/][MPI]] / [[https://www.openmp.org/][OpenMP]] ainsi que la génération de
+     nombre aléatoire (Hery Andrianantenaina / Julien Even)
+   - un groupe sur le support de la vectorisation dans Verificarlo
+     (Nicolas Bouton / Ali Lakbal)
+
+** Git
+
+   Etant donné que *Verificarlo* est un logiciel ayant un dépôt
+   distant sur le site [[https://github.com][GitHub]]. Nous avons décidés de créer une
+   Organisation sur *GitHub* et de *fork* Verificarlo dans notre
+   Organisation. Nous avons également chacun *fork* Verificarlo depuis
+   notre Organisation.
+
+   Voici le lien vers notre *fork* de verificarlo: [[https://github.com/Safecarlo/verificarlo/tree/vectorization][Safecarlo]]
+
+   Il s'agit de la branche où nous avons réunis les modifications
+   apportés au cours du projet.
+
+** Réunion avec l'encadrant
+
+   Nous avions une réunion toutes les semaines le mardi après-midi
+   avec notre encadrant pour faire le point sur l'avancement de la
+   semaine.
+
+** Discord
+
+   Nous nous sommes créer un discord pour pouvoir échanger entre nous et avec
+   l'encadrant.
+
+* Support MPI / OpenMP
+** Notion de parallélisme
+  L’idée de parallélisme est née pour résoudre un problème long et coûteux entemps de calcul.
+  Le parallélisme dans le domaine de calcul haute performance consisteà exécuté des codes en parallèle pour pouvoir augmenter la puissance des processeurs.
+  Le parallélisme existe déjà dans les processeurs (pipeline, traitement de plusieurs ins-truction,...).
+  Le parallélisme sert aussi à multiplié les unités de traitement c’est à direaugmenter les nombres de coeurs et de dupliqué les unités vectorielles.
+* Génération de nombre aléatoire
+* Vectorisation
+** Test
+
+   Pour les test, nous avons décidés de suivre le fonctionnement de
+   test que *Verificarlo* a commencé à implémenter. C'est-à-dire que
+   nous ne ferons pas de *tests unitaires* mais nous testerons si les
+   résultats obtenus lors de la *compilation* et de l'*exécution* sont
+   exactes.
+
+   Les *tests* sont principalement écrient en *bash*, avec un code de
+   test écris en *c* et un code *python* qui permet uniquement de
+   capturer les lignes où commencent et finissent les fonctions
+   vectorielles des backends dans l'assembleurs généré à la
+   compilation du compilateur Verificarlo par clang. Les *tests* se
+   trouvent dans le répertoire =tests/test_vector_instrumentation/=.
+
+   Les *tests* ne testent pas les *conditions*, mais uniquement les
+   opérations *arithmétiques*.
+
+   Nous devons testés 3 choses:
+   - le bon résultat des opérations vecorielles
+   - l'appel aux *probes vectorielles*
+   - l'utilisation des jeux d'instructions vectorielles (suivant
+     l'arhitecture) dans les backends
+
+   Nous testons tous les backends pour les 3 sous tests, sauf pour le backend
+   *cancellation* ou nous testons pas le bon résultat car il y a beacoup
+   d'*annultion* détectés et le résultat est modifié avec du bruit.
+
+*** Bon résultat des opérations vectorielles
+
+    Pour ce faire nous devons itérer sur tout les backends, sur toutes les
+    précisions, sur toutes les tailles de vecteurs et sur touts les types
+    d'opérations aritmétiques en s'assurant du bon résultat à l'aide
+    d'un fichier généré automatiquement suivant les jeux d'instruction
+    disponible contenant le résultat attendu que l'on comparera avec
+    la sortie de notre programme.
+
+    Ce sous-test utilise la sortie du code c.
+
+    Exemple de sortie:
+
+#+BEGIN_SRC c
+
+float + 4
+2.100000
+2.100000
+2.100000
+2.100000
+
+#+END_SRC
+
+    Il s'agit de la sortie attendu pour l'addition du type vectorielle *float4* qui
+    est un vecteur de 4 flotant simple précision. (addition d'un vecteur
+    composé de 1.0 avec un vecteur composé de 1.1).
+
+*** Appel aux probes vectorielles
+
+    Pour ce faire nous devons récupérer les fichiers *.ll*, en
+    compilant notre fichier *c* avec *--save-temps*, qui sont les
+    représentations intermédiaires de notre programme de test.
+
+    Un fois récupéré, il nous suffit de vérifier si l'appel aux
+    *probes vectorielles* sont bien effectué.
+
+    Exemple d'appel des *probes vectorielles*:
+
+#+BEGIN_SRC asm
+
+  %59 = call <4 x float> @_4xfloatadd(<4 x float> %55, <4 x float> %56)
+  ...
+  %65 = call <4 x float> @_4xfloatmul(<4 x float> %61, <4 x float> %62)
+  ...
+  %71 = call <4 x float> @_4xfloatsub(<4 x float> %67, <4 x float> %68)
+  ...
+  %77 = call <4 x float> @_4xfloatdiv(<4 x float> %73, <4 x float> %74)
+
+#+END_SRC
+
+    Il s'agit de la représentation intermédiaire de notre code de
+    test. Nous pouvons voir les différents appels aux probes
+    vectorielles pour une vecteur de 4 flotant simple précision.
+
+*** Utilisation des jeux d'instructions vectorielles suivant l'arhitecture
+
+    Pour ce dernier sous-test, nous supposons que le test s'effectue
+    sur une machine *x86_64* tournant sur *Linux*.
+
+    Suivant les jeux d'instructions disponnible sur la machine, le
+    test vérifie si les jeux d'instructions sont bien utilisés.
+
+    De plus il faut savoir que pour les processeurs *x86_64*, les
+    instructions vectorielles pour les opérations arithmétiques
+    se compose avec la règle suivante:
+    *opération##vectoriel##presision*.
+    Et s'utilise avec un registre vectoriel: *xmm*, *ymm* et *zmm*
+    respectivement pour les jeux instruction *sse*, *avx* et *avx512*.
+    - *##:* signifie la concaténation des chaînes de caractères
+    - *opération:* add, mul, sub, div
+    - *vectoriel:* *p* pour *packed* si instructions vectorielles,
+      *s* pour *scalar* sinon
+    - *précision:* *d* pour double precision (double précision), *s* pour simgle
+      precision (simple précision)
+
+    Par exemple, *addps* avec un registre *xmm* est une instruction
+    vectorisé tandis que *addss* avec un registre *xmm* ne l'est pas.
+
+    A noter que si nous avons uniquement les jeux d'instructions
+    *sse* et *avx*, nous devrions avoir des instructions *sse* pour
+    les types vectorielles *float2*, *float4* et *double2*. Et des
+    instructions *avx* pour tous les autres types vecorielles.
+
+    Cependant notre test, test uniquement si ces instructions sont
+    utilisé au moins une fois et ne compte pas exactement combien de
+    fois elles sont utilisé ce qui rendrait le test encore plus
+    fiable. Nous supposons donc que *clang* et *llvm* vectorisent bien
+    toutes nos opérations.
+
+    Exemples de résultat attendu pour le type vectorielles *float4*:
+
+#+BEGIN_SRC asm
+
+float4
+2c24:c5 f8 58 c1          vaddps %xmm1,%xmm0,%xmm0
+2c43:c4 c1 78 58 07       vaddps (%r15),%xmm0,%xmm0
+Instruction addps and register xmm INSTRUMENTED
+3024:c5 f8 59 c1          vmulps %xmm1,%xmm0,%xmm0
+3043:c4 c1 78 59 07       vmulps (%r15),%xmm0,%xmm0
+Instruction mulps and register xmm INSTRUMENTED
+2e24:c5 f8 5c c1          vsubps %xmm1,%xmm0,%xmm0
+2e43:c4 c1 78 5c 07       vsubps (%r15),%xmm0,%xmm0
+Instruction subps and register xmm INSTRUMENTED
+3224:c5 f8 5e c1          vdivps %xmm1,%xmm0,%xmm0
+3243:c4 c1 78 5e 07       vdivps (%r15),%xmm0,%xmm0
+Instruction divps and register xmm INSTRUMENTED
+
+#+END_SRC
+
+    Il s'agit de la sortie de notre test qui afiiche des bouts de code de
+    l'assembleur du backend *ieee*. Et nous remarquons bien que les instructions
+    vectorielles *ps* (packed simgle) sont bien utilisés avec les registres
+    *xmm* qui font 128 bits.
+
+** Support des vecteurs 512 / 256 bits
+
+   Les vecteurs 512 / 256 bits était déjà supporté.
+
+   Verificarlo utilise les types vectorielles de [[https://clang.llvm.org/docs/LanguageExtensions.html#vectors-and-extended-vectors][clang]].
+
+** Ajout de probes vectorielles
+
+   Les probes vectorielles étaient déjà implémentés mais appelaient les
+   probes scalaires.
+
+   Nous avons donc dû modifier les probes en appelant les fonctions
+   vectorielles des backends.
+
+   De plus nous avons factorisés la macro qui permet de définir les
+   probes vecorielles en *1* macro au lieu de *4* (une pour chaque
+   taille) en passant la taille en paramètre.
+
+** Ajout des fonctions vectorielles dans l'interface
+
+   Il nous faut d'abord identifier quelle est l'interface et où la
+   trouver. Nous avons facilement trouver où et comment la
+   modifier. L'interface se trouve dans le fichier
+   *src/common/inteflop.h*.
+
+   Nous avons décidés de mettre la taille en argument pour éviter de
+   faire une fonction pour chaque tailles en plus d'une fonction pour
+   chaque opérations et pour chaque précisions. Ce qui nous fait un
+   total de 8 fonctions à ajouter au lieu de 32.
+
+   Comme nous passons la taille en argument, il faudra tester la
+   taille pour permettre à clang d'effectuer une opération vectorielle
+   en changeant le type de notre tableau dans le bon type vectorielles de clang.
+
+   Par exemple si nous avons une opération flottante avec une
+   précision *double*, l'opération *add* et un taille de vecteur
+   de *4* nous devrons faire l'opération suivante:
+
+#+BEGIN_SRC c
+
+(*(double4 *)c) = (*(double4 *)a) + (*(double4 *)b);
+
+#+END_SRC
+
+   En ce qui concerne le type des opérandes, nous avons décidé de
+   changer le type vectorielles en son pointeur sur sa
+   précision. Reprenons l'exemple ci-dessus, pour un type *double4*
+   nous casterons sont pointeur en un pointeur de *double*.
+
+   _Règle:_ @precision##size -> @precision
+
+   Nous pouvons faire cela car lors de la définitions des types
+   vectorielles, il est précisé qu'un type *precision##size* est de type
+   *precision*.
+
+   De plus nous avons déplacés la définitions des types vectorielles dans le
+   fichier *src/common/inteflop.h*. Car nous avons besoins de ces types dans les
+   *wrappers* et les *backends*. Et comme ils ont besoin tout les deux de
+   l'interface et que ce fichier est déjà inclu dans les *wrappers* et les
+   *backends*, il nous a paru judicieux de les déplacés ici.
+
+** Fonctions vectorielles en mode scalaire dans les backends
+
+   Pour les fonctions *vectorielles* en mode scalaire, il suffit de
+   prendre le code des fonctions *scalaires* et de faire un boucle sur
+   chaque élément du tableau. Ceci est appliquable pour tout les
+   *backends*.
+
+   Nous avons implémenté les fonctions vectorielles en mode scalaire pour tout
+   les *backends*.
+
+** Fonctions vectorielles en mode vectorielles dans les backends
+*** Backend ieee
+
+    Pour le *backend ieee*, il n'y pas de traitement particulier sur
+    les opérations. Le *backend* effectue l'opération et la débogue.
+
+    Pour vectoriser l'opération, comme dit précedement il faut changer le type
+    du pointeur de sa *precision* flottante en son type vectorielles de
+    clang. Pour cela nous avons créés une macro *c* qui nous le
+    permet. Le seul désavantage est que l'on effectue un branchement à
+    cause de la condition.
+
+    Pour la fonction de déboguage, elle est essentiellement composé de
+    sortie standart ou dans un fichier ce qui n'est pas
+    vectorisable. Donc nous avons laisser la boucle qui appelle la
+    fonction de débogue pour chaque élément du tableau.
+
+*** Backend vprec
+
+    Pour le *backend vprec*, nous avons commencé à le vectorisé. Pour l'instant
+    il n'y a que les opérations qui sont vectorisé comme pour le *backend ieee*.
+
+    Ce *backend* permet de gérer les nombre *dénormaux* (c'est-à-dire les
+    nombres qui ont un exposant nul).
+
+    Voici un schéma qui montre la représentation d'un nombre flottant simple
+    précision:
+
+    #+CAPTION: Représentation d'un nombre flottant simple précision
+    #+NAME: fig:representation__nombre_flottant_simple_precision
+    #+ATTR_LATEX: :width 150px
+    [[../ressources/IEEE754_simple_precision.png]]
+
+    source: https://fr.wikipedia.org/wiki/IEEE_754
+
+    Revenons à notre cas, le *backend vprec* fait différentes opérations suivant
+    si le nombre floattant est fini, infini, dénormal ou encore normal.
+
+    Nous avons commencé à réfléchir sur comment gérer les comparaisons et essayé
+    de faire un prototype mais il n'est pas vraimment abouti et ne l'avons pas
+    pousser sur le dépot.
+
+    Si vous êtes intéressé, le prototype se trouve ici:
+    [[https://github.com/Sholde/verificarlo/tree/vectorize-vprec][vectorisation de vprec]].
+
+    Il faudrai créer des structures *binary32* et *binary64* pour les types
+    vectorielles avec des macros ce que nous avons réussis à faire.
+
+    Ensuite pour toutes les opérations cité si dessus il faudrai testé:
+    1. si tout les éléments satifont la condition
+    2. si il y en a au moins un qui satisfait la condition
+    3. si il n'y en a aucun.
+
+    Après avoir testé la condition il faudrai faire les opérations. Pour le cas
+    où tous les éléments satisfont ou non la condition, nous pouvons vectorisé
+    les opérations. Pour le cas où il y a au moins un (et pas tous) qui
+    satisfait la condition il faudrai faire les opérations en sérialisé car le
+    comportement ne sera pas le même pour tout les éléments du vecteur.
+
+    De plus pour testé si il a au moins un élément du vecteur qui satisfait la
+    condition, il faudrai le testé en dernier, car nous ne voyons pas d'autres
+    moyen que de testé séparement tous les éléments du tableaux pour le moment.
+
+*** Backend mca
+
+    Nous n'avons pas eu le temps de vectorisé le *backend mca*.
+
+** Vérification si au moins un backend utilisé implémente les opérations vectorielles
+
+   Pour l'instant seul les backends *ieee*, *vprec* et *mca* ont été
+   modifié et implémentent les opérations vectorielles de façons
+   scalaire ou vectorielles.
+
+   Pour les autres backends, la version scalaire n'est même pas
+   implémentés.
+
+   Comme pour les opérations scalaires, nous avons ajoutés dans la
+   fonctions d'initialisations des *probes* le fait de vérifier si au
+   moins un *backend* utilisé implémente les opérations vectorielles.
+
+   Ceci bloque tout les backends qui ne les implémentent pas. Mais une
+   sérialisation peut très vite être faites.
+** Problèmes rencontrés
+
+   Nous avons rencontrés plusieurs problèmes. La plupart ont pu être résolu mais
+   il en reste un où nous n'avons pas réussis à corrigé. Il s'agit de
+   l'optimisation de la vectorisation que permet *llvm*.
+
+   C'est-à-dire que si on compile un programme avec *clang* et que nous avons
+   *uniquement* le jeu d'instruction vectorielle *sse* et que nous utilisons des
+   vecteurs qui normallement représente des vecteurs *avx512* comme par exemple un
+   vecteur de 8 éléments double précision, clang reconnait que nous n'avons pas
+   *avx* et utilise 4 instructions *sse* à la place.
+
+#+BEGIN_SRC asm
+
+    12e0:       66 0f 58 c4             addpd  %xmm4,%xmm0
+    12e4:       66 0f 58 cd             addpd  %xmm5,%xmm1
+    12e8:       66 0f 58 d6             addpd  %xmm6,%xmm2
+    12ec:       66 0f 58 df             addpd  %xmm7,%xmm3
+
+#+END_SRC
+
+   Ceci est le code que clang a généré pour notre vecteur *double8* sur une
+   machine qui n'a que *sse*.
+
+   Le problème étant que aujourd'hui, *Verificarlo* ne détecte pas 4 opérations
+   mais qu'une seule.
+
+   Nous avons donc 2 hypothèses:
+   - soit la phase de la détection de jeu d'instruction et de réarrangement des
+     opérations s'effectue dans la phase d'optimisation du compilateur (ce que
+     nous avons vu plus tôt), et donc il appelle tout de même les probes
+     vectorielles pour des vecteurs *avx512*
+   - soit c'est un problème de *llvm* du fait que comme ce sont des modules
+     différent et compilé séparément, il ne fait pas d'optimisation mais passe
+     le vecteur pas registre et donc cast (change le type) du vecteur

@@ -190,7 +190,7 @@
    Nous avons aussi fait une *pull request* sur la branche *master* de
    *Safecarlo* afin que vous puissiez mieux voir les changements apportés.
 
-   [[Lien de la pull request]]
+   [[https://github.com/Safecarlo/verificarlo/pull/24][Lien de la pull request]]
    
 ** Réunion avec l'encadrant
 

@@ -12,27 +12,27 @@
 
   Les opérations flottantes ont un intérêt particulier dans le monde
   du *HPC* (High Performance Computing). Elles peuvent être source
-  d'erreur sans pour autant être un problème mathématiques. En effet
+  d'erreurs sans pour autant être un problème mathématiques. En effet
   dans le domaine de l'informatique, les ordinateurs ont une
   limitation matérielle qui ne leur permet pas d'atteindre une
   certaine précision.
 
   C'est là qu'intervient *Verificarlo*, cet outil permet par
-  instumentation des opérations flottantes, de pouvoir déboguer 
-  les erreurs dû à la précision machine. Par exemple de pouvoir
+  instrumentation des opérations flottantes, de pouvoir déboguer 
+  les erreurs, dû à la précision machine. Par exemple de pouvoir
   modifier la taille de l'exposant ou bien de la mantisse. Ou
   bien même de pouvoir effectuer des opérations flottantes en
   ajoutant du bruit au résultat afin de simuler une précision machine
-  plus élevé.
+  plus élevée.
 
 ** Vectorisation dans le calcul scientifique
 
-   Dans le domaine du calcul scientifique il est important de faire
+   Dans le domaine du calcul scientifique, il est important de faire
    des codes propres (c'est à dire pas d'erreur à l'éxécution) et
-   optimizé.
+   optimisés.
 
-   Nous avons vu que le parrallélisme permettait d'optimizé notre code
-   mais ce n'est pas le seul moyens.
+   Nous avons vu que le parallélisme permettait d'optimiser notre code
+   mais ce n'est pas le seul moyen.
 
    Dans nos processeurs modernes, des jeux d'instructions vectorielles
    sont apparus. Ils ont une taille de 128, 256 ou 512 bits suivant le
@@ -42,7 +42,7 @@
    permettent d'effectuer plusieurs opérations en même temps sur le
    même coeur de calcul.
 
-   Dans notre cas, nous nous intéressont uniquement au type *float* et
+   Dans notre cas, nous nous intéressons uniquement au type *float* et
    *double* qui ont respectivement une taille de 32 bits et de 64
    bits.
 
@@ -55,7 +55,8 @@
 
 ** Compilation
 
-   Voici le comportement d'un compilateur:
+   Voici le comportement d'un compilateur
+   ([[fig:fonctionnement_base_compilateur][Voir la figure 1]]):
    
    #+CAPTION: Fonctionnement de base d'un compilateur
    #+NAME: fig:fonctionnement_base_compilateur
@@ -65,73 +66,76 @@
    Son but est de produire un binaire pour notre architecture à partir
    d'un fichier source.
 
-   Le [[https://sifflez.org/lectures/compil/week1/3-compiler-anatomy.pdf][compilateur]] est généralement décomposé en 3 étape:
+   Le [[https://sifflez.org/lectures/compil/week1/3-compiler-anatomy.pdf][compilateur]] est généralement décomposé en 3 étapes
+   ([[fig:etape_compilateur][Voir la figure 2]]):
 
    #+CAPTION: Etape d'un compilateur
    #+NAME: fig:etape_compilateur
-   #+ATTR_LATEX: :width 150px
+   #+ATTR_LATEX: :width 300px
    [[../ressources/compiler_step.png]]
 
    *Verificarlo* est un compilateur. Comme vu précédement, il suit la
    décomposition en 3 étapes car il est basé sur *clang* et
-   *llvm*. Les *modifications* qu'apporte verificarlo ce font au
+   *llvm*. Les *modifications* qu'apporte Verificarlo se font au
    *middle-end* avant la phase d'optimisation qui se déroule aussi
    dans le *middle-end* au niveau de *llvm*.
 
-   Voici les principales étapes de la compilation avec *Verificarlo*:
+   Voici les principales étapes de la compilation avec *Verificarlo*
+   ([[fig:fonctionnement_de_verificarlo][Voir la figure 3]]):
 
    #+CAPTION: Fonctionnement de Verificarlo
    #+NAME: fig:fonctionnement_de_verificarlo
-   #+ATTR_LATEX: :width 250px
+   #+ATTR_LATEX: :width 200px
    [[../ressources/verificarlo_works.png]]
 
-* Définitions de certains termes technique
+* Définitions de certains termes techniques
 
-  *probes:* Les probes sont des fonctions implémenté dans
+  - *probes:* Les probes sont des fonctions implémenté dans
   *vfcwrapper* qui est linker avec le programme par la partie
   compilation de veificarlo.
 
-  *backend:* Dans le cadre de verifcarlo, c'est la/les librairie(s)
+  - *backend:* Dans le cadre de verifcarlo, c'est la/les librairie(s)
   dynamique(s) qui seront appelées par le wrapper dans les
   probes. Dans le cadre d'un compilateur c'est la derniere phase qui
   descend de la représentation intermédiaire vers le binaires (en
   général).
 
-  *wrapper:* Ce sont des fonctions qui enveloppent l'appel à
+  - *wrapper:* Ce sont des fonctions qui enveloppent l'appel à
   d'autres fonctions.
 
-  *link:* Il s'agit de la phase de compilation qui consiste à aller
+  - *link:* Il s'agit de la phase de compilation qui consiste à aller
   chercher toute les librairies externes appelé par l'application
   pour les liées au programe utilisateur afin de resoudre les
   références non défini.
 
-  *sérialisation:* Dans le contexte de l'utilisation de vecteur il
+  - *sérialisation:* Dans le contexte de l'utilisation de vecteur il
   s'agit d'éxécuter en séquence les éléments du vecteur.
+
 * Résumé des besoins
 
-  A l'heure actuel, les codes *multithreadés* (parallèle),
-  particulièrement pour OpenMP, et *vectorisés* nécessite une 
+  A l'heure actuelle, les codes *multithreadés* (parallèle),
+  particulièrement pour OpenMP, et *vectorisés* nécessitent une 
   sérialisation des opérations ce qui entraîne un surcoût qui peut
   être évitable.
 
   Il faudra donc proposer des opérateurs vectorisés dans *Verificarlo*
   pour les deux outils d'analyse *VPREC* et *MCA*.
 
-  L'aspect thread-safe de ces opérateurs devra être assurés.
+  L'aspect thread-safe de ces opérateurs devra être assuré.
 
-  De plus il faudra généré des nombres aléatoires indépendant pour
-  l'outil d'analyse *MCA* et la gestion des entrées sortie.
+  De plus il faudra générer des nombres aléatoires indépendants pour
+  l'outil d'analyse *MCA* et la gestion des entrées sorties.
 
   Une fois ces outils en place, il sera possible d'étudier l'impact
-  sudr la stabilité des codes des environements MPI et OpenMP. Ainsi
+  sur la stabilité des codes des environnements MPI et OpenMP. Ainsi
   que de proposer d'éventuelles ananyles.
 
 ** Vectorisation
 
-  Aujourd’hui *vfcinstrument* insert des probes, y compris pour les
-  instruction vectorielles.
+  Aujourd’hui *vfcinstrument* insère des probes, y compris pour les
+  instructions vectorielles.
 
-  Celles des instructions vectorielles défont le vecteur et appel les
+  Celles des instructions vectorielles défont le vecteur et appellent les
   versions scalaires au lieu d'appeler les fonctions vectorielles des
   backends.
 
@@ -165,27 +169,27 @@
 * Organisation
 ** Groupe
 
-   Nous nous somme répartis en 2 groupe:
+   Nous nous sommes répartis en 2 groupes:
    - un groupe sur la partie [[https://www.mpich.org/][MPI]] / [[https://www.openmp.org/][OpenMP]] ainsi que la génération de
-     nombre aléatoire (Hery Andrianantenaina / Julien Even)
+     nombres aléatoires (Hery Andrianantenaina / Julien Even)
    - un groupe sur le support de la vectorisation dans Verificarlo
      (Nicolas Bouton / Ali Lakbal)
 
 ** Git
 
    Etant donné que *Verificarlo* est un logiciel ayant un dépôt
-   distant sur le site [[https://github.com][GitHub]]. Nous avons décidés de créer une
+   distant sur le site [[https://github.com][GitHub]]. Nous avons décidé de créer une
    Organisation, nommé *Safecarlo* (au passage la plupart des noms sur la
-   méthode Monte Carlo était pris et que l'aspect *thread-safe* des *wrappers*
-   et des *backends* devait être un des sujets principales avec la
+   méthode Monte Carlo étaient pris et l'aspect *thread-safe* des *wrappers*
+   et des *backends* devait être un des sujets principaux avec la
    vectorisation), sur *GitHub* et de *fork* Verificarlo dans notre
    Organisation. Nous avons également chacun *fork* Verificarlo depuis notre
    Organisation.
 
    Voici le lien vers notre *fork* de verificarlo: [[https://github.com/Safecarlo/verificarlo/tree/vectorization][Safecarlo]]
 
-   Il s'agit de la branche où nous avons réunis les modifications
-   apportés au cours du projet.
+   Il s'agit de la branche où nous avons réuni les modifications
+   apportées au cours du projet.
 
    Nous avons aussi fait une *pull request* sur la branche *master* de
    *Safecarlo* afin que vous puissiez mieux voir les changements apportés.
@@ -205,15 +209,19 @@
 
 * Support MPI / OpenMP
 ** Notion de parallélisme
+
   L’idée de parallélisme est née pour résoudre un problème long et coûteux entemps de calcul.
   Le parallélisme dans le domaine de calcul haute performance consiste à exécuté des codes en parallèle pour pouvoir augmenter la puissance des processeurs.
   Le parallélisme existe déjà dans les processeurs (pipeline, traitement de plusieurs instruction,...).
   Le parallélisme sert aussi à multiplié les unités de traitement c’est à direaugmenter les nombres de coeurs et de dupliqué les unités vectorielles.
+
 ** Notions indespensable pour le parallélisme
 *** Système à mémoire partage
+
   C’est un système qui met en jeu plusieurs ressources de calcul. D’une manière général, il existe deux type de système à mémoire partagée.
   - a SMP ou Symmetrical Multi-Processing : C’est une machine constituée de plusieurs processeurs identiques connectés à une unique mémoire physique.
   - Le NUMA ou Non-Uniform Memory Access : C’est une machine constitué de plusieurs processeurs connectés à plusieurs mémoires distinctes.
+
 *** Système à mémoire distribuée
   On dit qu’une système est à mémoire distribuée si la mémoire est répartie surplusieurs coeurs.
   Les ressources de calcul n’ont pas de mémoire partagée, que ce soit de manière physique ou logicielle.
@@ -240,8 +248,8 @@
 ** Préparation environnement
 Pour compiler un programme avec MPI, il faut exporter les bibliothèques nécessaire et les variables d'environnement.
 
-  - export MPI\_PATH=/'chemin'/bin
-  - export PATH=\$MPI\_PATH:\$PATH
+  - =export MPI_PATH='chemin'bin=
+  - =export PATH=$MPI_PATH:$PATH=
 ** Description de communication dans Open MPI
   Comme son nom l'indique la communication dans Open MPI consiste par envoie de message.
   La bibliothèque MPI permet de gérer:
@@ -253,18 +261,18 @@ Pour compiler un programme avec MPI, il faut exporter les bibliothèques nécess
 ** Compilation d'un programme parallèle avec verificarlo
   Pour compiler des programmes qui fait appelle au bibliothèque MPI avec le compilateur verificarlo, on a appelle le compilateur à partir du makefile en ajoutant le flag suivant:
 
-  - CC= OMPI\_CC=verificarlo mpicc
+  - =CC=OMPI_CC=verificarlo mpicc=
 * Vectorisation
 ** Introduction
 
-   Différent compilateur existe et ont des définitions de types vectorielles
-   différent. Etant donné que notre encadrant nous a dis que le support de *gcc*
-   était éphémère dû à une dépendance avec *fortran* qui allais être enlever
-   dans le futur. Nous avons décidés de ne pas supporté les types vectorielles
-   de *gcc*. Nous supporterons que les types vectorielles de *clang*.
+   Différents compilateurs existent et ont des définitions de types vectoriels
+   différents. Etant donné que notre encadrant nous a dit que le support de *gcc*
+   était éphémère dû à une dépendance avec *fortran* qui allait être enlevée
+   dans le futur. Nous avons décidé de ne pas supporter les types vectoriels
+   de *gcc*. Nous ne supporterons que les types vectoriels de *clang*.
 
-   Si vous souhaité donc tester nos test ou nos implémentations sur vos propres
-   code, merci de bien vous assurez que vous avez configurer *Verificarlo* avec
+   Si vous souhaitez donc tester nos tests ou nos implémentations sur vos propres
+   codes, merci de bien vous assurer que vous avez configuré *Verificarlo* avec
    *clang* pour le compilateur *c* et *c++* comme suit:
 
 #+BEGIN_SRC bash
@@ -273,12 +281,12 @@ Pour compiler un programme avec MPI, il faut exporter les bibliothèques nécess
 
 #+END_SRC
 
-   Au quel cas cela risque de ne pas fonctionner. Vous pouvez activez *flang* si
-   vous voulez mais nous n'avons pas testés sur des codes *fortran*.
+   Auquel cas cela risque de ne pas fonctionner. Vous pouvez activer *flang* si
+   vous voulez mais nous n'avons pas testé sur des codes *fortran*.
 
 ** Test
 
-   Pour les test, nous avons décidés de suivre le fonctionnement de
+   Pour les test, nous avons décidé de suivre le fonctionnement de
    test que *Verificarlo* a commencé à implémenter. C'est-à-dire que
    nous ne ferons pas de *tests unitaires* mais nous testerons si les
    résultats obtenus lors de la *compilation* et de l'*exécution* sont
@@ -293,7 +301,7 @@ Pour compiler un programme avec MPI, il faut exporter les bibliothèques nécess
 
    Les *tests* ne testent pas les *conditions*, mais uniquement les
    opérations *arithmétiques* sur un exemple basique. Un vecteur contient que
-   des *1.0* et l'autre que des *1.1*. Nous avons décidés de ne pas mettre dans
+   des *1.0* et l'autre que des *1.1*. Nous avons décidé de ne pas mettre dans
    ce test les cas spécifiques de tout les *backends*, mais seulement s'assurer
    du fonctionnement pour un cas simple des opérations arithmétiques
    vectorielles. Pour les cas spécifiques nous pensons qu'il serais judicieux de
@@ -450,7 +458,7 @@ Instruction divps and register xmm INSTRUMENTED
    modifier. L'interface se trouve dans le fichier
    *src/common/inteflop.h*.
 
-   Nous avons décidés de mettre la taille en argument pour éviter de
+   Nous avons décidé de mettre la taille en argument pour éviter de
    faire une fonction pour chaque tailles en plus d'une fonction pour
    chaque opérations et pour chaque précisions. Ce qui nous fait un
    total de 8 fonctions à ajouter au lieu de 32.
@@ -493,7 +501,7 @@ Instruction divps and register xmm INSTRUMENTED
    modifiés comme pour les fonctions scalaires du backends. Cependant, nous
    avions un *avertissement* de *clang* qui nous disait que les types des paramètres
    ne correspondait pas avec l'interface car nous les avions caster (changer le
-   type) en constantes. Nous avons donc décidés d'ajouter un *pragma* qui permet
+   type) en constantes. Nous avons donc décidé d'ajouter un *pragma* qui permet
    de ne pas afficher l'*avertissement*. Car cet *avertissement* ne change pas
    le comportement de nos fonctions.
 
@@ -507,7 +515,7 @@ Instruction divps and register xmm INSTRUMENTED
    Nous avons implémenté les fonctions vectorielles en mode scalaire pour tout
    les *backends*.
 
-** Fonctions vectorielles en mode vectorielles dans les backends
+** Fonctions vectorielles en mode vectoriel dans les backends
 *** Backend ieee
 
     Pour le *backend ieee*, il n'y pas de traitement particulier sur
@@ -533,7 +541,7 @@ Instruction divps and register xmm INSTRUMENTED
     nombres qui ont un exposant nul).
 
     Voici un schéma qui montre la représentation d'un nombre flottant simple
-    précision:
+    précision ([[fig:representation__nombre_flottant_simple_precision][Voir la figure 4]]):
     
     #+CAPTION: Représentation d'un nombre flottant simple précision
     #+NAME: fig:representation__nombre_flottant_simple_precision
@@ -644,7 +652,7 @@ Instruction divps and register xmm INSTRUMENTED
      différent et compilé séparément, il ne fait pas d'optimisation mais passe
      le vecteur par registre et donc cast (change le type) du vecteur
 
-** Connaissance acquise
+** Connaissances acquises
 
    Durant notre projet, nous avons acquis quelques bases sur différent logiciels
    ou librairies.
@@ -701,30 +709,30 @@ Instruction divps and register xmm INSTRUMENTED
    
 ** Conclusion vectorisation
 
-   La vectorisation étant un thème que nous avons beacoup abordé dans le cours
-   *architecture parralèlle*, cela nous a permis de bien comprendre le sujet et
-   d'essayer de venir à bout de cette partis.
+   La vectorisation étant un thème que nous avons beaucoup abordé dans le cours
+   *architecture paralèlle*, cela nous a permis de bien comprendre le sujet et
+   d'essayer de venir à bout de cette partie.
 
-   Néanmoins il reste beacoup de chose à accomplir comme le support des
-   conditions (branchement) que nous n'avons absolument pas abordés que ce soit
-   au niveua des tests ainsi qu'au niveau du support dans verificarlo.
+   Néanmoins il reste beaucoup de choses à accomplir comme le support des
+   conditions (branchement) que nous n'avons absolument pas abordé que ce soit
+   au niveau des tests ainsi qu'au niveau du support dans *Verificarlo*.
 
    Récapitulatif de ce que nous avons fait:
    - rendre les *probes vectorielles*
    - implémentation des fonctions vectorielles dans les backends en mode
      scalaire (bitmask, cancellation, mca, mca_mpfr, vprec)
    - implémentation des fonctions vectorielles dans les backends en mode
-     vectorielles (ieee, vprec)
+     vectoriel (ieee, vprec)
    - compilation avec les jeux d'instructions disponible sur la machine de test
 
    Récapitulatif de ce qu'il nous reste à faire:
-   - faire les tests sur les branchements vectorielles
+   - faire les tests sur les branchements vectoriels
    - faire des tests spécifiques sur les backends pour des opérations
      vectorielles
-   - vectoriser les backends manquant (en priorité la backend *mca*)
+   - vectoriser les backends manquants (en priorité la backend *mca*)
    - tester la performance sur des *NAS*
 
-*** Performance attendu
+*** Performances attendues
 
    Pour les tests sur les *NAS*, cela pourrait être intéressant de tester les
    opérations vectorielles avec des communications MPI ou OpenMP car nous ferons
@@ -738,13 +746,13 @@ Instruction divps and register xmm INSTRUMENTED
 
 * Conclusion
 
-  Le projet nous a permis d'élargir nos connaissance sur les différents thèmes
-  que nous avons vu dans nos cours de *Master*, comme la *vectorisation* et la
-  *parrallélisation*. Ainsi que d'autres thèmes comme la *compilation* avec le
+  Le projet nous a permis d'élargir nos connaissances sur les différents thèmes
+  que nous avons vus dans nos cours de *Master*, comme la *vectorisation* et la
+  *parallélisation*. Ainsi que d'autres thèmes comme la *compilation* avec le
   projet *llvm*.
 
   De plus il nous a permis de pouvoir contribuer à un projet existant qui a une
-  vocation de pourvoir contribuer au domaine du *HPC* ou du moins à avoir une
-  première apporche sur le *calcul numérique* de part la spécificité de l'outils
-  qui a pour but de détecté les éventuelles erreurs des opérations flottantes
-  qui est un problèmes majeur dans le *calcul numérique*.
+  vocation à pourvoir contribuer au domaine du *HPC* ou du moins à avoir une
+  première apporche sur le *calcul numérique* de par la spécificité de l'outil
+  qui a pour but de détecter les éventuelles erreurs des opérations flottantes
+  qui est un problème majeur dans le *calcul numérique*.

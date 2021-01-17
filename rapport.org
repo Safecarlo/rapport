@@ -199,8 +199,11 @@
 ** Notion de parallélisme
   L’idée de parallélisme est née pour résoudre un problème long et coûteux entemps de calcul.
   Le parallélisme dans le domaine de calcul haute performance consisteà exécuté des codes en parallèle pour pouvoir augmenter la puissance des processeurs.
-  Le parallélisme existe déjà dans les processeurs (pipeline, traitement de plusieurs ins-truction,...).
+  Le parallélisme existe déjà dans les processeurs (pipeline, traitement de plusieurs instruction,...).
   Le parallélisme sert aussi à multiplié les unités de traitement c’est à direaugmenter les nombres de coeurs et de dupliqué les unités vectorielles.
+
+** Notions indespensable pour le parallélisme
+*** Système à mémoire partage
 * Génération de nombre aléatoire
 * Vectorisation
 ** Test

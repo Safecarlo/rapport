@@ -4,7 +4,7 @@
 
 * Verificarlo
 
-  [[https://github.com/verificarlo/verificarlo][Verificarlo]] est un compilateur basé sur *clang* et *llvm*. Il
+  [[https://github.com/verificarlo/verificarlo][Verificarlo]] est un compilateur basé sur [[https://clang.llvm.org/][clang]] et [[https://llvm.org/][llvm]]. Il
   permet d'intercepter toutes les opérations flottantes et de les
   analyser. Ce qui permet dans le cadre du calcul scientifique et de
   la simulation de pouvoir déboguer, valider et optimiser ces
@@ -20,8 +20,8 @@
   C'est là qu'intervient *Verificarlo*, cet outil permet par
   instumentation des opérations flottantes, de pouvoir déboguer 
   les erreurs dû à la précision machine. Par exemple de pouvoir
-  modifier la taille maximale de l'exposant ou bien de la mantise. Ou
-  bien même de pour voir effectuer des opérations flottantes en
+  modifier la taille de l'exposant ou bien de la mantisse. Ou
+  bien même de pouvoir effectuer des opérations flottantes en
   ajoutant du bruit au résultat afin de simuler une précision machine
   plus élevé.
 
@@ -60,7 +60,7 @@
    
    #+CAPTION: Fonctionnement de base d'un compilateur
    #+NAME: fig:fonctionnement_base_compilateur
-   #+ATTR_LATEX: :width 150px
+   #+ATTR_LATEX: :width 100px
    [[../ressources/compilation.png]]
 
    Son but est de produire un binaire pour notre architecture à partir
@@ -70,7 +70,7 @@
 
    #+CAPTION: Etape d'un compilateur
    #+NAME: fig:etape_compilateur
-   #+ATTR_LATEX: :width 250px
+   #+ATTR_LATEX: :width 150px
    [[../ressources/compiler_step.png]]
 
    *Verificarlo* est un compilateur. Comme vu précédement, il suit la
@@ -175,14 +175,22 @@
 
    Etant donné que *Verificarlo* est un logiciel ayant un dépôt
    distant sur le site [[https://github.com][GitHub]]. Nous avons décidés de créer une
-   Organisation sur *GitHub* et de *fork* Verificarlo dans notre
-   Organisation. Nous avons également chacun *fork* Verificarlo depuis
-   notre Organisation.
+   Organisation, nommé *Safecarlo* (au passage la plupart des noms sur la
+   méthode Monte Carlo était pris et que l'aspect *thread-safe* des *wrappers*
+   et des *backends* devait être un des sujets principales avec la
+   vectorisation), sur *GitHub* et de *fork* Verificarlo dans notre
+   Organisation. Nous avons également chacun *fork* Verificarlo depuis notre
+   Organisation.
 
    Voici le lien vers notre *fork* de verificarlo: [[https://github.com/Safecarlo/verificarlo/tree/vectorization][Safecarlo]]
 
    Il s'agit de la branche où nous avons réunis les modifications
    apportés au cours du projet.
+
+   Nous avons aussi fait une *pull request* sur la branche *master* de
+   *Safecarlo* afin que vous puissiez mieux voir les changements apportés.
+
+   [[Lien de la pull request]]
    
 ** Réunion avec l'encadrant
 
@@ -193,11 +201,32 @@
 ** Discord
 
    Nous nous sommes créer un discord pour pouvoir échanger entre nous et avec
-   l'encadrant.
+   notre encadrant.
 
 * Support MPI / OpenMP
 * Génération de nombre aléatoire
 * Vectorisation
+** Introduction
+
+   Différent compilateur existe et ont des définitions de types vectorielles
+   différent. Etant donné que notre encadrant nous a dis que le support de *gcc*
+   était éphémère dû à une dépendance avec *fortran* qui allais être enlever
+   dans le futur. Nous avons décidés de ne pas supporté les types vectorielles
+   de *gcc*. Nous supporterons que les types vectorielles de *clang*.
+
+   Si vous souhaité donc tester nos test ou nos implémentations sur vos propres
+   code, merci de bien vous assurez que vous avez configurer *Verificarlo* avec
+   *clang* pour le compilateur *c* et *c++* comme suit:
+
+#+BEGIN_SRC bash
+
+./configure --without-flang CC=clang CXX=clang++
+
+#+END_SRC
+
+   Au quel cas cela risque de ne pas fonctionner. Vous pouvez activez *flang* si
+   vous voulez mais nous n'avons pas testés sur des codes *fortran*.
+
 ** Test
 
    Pour les test, nous avons décidés de suivre le fonctionnement de
@@ -214,7 +243,14 @@
    trouvent dans le répertoire =tests/test_vector_instrumentation/=.
 
    Les *tests* ne testent pas les *conditions*, mais uniquement les
-   opérations *arithmétiques*.
+   opérations *arithmétiques* sur un exemple basique. Un vecteur contient que
+   des *1.0* et l'autre que des *1.1*. Nous avons décidés de ne pas mettre dans
+   ce test les cas spécifiques de tout les *backends*, mais seulement s'assurer
+   du fonctionnement pour un cas simple des opérations arithmétiques
+   vectorielles. Pour les cas spécifiques nous pensons qu'il serais judicieux de
+   les rajoutés dans les autres tests qui test ces cas spécifiques pour un
+   *backend* particulier pour les types de bases comme les types *float* et
+   *double*.
 
    Nous devons testés 3 choses:
    - le bon résultat des opérations vecorielles
@@ -401,6 +437,17 @@ Instruction divps and register xmm INSTRUMENTED
    l'interface et que ce fichier est déjà inclu dans les *wrappers* et les
    *backends*, il nous a paru judicieux de les déplacés ici.
 
+*** Backend ieee
+
+   Pour le backend *ieee*, nous avons mis les opérandes constantes pour
+   s'assurer dès la compilation que les valeurs des opérandes ne sont pas
+   modifiés comme pour les fonctions scalaires du backends. Cependant, nous
+   avions un *avertissement* de *clang* qui nous disait que les types des paramètres
+   ne correspondait pas avec l'interface car nous les avions caster (changer le
+   type) en constantes. Nous avons donc décidés d'ajouter un *pragma* qui permet
+   de ne pas afficher l'*avertissement*. Car cet *avertissement* ne change pas
+   le comportement de nos fonctions.
+
 ** Fonctions vectorielles en mode scalaire dans les backends
 
    Pour les fonctions *vectorielles* en mode scalaire, il suffit de
@@ -441,7 +488,7 @@ Instruction divps and register xmm INSTRUMENTED
     
     #+CAPTION: Représentation d'un nombre flottant simple précision
     #+NAME: fig:representation__nombre_flottant_simple_precision
-    #+ATTR_LATEX: :width 150px
+    #+ATTR_LATEX: :width 200px
     [[../ressources/IEEE754_simple_precision.png]]
 
     source: https://fr.wikipedia.org/wiki/IEEE_754
@@ -453,14 +500,14 @@ Instruction divps and register xmm INSTRUMENTED
     de faire un prototype mais il n'est pas vraimment abouti et ne l'avons pas
     pousser sur le dépot.
 
-    Si vous êtes intéressé, le prototype se trouve ici:
-    [[https://github.com/Sholde/verificarlo/tree/vectorize-vprec][vectorisation de vprec]].
+    Si vous êtes intéressé, le prototype se trouve ici dans le dernier *commit*:
+    [[https://github.com/Safecarlo/verificarlo/tree/vectorize-vprec][vectorisation de vprec]].
 
     Il faudrai créer des structures *binary32* et *binary64* pour les types
     vectorielles avec des macros ce que nous avons réussis à faire.
     
     Ensuite pour toutes les opérations cité si dessus il faudrai testé:
-    1. si tout les éléments satifont la condition
+    1. si tout les éléments satisfont la condition
     2. si il y en a au moins un qui satisfait la condition
     3. si il n'y en a aucun.
 
@@ -493,6 +540,25 @@ Instruction divps and register xmm INSTRUMENTED
 
    Ceci bloque tout les backends qui ne les implémentent pas. Mais une
    sérialisation peut très vite être faites.
+** Compilation
+
+   Etant donné que la vectorisation implique d'utilisé les jeux d'instrucions
+   vectorielles il faut s'assurer que les fichiers qui doivent supporter la
+   vectorisation sont compiler avec les drapeaux des jeux d'instuctions
+   disponibles sur la machine.
+
+   Nous avons donc décidé d'utilisé le drapeaux: =-march=native=, qui nous
+   permet de mettre automatiquement les drapeaux des jeux d'instructions
+   disponibles sur la machines.
+
+   Nous l'avons rajouté pour la compilation des *wrappers* et des *backends*.
+
+   Nous avons aussi décidé de ne pas mettre une règle pour activer ou non le
+   drapeau, comme pour le drapeau =-Wall= dans le fichier de configuration de
+   *autoconf*, car il nous le faut absolument pour pouvoir activer le support
+   des opérations vectorielles, sinon il utilise uniquement le jeu d'instruction
+   *sse*.
+
 ** Problèmes rencontrés
 
    Nous avons rencontrés plusieurs problèmes. La plupart ont pu être résolu mais
@@ -527,4 +593,98 @@ Instruction divps and register xmm INSTRUMENTED
      vectorielles pour des vecteurs *avx512*
    - soit c'est un problème de *llvm* du fait que comme ce sont des modules
      différent et compilé séparément, il ne fait pas d'optimisation mais passe
-     le vecteur pas registre et donc cast (change le type) du vecteur
+     le vecteur par registre et donc cast (change le type) du vecteur
+
+** Connaissance acquise
+
+   Durant notre projet, nous avons acquis quelques bases sur différent logiciels
+   ou librairies.
+
+*** gdb
+
+   Tout d'abord avec l'aide de notre encadrant nous avons réussis à comprendre
+   et excécuter un programme dans [[https://www.gnu.org/software/gdb/][gdb]], qui est un outils de débogue. Nous
+   l'avons utilisé pour comprendre pourquoi *Verificarlo* ne voulais pas utilisé
+   des instructions *sse* pour des opérations sur des vecteurs de 8 flottants
+   simple précision par exemple, qui est un vecteur normalement utilisé avec le
+   jeu d'instruction *avx* avec un *addpd* sur des registres *ymm* par exemple.
+
+*** llvm
+
+   De plus durant notre exploration de *Verificarlo*, nous somme tombé sur des
+   codes écrient en *c++* utilisant les librairies de *llvm* pour pouvoir
+   capturer les opérations flottantes et changer ces opérations en appelant les
+   *probes*.
+
+   Nous avons compris le principe du code ainsi que la partis déjà implémenté
+   qui permet d'appeler les probes vectorielles. En effet un bout de codes
+   permet rajouter dans le nom de la fonction à appeler, la taile du vecteur
+   suivis d'un "x" pour signifié "fois". Cela ce fait en testant si le type est
+   un type vectoriel et ensuite de récuperer la taille si c'est le cas et de
+   vérifier si c'est une taille valide de vecteur.
+
+   Voici le bout de code en question:
+
+#+BEGIN_SRC cpp
+
+    // Should we add a vector prefix?
+    unsigned size = 1;
+    if (opType->isVectorTy()) {
+      VectorType *t = static_cast<VectorType *>(opType);
+      baseType = t->getElementType();
+      size = t->getNumElements();
+
+      if (size == 2) {
+        vectorName = "2x";
+      } else if (size == 4) {
+        vectorName = "4x";
+      } else if (size == 8) {
+        vectorName = "8x";
+      } else if (size == 16) {
+        vectorName = "16x";
+      } else {
+        errs() << "Unsuported vector size: " << size << "\n";
+        return nullptr;
+      }
+    }
+
+#+END_SRC
+   
+** Conclusion vectorisation
+
+   La vectorisation étant un thème que nous avons beacoup abordé dans le cours
+   *architecture parralèlle*, cela nous a permis de bien comprendre le sujet et
+   d'essayer de venir à bout de cette partis.
+
+   Néanmoins il reste beacoup de chose à accomplir comme le support des
+   conditions (branchement) que nous n'avons absolument pas abordés que ce soit
+   au niveua des tests ainsi qu'au niveau du support dans verificarlo.
+
+   Récapitulatif de ce que nous avons fait:
+   - rendre les *probes vectorielles*
+   - implémentation des fonctions vectorielles dans les backends en mode
+     scalaire (bitmask, cancellation, mca, mca_mpfr, vprec)
+   - implémentation des fonctions vectorielles dans les backends en mode
+     vectorielles (ieee, vprec)
+   - compilation avec les jeux d'instructions disponible sur la machine de test
+
+   Récapitulatif de ce qu'il nous reste à faire:
+   - faire les tests sur les branchements vectorielles
+   - faire des tests spécifiques sur les backends pour des opérations
+     vectorielles
+   - vectoriser les backends manquant (en priorité la backend *mca*)
+   - tester la performance sur des *NAS*
+
+*** Performance attendu
+
+   Pour les tests sur les *NAS*, cela pourrait être intéressant de tester les
+   opérations vectorielles avec des communications MPI ou OpenMP car nous ferons
+   moins de communications comparé à des opérations scalaire et donc les
+   résultats devront normalement être au rendez vous.
+
+   Pour ce qui est de la comparaison entre l'implémentation des opérations
+   vectorielles *avant* et *après* notre projet, nous devrions avoir des gains
+   car nous faisons moins d'appelle de fonction et nous avons vectorisé les
+   opérations arithméthiques de base dans le cas de *ieee* et *vprec*.
+
+* Conclusion

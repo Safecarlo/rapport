@@ -2,13 +2,13 @@ CC=OMPI_CC=verificarlo mpicc
 CFLAGS=-O3 -std=c99
 LDFLANGS=-lm
 
-all:	test
+all:	reduc
 
-test:	main.o
-	$(CC)	$(CFLANGS) -o	test	main.o	$(LDFLANGS)
+reduc:	reduc.o
+	$(CC)	$(CFLANGS) -o	reduc	reduc.o	$(LDFLANGS)
 
-main.o:	main.c
-		$(CC)	$(CFLANGS) -o main.o	-c	main.c
+reduc.o:	reduc.c
+		$(CC)	$(CFLANGS) -o reduc.o	-c	reduc.c
 
 clean:
-	rm	-rf	*.o	test
+	rm	-rf	*.o	reduc

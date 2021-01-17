@@ -688,3 +688,14 @@ Instruction divps and register xmm INSTRUMENTED
    opérations arithméthiques de base dans le cas de *ieee* et *vprec*.
 
 * Conclusion
+
+  Le projet nous a permis d'élargir nos connaissance sur les différents thèmes
+  que nous avons vu dans nos cours de *Master*, comme la *vectorisation* et la
+  *parrallélisation*. Ainsi que d'autres thèmes comme la *compilation* avec le
+  projet *llvm*.
+
+  De plus il nous a permis de pouvoir contribuer à un projet existant qui a une
+  vocation de pourvoir contribuer au domaine du *HPC* ou du moins à avoir une
+  première apporche sur le *calcul numérique* de part la spécificité de l'outils
+  qui a pour but de détecté les éventuelles erreurs des opérations flottantes
+  qui est un problèmes majeur dans le *calcul numérique*.

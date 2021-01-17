@@ -126,8 +126,6 @@
   sudr la stabilité des codes des environements MPI et OpenMP. Ainsi
   que de proposer d'éventuelles ananyles.
 
-** MPI/OpenMP
-** Génération de nombre aléatoire
 ** Vectorisation
 
   Aujourd’hui *vfcinstrument* insert des probes, y compris pour les
@@ -144,7 +142,6 @@
 ** MPI/OpenMP
   L'objectif ici est de savoir installer et compiler des programmes avec mpi/open en faisant appel à la compilateur verificarlo.
 ** Vectorisation
-
   Les changements sont à faire essentiellement dans les *wrappers* et
   les *backends*:
 

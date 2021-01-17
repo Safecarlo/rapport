@@ -495,7 +495,21 @@ Instruction divps and register xmm INSTRUMENTED
    sérialisation peut très vite être faites.
 ** Compilation
 
+   Etant donné que la vectorisation implique d'utilisé les jeux d'instrucions
+   vectorielles il faut s'assurer que les fichiers qui doivent supporter la
+   vectorisation sont compiler avec les drapeaux des jeux d'instuctions
+   disponibles sur la machine.
 
+   Nous avons donc décidé d'utilisé le drapeaux: =-march=native=, qui nous
+   permet de mettre automatiquement les drapeaux des jeux d'instructions
+   disponibles sur la machines.
+
+   Nous l'avons rajouté pour la compilation des *wrappers* et des *backends*.
+
+   Nous avons aussi décidé de ne pas mettre une règle pour activer ou non le
+   drapeau, comme pour le drapeau =-Wall=, car il nous le faut absolument pour
+   pouvoir activer le support des opérations vectorielles, sinon il utilise
+   uniquement le jeu d'instruction *sse*.
 
 ** Problèmes rencontrés
 

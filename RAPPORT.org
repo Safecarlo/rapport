@@ -142,6 +142,7 @@
 ** MPI/OpenMP
   L'objectif ici est de savoir installer et compiler des programmes avec mpi/open en faisant appel à la compilateur verificarlo.
 ** Vectorisation
+
   Les changements sont à faire essentiellement dans les *wrappers* et
   les *backends*:
 
@@ -162,7 +163,8 @@
 ** Groupe
 
    Nous nous somme répartis en 2 groupe:
-   - un groupe sur la partie [[https://www.mpich.org/][MPI]] / [[https://www.openmp.org/][OpenMP]] (Hery Andrianantenaina )
+   - un groupe sur la partie [[https://www.mpich.org/][MPI]] / [[https://www.openmp.org/][OpenMP]] ainsi que la génération de
+     nombre aléatoire (Hery Andrianantenaina / Julien Even)
    - un groupe sur le support de la vectorisation dans Verificarlo
      (Nicolas Bouton / Ali Lakbal)
 
@@ -245,7 +247,6 @@ Pour compiler un programme avec MPI, il faut exporter les bibliothèques nécess
 
   - CC= OMPI\_CC=verificarlo mpicc
 
-* Génération de nombre aléatoire
 * Vectorisation
 ** Test
 

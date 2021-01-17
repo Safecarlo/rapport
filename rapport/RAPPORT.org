@@ -20,8 +20,8 @@
   C'est là qu'intervient *Verificarlo*, cet outil permet par
   instumentation des opérations flottantes, de pouvoir déboguer 
   les erreurs dû à la précision machine. Par exemple de pouvoir
-  modifier la taille maximale de l'exposant ou bien de la mantise. Ou
-  bien même de pour voir effectuer des opérations flottantes en
+  modifier la taille de l'exposant ou bien de la mantisse. Ou
+  bien même de pouvoir effectuer des opérations flottantes en
   ajoutant du bruit au résultat afin de simuler une précision machine
   plus élevé.
 
@@ -60,7 +60,7 @@
    
    #+CAPTION: Fonctionnement de base d'un compilateur
    #+NAME: fig:fonctionnement_base_compilateur
-   #+ATTR_LATEX: :width 150px
+   #+ATTR_LATEX: :width 100px
    [[../ressources/compilation.png]]
 
    Son but est de produire un binaire pour notre architecture à partir
@@ -70,7 +70,7 @@
 
    #+CAPTION: Etape d'un compilateur
    #+NAME: fig:etape_compilateur
-   #+ATTR_LATEX: :width 250px
+   #+ATTR_LATEX: :width 150px
    [[../ressources/compiler_step.png]]
 
    *Verificarlo* est un compilateur. Comme vu précédement, il suit la
@@ -175,14 +175,22 @@
 
    Etant donné que *Verificarlo* est un logiciel ayant un dépôt
    distant sur le site [[https://github.com][GitHub]]. Nous avons décidés de créer une
-   Organisation sur *GitHub* et de *fork* Verificarlo dans notre
-   Organisation. Nous avons également chacun *fork* Verificarlo depuis
-   notre Organisation.
+   Organisation, nommé *Safecarlo* (au passage la plupart des noms sur la
+   méthode Monte Carlo était pris et que l'aspect *thread-safe* des *wrappers*
+   et des *backends* devait être un des sujets principales avec la
+   vectorisation), sur *GitHub* et de *fork* Verificarlo dans notre
+   Organisation. Nous avons également chacun *fork* Verificarlo depuis notre
+   Organisation.
 
    Voici le lien vers notre *fork* de verificarlo: [[https://github.com/Safecarlo/verificarlo/tree/vectorization][Safecarlo]]
 
    Il s'agit de la branche où nous avons réunis les modifications
    apportés au cours du projet.
+
+   Nous avons aussi fait une *pull request* sur la branche *master* de
+   *Safecarlo* afin que vous puissiez mieux voir les changements apportés.
+
+   [[Lien de la pull request]]
    
 ** Réunion avec l'encadrant
 
@@ -198,6 +206,27 @@
 * Support MPI / OpenMP
 * Génération de nombre aléatoire
 * Vectorisation
+** Introduction
+
+   Différent compilateur existe et ont des définitions de types vectorielles
+   différent. Etant donné que notre encadrant nous a dis que le support de *gcc*
+   était éphémère dû à une dépendance avec *fortran* qui allais être enlever
+   dans le futur. Nous avons décidés de ne pas supporté les types vectorielles
+   de *gcc*. Nous supporterons que les types vectorielles de *clang*.
+
+   Si vous souhaité donc tester nos test ou nos implémentations sur vos propres
+   code, merci de bien vous assurez que vous avez configurer *Verificarlo* avec
+   *clang* pour le compilateur *c* et *c++* comme suit:
+
+#+BEGIN_SRC bash
+
+./configure --without-flang CC=clang CXX=clang++
+
+#+END_SRC
+
+   Au quel cas cela risque de ne pas fonctionner. Vous pouvez activez *flang* si
+   vous voulez mais nous n'avons pas testés sur des codes *fortran*.
+
 ** Test
 
    Pour les test, nous avons décidés de suivre le fonctionnement de
@@ -219,8 +248,9 @@
    ce test les cas spécifiques de tout les *backends*, mais seulement s'assurer
    du fonctionnement pour un cas simple des opérations arithmétiques
    vectorielles. Pour les cas spécifiques nous pensons qu'il serais judicieux de
-   les rajoutés dans les autres tests qui le test pour les types de bases comme
-   le types *float* et *double*.
+   les rajoutés dans les autres tests qui test ces cas spécifiques pour un
+   *backend* particulier pour les types de bases comme les types *float* et
+   *double*.
 
    Nous devons testés 3 choses:
    - le bon résultat des opérations vecorielles
@@ -407,6 +437,17 @@ Instruction divps and register xmm INSTRUMENTED
    l'interface et que ce fichier est déjà inclu dans les *wrappers* et les
    *backends*, il nous a paru judicieux de les déplacés ici.
 
+*** Backend ieee
+
+   Pour le backend *ieee*, nous avons mis les opérandes constantes pour
+   s'assurer dès la compilation que les valeurs des opérandes ne sont pas
+   modifiés comme pour les fonctions scalaires du backends. Cependant, nous
+   avions un *avertissement* de *clang* qui nous disait que les types des paramètres
+   ne correspondait pas avec l'interface car nous les avions caster (changer le
+   type) en constantes. Nous avons donc décidés d'ajouter un *pragma* qui permet
+   de ne pas afficher l'*avertissement*. Car cet *avertissement* ne change pas
+   le comportement de nos fonctions.
+
 ** Fonctions vectorielles en mode scalaire dans les backends
 
    Pour les fonctions *vectorielles* en mode scalaire, il suffit de
@@ -447,7 +488,7 @@ Instruction divps and register xmm INSTRUMENTED
     
     #+CAPTION: Représentation d'un nombre flottant simple précision
     #+NAME: fig:representation__nombre_flottant_simple_precision
-    #+ATTR_LATEX: :width 150px
+    #+ATTR_LATEX: :width 200px
     [[../ressources/IEEE754_simple_precision.png]]
 
     source: https://fr.wikipedia.org/wiki/IEEE_754
@@ -459,14 +500,14 @@ Instruction divps and register xmm INSTRUMENTED
     de faire un prototype mais il n'est pas vraimment abouti et ne l'avons pas
     pousser sur le dépot.
 
-    Si vous êtes intéressé, le prototype se trouve ici:
-    [[https://github.com/Sholde/verificarlo/tree/vectorize-vprec][vectorisation de vprec]].
+    Si vous êtes intéressé, le prototype se trouve ici dans le dernier *commit*:
+    [[https://github.com/Safecarlo/verificarlo/tree/vectorize-vprec][vectorisation de vprec]].
 
     Il faudrai créer des structures *binary32* et *binary64* pour les types
     vectorielles avec des macros ce que nous avons réussis à faire.
     
     Ensuite pour toutes les opérations cité si dessus il faudrai testé:
-    1. si tout les éléments satifont la condition
+    1. si tout les éléments satisfont la condition
     2. si il y en a au moins un qui satisfait la condition
     3. si il n'y en a aucun.
 
@@ -556,8 +597,8 @@ Instruction divps and register xmm INSTRUMENTED
 
 ** Connaissance acquise
 
-   Durant notre projet, nous avons acquis quelques bases sur différent logiciel
-   ou librairie.
+   Durant notre projet, nous avons acquis quelques bases sur différent logiciels
+   ou librairies.
 
 *** gdb
 
@@ -622,7 +663,7 @@ Instruction divps and register xmm INSTRUMENTED
    Récapitulatif de ce que nous avons fait:
    - rendre les *probes vectorielles*
    - implémentation des fonctions vectorielles dans les backends en mode
-     scalaire (bitmask, cancellation, mca, mca_mpfr)
+     scalaire (bitmask, cancellation, mca, mca_mpfr, vprec)
    - implémentation des fonctions vectorielles dans les backends en mode
      vectorielles (ieee, vprec)
    - compilation avec les jeux d'instructions disponible sur la machine de test

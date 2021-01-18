@@ -15,7 +15,7 @@
 \usepackage{amssymb}
 \usepackage{capt-of}
 \usepackage{hyperref}
-\author{Bouton Nicolas, Hery Andrianantenaina, Ali Lakbal, Julien Even}
+\author{Nicolas Bouton, Hery Andrianantenaina, Ali Lakbal, Julien Even}
 \date{2020}
 \title{Support de MPI/OpenMP et de la vectorisation dans Verificarlo}
 \hypersetup{
@@ -38,14 +38,14 @@
 permet d'intercepter toutes les opérations flottantes et de les
 analyser. Ce qui permet dans le cadre du calcul scientifique et de
 la simulation de pouvoir déboguer, valider et optimiser ces
-opérations ainsi que leurs formats.
+opérations ainsi que leurs formats.\\
 \vspace{5mm}
 Les opérations flottantes ont un intérêt particulier dans le monde
 du \textbf{HPC} (High Performance Computing). Elles peuvent être source
 d'erreurs sans pour autant être un problème mathématiques. En effet
 dans le domaine de l'informatique, les ordinateurs ont une
 limitation matérielle qui ne leur permet pas d'atteindre une
-certaine précision.
+certaine précision.\\
 \vspace{5mm}
 C'est là qu'intervient \textbf{Verificarlo}, cet outil permet par
 instrumentation des opérations flottantes, de pouvoir déboguer 
@@ -60,10 +60,10 @@ plus élevée.
 
 Dans le domaine du calcul scientifique, il est important de faire
 des codes propres (c'est à dire pas d'erreur à l'éxécution) et
-optimisés.
+optimisés.\\
 \vspace{5mm}
 Nous avons vu que le parallélisme permettait d'optimiser notre code
-mais ce n'est pas le seul moyen.
+mais ce n'est pas le seul moyen.\\
 \vspace{5mm}
 Dans nos processeurs modernes, des jeux d'instructions vectorielles
 sont apparus. Ils ont une taille de 128, 256 ou 512 bits suivant le
@@ -72,11 +72,11 @@ d'instruction \textbf{sse}, \textbf{avx} et \textbf{avx512}. Ce dernier n'est di
 que sur certains processeurs d'\textbf{Intel}. Ces jeux d'instructions
 permettent d'effectuer plusieurs opérations en même temps sur le
 même coeur de calcul.
-\vspace{5mm}
+\\ \vspace{5mm}
 Dans notre cas, nous nous intéressons uniquement au type \textbf{float} et
 \textbf{double} qui ont respectivement une taille de 32 bits et de 64
 bits.
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous pouvons donc effectuer 4 additions en même temps pour le type
 \textbf{float} et le jeu d'instruction \textbf{sse}. Ce qui théoriquement
 multiplie par \textbf{4} la vitesse de calcul. D'où l'intérêt particulier
@@ -89,73 +89,66 @@ des centres de calculs.
 
 Voici le comportement d'un compilateur
 (\hyperref[fig:orge695f88]{Voir la figure 1}):
-\vspace{5mm}
+\\ \vspace{5mm}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=100px]{../ressources/compilation.png}
 \caption{\label{fig:orge695f88}Fonctionnement de base d'un compilateur}
 \end{figure}\\
-\vspace{5mm}
+\\ \vspace{5mm}
 Son but est de produire un binaire pour notre architecture à partir
 d'un fichier source.
-\vspace{5mm}
+\\ \vspace{5mm}
 Le \href{https://sifflez.org/lectures/compil/week1/3-compiler-anatomy.pdf}{compilateur} est généralement décomposé en 3 étapes
 (\hyperref[fig:org97c1cff]{Voir la figure 2}):
-\vspace{5mm}
+\\ \vspace{5mm}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=300px]{../ressources/compiler_step.png}
 \caption{\label{fig:org97c1cff}Etape d'un compilateur}
 \end{figure}\\
-\vspace{5mm}
+\\ \vspace{5mm}
 \textbf{Verificarlo} est un compilateur. Comme vu précédement, il suit la
 décomposition en 3 étapes car il est basé sur \textbf{clang} et
 \textbf{llvm}. Les \textbf{modifications} qu'apporte Verificarlo se font au
 \textbf{middle-end} avant la phase d'optimisation qui se déroule aussi
 dans le \textbf{middle-end} au niveau de \textbf{llvm}.
-\vspace{5mm}
+\\ \vspace{5mm}
 Voici les principales étapes de la compilation avec \textbf{Verificarlo}
 (\hyperref[fig:orgfd31292]{Voir la figure 3}):
-\vspace{5mm}
+\\ \vspace{5mm}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=200px]{../ressources/verificarlo_works.png}
 \caption{\label{fig:orgfd31292}Fonctionnement de Verificarlo}
 \end{figure}\\
-\vspace{5mm}
+\\ \vspace{5mm}
 \section{Définitions de certains termes techniques}
 \label{sec:org847d243}
-\vspace{5mm}
+\\ \vspace{5mm}
 \begin{itemize}
 \item \textbf{probes:} Les probes sont des fonctions implémenté dans
-\end{itemize}
-\textbf{vfcwrapper} qui est linker avec le programme par la partie
+
+\item \textbf{vfcwrapper} qui est linker avec le programme par la partie
 compilation de veificarlo.
 
-\begin{itemize}
 \item \textbf{backend:} Dans le cadre de verifcarlo, c'est la/les librairie(s)
-\end{itemize}
 dynamique(s) qui seront appelées par le wrapper dans les
 probes. Dans le cadre d'un compilateur c'est la derniere phase qui
 descend de la représentation intermédiaire vers le binaires (en
 général).
 
-\begin{itemize}
 \item \textbf{wrapper:} Ce sont des fonctions qui enveloppent l'appel à
-\end{itemize}
 d'autres fonctions.
 
-\begin{itemize}
 \item \textbf{link:} Il s'agit de la phase de compilation qui consiste à aller
-\end{itemize}
 chercher toute les librairies externes appelé par l'application
 pour les liées au programe utilisateur afin de resoudre les
 références non défini.
 
-\begin{itemize}
 \item \textbf{sérialisation:} Dans le contexte de l'utilisation de vecteur il
-\end{itemize}
 s'agit d'éxécuter en séquence les éléments du vecteur.
+\end{itemize}
 
 \section{Résumé des besoins}
 \label{sec:orgefc274e}
@@ -164,15 +157,15 @@ A l'heure actuelle, les codes \textbf{multithreadés} (parallèle),
 particulièrement pour OpenMP, et \textbf{vectorisés} nécessitent une 
 sérialisation des opérations ce qui entraîne un surcoût qui peut
 être évitable.
-\vspace{5mm}
+\\ \vspace{5mm}
 Il faudra donc proposer des opérateurs vectorisés dans \textbf{Verificarlo}
 pour les deux outils d'analyse \textbf{VPREC} et \textbf{MCA}.
-\vspace{5mm}
+\\ \vspace{5mm}
 L'aspect thread-safe de ces opérateurs devra être assuré.
-\vspace{5mm}
+\\ \vspace{5mm}
 De plus il faudra générer des nombres aléatoires indépendants pour
 l'outil d'analyse \textbf{MCA} et la gestion des entrées sorties.
-\vspace{5mm}
+\\ \vspace{5mm}
 Une fois ces outils en place, il sera possible d'étudier l'impact
 sur la stabilité des codes des environnements MPI et OpenMP. Ainsi
 que de proposer d'éventuelles ananyles.
@@ -182,11 +175,11 @@ que de proposer d'éventuelles ananyles.
 
 Aujourd’hui \textbf{vfcinstrument} insère des probes, y compris pour les
 instructions vectorielles.
-\vspace{5mm}
+\\ \vspace{5mm}
 Celles des instructions vectorielles défont le vecteur et appellent les
 versions scalaires au lieu d'appeler les fonctions vectorielles des
 backends.
-\vspace{5mm}
+\\ \vspace{5mm}
 A l’exécution le \textbf{wrapper} charge les librairies dynamiques (.so)
 correspondantes au(x) \textbf{backend(s)} verificarlo utilisé (vprec, mca).
 
@@ -249,15 +242,15 @@ et des \textbf{backends} devait être un des sujets principaux avec la
 vectorisation), sur \textbf{GitHub} et de \textbf{fork} Verificarlo dans notre
 Organisation. Nous avons également chacun \textbf{fork} Verificarlo depuis notre
 Organisation.
-\vspace{5mm}
+\\ \vspace{5mm}
 Voici le lien vers notre \textbf{fork} de verificarlo: \href{https://github.com/Safecarlo/verificarlo/tree/vectorization}{Safecarlo}
-\vspace{5mm}
+\\ \vspace{5mm}
 Il s'agit de la branche où nous avons réuni les modifications
 apportées au cours du projet.
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous avons aussi fait une \textbf{pull request} sur la branche \textbf{master} de
 \textbf{Safecarlo} afin que vous puissiez mieux voir les changements apportés.
-\vspace{5mm}
+\\ \vspace{5mm}
 \href{https://github.com/Safecarlo/verificarlo/pull/24}{Lien de la pull request}
 
 \subsection{Réunion avec l'encadrant}
@@ -333,7 +326,7 @@ L'installation du programme se fait aussi à partir du fichier source en exécut
 Pour compiler un programme avec MPI, il faut exporter les bibliothèques nécessaire et les variables d'environnement.
 
 \begin{itemize}
-\item \texttt{export MPI\_PATH}'chemin'bin=
+\item \texttt{export MPI\_PATH=/'chemin'/bin}
 \item \texttt{export PATH=\$MPI\_PATH:\$PATH}
 \end{itemize}
 \subsection{Description de communication dans Open MPI}
@@ -364,7 +357,7 @@ différents. Etant donné que notre encadrant nous a dit que le support de \text
 était éphémère dû à une dépendance avec \textbf{fortran} qui allait être enlevée
 dans le futur. Nous avons décidé de ne pas supporter les types vectoriels
 de \textbf{gcc}. Nous ne supporterons que les types vectoriels de \textbf{clang}.
-\vspace{5mm}
+\\ \vspace{5mm}
 Si vous souhaitez donc tester nos tests ou nos implémentations sur vos propres
 codes, merci de bien vous assurer que vous avez configuré \textbf{Verificarlo} avec
 \textbf{clang} pour le compilateur \textbf{c} et \textbf{c++} comme suit:
@@ -386,14 +379,14 @@ test que \textbf{Verificarlo} a commencé à implémenter. C'est-à-dire que
 nous ne ferons pas de \textbf{tests unitaires} mais nous testerons si les
 résultats obtenus lors de la \textbf{compilation} et de l'\textbf{exécution} sont
 exactes.
-\vspace{5mm}
+\\ \vspace{5mm}
 Les \textbf{tests} sont principalement écrient en \textbf{bash}, avec un code de
 test écris en \textbf{c} et un code \textbf{python} qui permet uniquement de
 capturer les lignes où commencent et finissent les fonctions
 vectorielles des backends dans l'assembleurs généré à la
 compilation du compilateur Verificarlo par clang. Les \textbf{tests} se
 trouvent dans le répertoire \texttt{tests/test\_vector\_instrumentation/}.
-\vspace{5mm}
+\\ \vspace{5mm}
 Les \textbf{tests} ne testent pas les \textbf{conditions}, mais uniquement les
 opérations \textbf{arithmétiques} sur un exemple basique. Un vecteur contient que
 des \textbf{1.0} et l'autre que des \textbf{1.1}. Nous avons décidé de ne pas mettre dans
@@ -403,7 +396,7 @@ vectorielles. Pour les cas spécifiques nous pensons qu'il serais judicieux de
 les rajoutés dans les autres tests qui test ces cas spécifiques pour un
 \textbf{backend} particulier pour les types de bases comme les types \textbf{float} et
 \textbf{double}.
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous devons testés 3 choses:
 \begin{itemize}
 \item le bon résultat des opérations vecorielles
@@ -411,7 +404,7 @@ Nous devons testés 3 choses:
 \item l'utilisation des jeux d'instructions vectorielles (suivant
 l'arhitecture) dans les backends
 \end{itemize}
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous testons tous les backends pour les 3 sous tests, sauf pour le backend
 \textbf{cancellation} ou nous testons pas le bon résultat car il y a beacoup
 d'\textbf{annultion} détectés et le résultat est modifié avec du bruit.
@@ -425,11 +418,11 @@ d'opérations aritmétiques en s'assurant du bon résultat à l'aide
 d'un fichier généré automatiquement suivant les jeux d'instruction
 disponible contenant le résultat attendu que l'on comparera avec
 la sortie de notre programme.
-\vspace{5mm}
+\\ \vspace{5mm}
 Ce sous-test utilise la sortie du code c.
-\vspace{5mm}
+\\ \vspace{5mm}
 Exemple de sortie:
-\vspace{5mm}
+\\ \vspace{5mm}
 \begin{verbatim}
 
 float + 4
@@ -439,7 +432,7 @@ float + 4
 2.100000
 
 \end{verbatim}
-\vspace{5mm}
+\\ \vspace{5mm}
 Il s'agit de la sortie attendu pour l'addition du type vectorielle \textbf{float4} qui
 est un vecteur de 4 flotant simple précision. (addition d'un vecteur
 composé de 1.0 avec un vecteur composé de 1.1).
@@ -450,12 +443,12 @@ composé de 1.0 avec un vecteur composé de 1.1).
 Pour ce faire nous devons récupérer les fichiers \textbf{.ll}, en
 compilant notre fichier \textbf{c} avec \textbf{--save-temps}, qui sont les
 représentations intermédiaires de notre programme de test.
-\vspace{5mm}
+\\ \vspace{5mm}
 Un fois récupéré, il nous suffit de vérifier si l'appel aux
 \textbf{probes vectorielles} sont bien effectué.
-\vspace{5mm}
+\\ \vspace{5mm}
 Exemple d'appel des \textbf{probes vectorielles}:
-\vspace{5mm}
+\\ \vspace{5mm}
 \begin{verbatim}
 
 %59 = call <4 x float> @_4xfloatadd(<4 x float> %55, <4 x float> %56)
@@ -467,7 +460,7 @@ Exemple d'appel des \textbf{probes vectorielles}:
 %77 = call <4 x float> @_4xfloatdiv(<4 x float> %73, <4 x float> %74)
 
 \end{verbatim}
-\vspace{5mm}
+\\ \vspace{5mm}
 Il s'agit de la représentation intermédiaire de notre code de
 test. Nous pouvons voir les différents appels aux probes
 vectorielles pour une vecteur de 4 flotant simple précision.
@@ -476,12 +469,12 @@ vectorielles pour une vecteur de 4 flotant simple précision.
 \label{sec:orgf847cb5}
 
 Pour ce dernier sous-test, nous supposons que le test s'effectue
-sur une machine \textbf{x86\textsubscript{64}} tournant sur \textbf{Linux}.
-\vspace{5mm}
+sur une machine \textbf{x86\_64} tournant sur \textbf{Linux}.
+\\ \vspace{5mm}
 Suivant les jeux d'instructions disponnible sur la machine, le
 test vérifie si les jeux d'instructions sont bien utilisés.
-\vspace{5mm}
-De plus il faut savoir que pour les processeurs \textbf{x86\textsubscript{64}}, les
+\\ \vspace{5mm}
+De plus il faut savoir que pour les processeurs \textbf{x86\_64}, les
 instructions vectorielles pour les opérations arithmétiques 
 se compose avec la règle suivante:
 \textbf{opération\#\#vectoriel\#\#presision}.
@@ -495,23 +488,23 @@ respectivement pour les jeux instruction \textbf{sse}, \textbf{avx} et \textbf{a
 \item \textbf{précision:} \textbf{d} pour double precision (double précision), \textbf{s} pour simgle
 precision (simple précision)
 \end{itemize}
-\vspace{5mm}
+\\ \vspace{5mm}
 Par exemple, \textbf{addps} avec un registre \textbf{xmm} est une instruction
 vectorisé tandis que \textbf{addss} avec un registre \textbf{xmm} ne l'est pas.
-\vspace{5mm}
+\\ \vspace{5mm}
 A noter que si nous avons uniquement les jeux d'instructions
 \textbf{sse} et \textbf{avx}, nous devrions avoir des instructions \textbf{sse} pour
 les types vectorielles \textbf{float2}, \textbf{float4} et \textbf{double2}. Et des
 instructions \textbf{avx} pour tous les autres types vecorielles.
-\vspace{5mm}
+\\ \vspace{5mm}
 Cependant notre test, test uniquement si ces instructions sont
 utilisé au moins une fois et ne compte pas exactement combien de
 fois elles sont utilisé ce qui rendrait le test encore plus
 fiable. Nous supposons donc que \textbf{clang} et \textbf{llvm} vectorisent bien
 toutes nos opérations.
-\vspace{5mm}
+\\ \vspace{5mm}
 Exemples de résultat attendu pour le type vectorielles \textbf{float4}:
-\vspace{5mm}
+\\ \vspace{5mm}
 \begin{verbatim}
 
 float4
@@ -527,9 +520,9 @@ Instruction subps and register xmm INSTRUMENTED
 3224:c5 f8 5e c1          vdivps %xmm1,%xmm0,%xmm0
 3243:c4 c1 78 5e 07       vdivps (%r15),%xmm0,%xmm0
 Instruction divps and register xmm INSTRUMENTED
-\vspace{5mm}
+
 \end{verbatim}
-\vspace{5mm}
+\\ \vspace{5mm}
 Il s'agit de la sortie de notre test qui afiiche des bouts de code de
 l'assembleur du backend \textbf{ieee}. Et nous remarquons bien que les instructions
 vectorielles \textbf{ps} (packed simgle) sont bien utilisés avec les registres
@@ -539,7 +532,7 @@ vectorielles \textbf{ps} (packed simgle) sont bien utilisés avec les registres
 \label{sec:orgd19a3ae}
 
 Les vecteurs 512 / 256 bits était déjà supporté.
-\vspace{5mm}
+\\ \vspace{5mm}
 Verificarlo utilise les types vectorielles de \href{https://clang.llvm.org/docs/LanguageExtensions.html\#vectors-and-extended-vectors}{clang}.
 
 \subsection{Ajout de probes vectorielles}
@@ -547,10 +540,10 @@ Verificarlo utilise les types vectorielles de \href{https://clang.llvm.org/docs/
 
 Les probes vectorielles étaient déjà implémentés mais appelaient les
 probes scalaires.
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous avons donc dû modifier les probes en appelant les fonctions
 vectorielles des backends.
-\vspace{5mm}
+\\ \vspace{5mm}
 De plus nous avons factorisés la macro qui permet de définir les
 probes vecorielles en \textbf{1} macro au lieu de \textbf{4} (une pour chaque
 taille) en passant la taille en paramètre.
@@ -562,16 +555,16 @@ Il nous faut d'abord identifier quelle est l'interface et où la
 trouver. Nous avons facilement trouver où et comment la
 modifier. L'interface se trouve dans le fichier
 \textbf{src/common/inteflop.h}.
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous avons décidé de mettre la taille en argument pour éviter de
 faire une fonction pour chaque tailles en plus d'une fonction pour
 chaque opérations et pour chaque précisions. Ce qui nous fait un
 total de 8 fonctions à ajouter au lieu de 32.
-\vspace{5mm}
+\\ \vspace{5mm}
 Comme nous passons la taille en argument, il faudra tester la
 taille pour permettre à clang d'effectuer une opération vectorielle
 en changeant le type de notre tableau dans le bon type vectorielles de clang.
-\vspace{5mm}
+\\ \vspace{5mm}
 Par exemple si nous avons une opération flottante avec une
 précision \textbf{double}, l'opération \textbf{add} et un taille de vecteur
 de \textbf{4} nous devrons faire l'opération suivante:
@@ -586,13 +579,13 @@ En ce qui concerne le type des opérandes, nous avons décidé de
 changer le type vectorielles en son pointeur sur sa
 précision. Reprenons l'exemple ci-dessus, pour un type \textbf{double4}
 nous casterons sont pointeur en un pointeur de \textbf{double}.
-\vspace{5mm}
+\\ \vspace{5mm}
 \uline{Règle:} @precision\#\#size -> @precision
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous pouvons faire cela car lors de la définitions des types
 vectorielles, il est précisé qu'un type \textbf{precision\#\#size} est de type
 \textbf{precision}.
-\vspace{5mm}
+\\ \vspace{5mm}
 De plus nous avons déplacés la définitions des types vectorielles dans le
 fichier \textbf{src/common/inteflop.h}. Car nous avons besoins de ces types dans les
 \textbf{wrappers} et les \textbf{backends}. Et comme ils ont besoin tout les deux de
@@ -618,7 +611,7 @@ Pour les fonctions \textbf{vectorielles} en mode scalaire, il suffit de
 prendre le code des fonctions \textbf{scalaires} et de faire un boucle sur
 chaque élément du tableau. Ceci est appliquable pour tout les
 \textbf{backends}.
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous avons implémenté les fonctions vectorielles en mode scalaire pour tout
 les \textbf{backends}.
 
@@ -629,13 +622,13 @@ les \textbf{backends}.
 
 Pour le \textbf{backend ieee}, il n'y pas de traitement particulier sur
 les opérations. Le \textbf{backend} effectue l'opération et la débogue.
-\vspace{5mm}
+\\ \vspace{5mm}
 Pour vectoriser l'opération, comme dit précedement il faut changer le type
 du pointeur de sa \textbf{precision} flottante en son type vectorielles de
 clang. Pour cela nous avons créés une macro \textbf{c} qui nous le
 permet. Le seul désavantage est que l'on effectue un branchement à
 cause de la condition.
-\vspace{5mm}
+\\ \vspace{5mm}
 Pour la fonction de déboguage, elle est essentiellement composé de
 sortie standart ou dans un fichier ce qui n'est pas
 vectorisable. Donc nous avons laisser la boucle qui appelle la
@@ -646,47 +639,47 @@ fonction de débogue pour chaque élément du tableau.
 
 Pour le \textbf{backend vprec}, nous avons commencé à le vectorisé. Pour l'instant
 il n'y a que les opérations qui sont vectorisé comme pour le \textbf{backend ieee}.
-\vspace{5mm}
+\\ \vspace{5mm}
 Ce \textbf{backend} permet de gérer les nombre \textbf{dénormaux} (c'est-à-dire les
 nombres qui ont un exposant nul).
-\vspace{5mm}
+\\ \vspace{5mm}
 Voici un schéma qui montre la représentation d'un nombre flottant simple
 précision (\hyperref[fig:orgb3c7269]{Voir la figure 4}):
-\vspace{5mm}
+\\ \vspace{5mm}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=200px]{../ressources/IEEE754_simple_precision.png}
 \caption{\label{fig:orgb3c7269}Représentation d'un nombre flottant simple précision}
 \end{figure}\\
-\vspace{5mm}
+\\ \vspace{5mm}
 source: \url{https://fr.wikipedia.org/wiki/IEEE\_754}\\
-\vspace{5mm}
+\\ \vspace{5mm}
 Revenons à notre cas, le \textbf{backend vprec} fait différentes opérations suivant
 si le nombre floattant est fini, infini, dénormal ou encore normal.
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous avons commencé à réfléchir sur comment gérer les comparaisons et essayé
 de faire un prototype mais il n'est pas vraimment abouti et ne l'avons pas
 pousser sur le dépot.
-\vspace{5mm}
+\\ \vspace{5mm}
 Si vous êtes intéressé, le prototype se trouve ici dans le dernier \textbf{commit}:
 \href{https://github.com/Safecarlo/verificarlo/tree/vectorize-vprec}{vectorisation de vprec}.
-\vspace{5mm}
+\\ \vspace{5mm}
 Il faudrai créer des structures \textbf{binary32} et \textbf{binary64} pour les types
 vectorielles avec des macros ce que nous avons réussis à faire.
-\vspace{5mm}
+\\ \vspace{5mm}
 Ensuite pour toutes les opérations cité si dessus il faudrai testé:
 \begin{enumerate}
 \item si tout les éléments satisfont la condition
 \item si il y en a au moins un qui satisfait la condition
 \item si il n'y en a aucun.
 \end{enumerate}
-\vspace{5mm}
+\\ \vspace{5mm}
 Après avoir testé la condition il faudrai faire les opérations. Pour le cas
 où tous les éléments satisfont ou non la condition, nous pouvons vectorisé
 les opérations. Pour le cas où il y a au moins un (et pas tous) qui
 satisfait la condition il faudrai faire les opérations en sérialisé car le
 comportement ne sera pas le même pour tout les éléments du vecteur.
-\vspace{5mm}
+\\ \vspace{5mm}
 De plus pour testé si il a au moins un élément du vecteur qui satisfait la
 condition, il faudrai le testé en dernier, car nous ne voyons pas d'autres
 moyen que de testé séparement tous les éléments du tableaux pour le moment.
@@ -702,14 +695,14 @@ Nous n'avons pas eu le temps de vectorisé le \textbf{backend mca}.
 Pour l'instant seul les backends \textbf{ieee}, \textbf{vprec} et \textbf{mca} ont été
 modifié et implémentent les opérations vectorielles de façons
 scalaire ou vectorielles.
-\vspace{5mm}
+\\ \vspace{5mm}
 Pour les autres backends, la version scalaire n'est même pas
 implémentés.
-\vspace{5mm}
+\\ \vspace{5mm}
 Comme pour les opérations scalaires, nous avons ajoutés dans la
 fonctions d'initialisations des \textbf{probes} le fait de vérifier si au
 moins un \textbf{backend} utilisé implémente les opérations vectorielles.
-\vspace{5mm}
+\\ \vspace{5mm}
 Ceci bloque tout les backends qui ne les implémentent pas. Mais une
 sérialisation peut très vite être faites.
 \subsection{Compilation}
@@ -719,13 +712,13 @@ Etant donné que la vectorisation implique d'utilisé les jeux d'instrucions
 vectorielles il faut s'assurer que les fichiers qui doivent supporter la
 vectorisation sont compiler avec les drapeaux des jeux d'instuctions
 disponibles sur la machine.
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous avons donc décidé d'utilisé le drapeaux: \texttt{-march=native}, qui nous
 permet de mettre automatiquement les drapeaux des jeux d'instructions
 disponibles sur la machines.
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous l'avons rajouté pour la compilation des \textbf{wrappers} et des \textbf{backends}.
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous avons aussi décidé de ne pas mettre une règle pour activer ou non le
 drapeau, comme pour le drapeau \texttt{-Wall} dans le fichier de configuration de
 \textbf{autoconf}, car il nous le faut absolument pour pouvoir activer le support
@@ -738,7 +731,7 @@ des opérations vectorielles, sinon il utilise uniquement le jeu d'instruction
 Nous avons rencontrés plusieurs problèmes. La plupart ont pu être résolu mais
 il en reste un où nous n'avons pas réussis à corrigé. Il s'agit de
 l'optimisation de la vectorisation que permet \textbf{llvm}.
-\vspace{5mm}
+\\ \vspace{5mm}
 C'est-à-dire que si on compile un programme avec \textbf{clang} et que nous avons
 \textbf{uniquement} le jeu d'instruction vectorielle \textbf{sse} et que nous utilisons des
 vecteurs qui normallement représente des vecteurs \textbf{avx512} comme par exemple un
@@ -756,10 +749,10 @@ vecteur de 8 éléments double précision, clang reconnait que nous n'avons pas
 
 Ceci est le code que clang a généré pour notre vecteur \textbf{double8} sur une
 machine qui n'a que \textbf{sse}.
-\vspace{5mm}
+\\ \vspace{5mm}
 Le problème étant que aujourd'hui, \textbf{Verificarlo} ne détecte pas 4 opérations
 mais qu'une seule.
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous avons donc 2 hypothèses:
 \begin{itemize}
 \item soit la phase de la détection de jeu d'instruction et de réarrangement des
@@ -794,14 +787,14 @@ De plus durant notre exploration de \textbf{Verificarlo}, nous somme tombé sur 
 codes écrient en \textbf{c++} utilisant les librairies de \textbf{llvm} pour pouvoir
 capturer les opérations flottantes et changer ces opérations en appelant les
 \textbf{probes}.
-\vspace{5mm}
+\\ \vspace{5mm}
 Nous avons compris le principe du code ainsi que la partis déjà implémenté
 qui permet d'appeler les probes vectorielles. En effet un bout de codes
 permet rajouter dans le nom de la fonction à appeler, la taile du vecteur
 suivis d'un "x" pour signifié "fois". Cela ce fait en testant si le type est
 un type vectoriel et ensuite de récuperer la taille si c'est le cas et de
 vérifier si c'est une taille valide de vecteur.
-\vspace{5mm}
+\\ \vspace{5mm}
 Voici le bout de code en question:
 
 \begin{verbatim}
@@ -835,21 +828,21 @@ if (opType->isVectorTy()) {
 La vectorisation étant un thème que nous avons beaucoup abordé dans le cours
 \textbf{architecture paralèlle}, cela nous a permis de bien comprendre le sujet et
 d'essayer de venir à bout de cette partie.
-\vspace{5mm}
+\\ \vspace{5mm}
 Néanmoins il reste beaucoup de choses à accomplir comme le support des
 conditions (branchement) que nous n'avons absolument pas abordé que ce soit
 au niveau des tests ainsi qu'au niveau du support dans \textbf{Verificarlo}.
-\vspace{5mm}
+\\ \vspace{5mm}
 Récapitulatif de ce que nous avons fait:
 \begin{itemize}
 \item rendre les \textbf{probes vectorielles}
 \item implémentation des fonctions vectorielles dans les backends en mode
-scalaire (bitmask, cancellation, mca, mca\textsubscript{mpfr}, vprec)
+scalaire (bitmask, cancellation, mca, mca\_mpfr, vprec)
 \item implémentation des fonctions vectorielles dans les backends en mode
 vectoriel (ieee, vprec)
 \item compilation avec les jeux d'instructions disponible sur la machine de test
 \end{itemize}
-\vspace{5mm}
+\\ \vspace{5mm}
 Récapitulatif de ce qu'il nous reste à faire:
 \begin{itemize}
 \item faire les tests sur les branchements vectoriels
@@ -866,7 +859,7 @@ Pour les tests sur les \textbf{NAS}, cela pourrait être intéressant de tester 
 opérations vectorielles avec des communications MPI ou OpenMP car nous ferons
 moins de communications comparé à des opérations scalaire et donc les
 résultats devront normalement être au rendez vous.
-\vspace{5mm}
+\\ \vspace{5mm}
 Pour ce qui est de la comparaison entre l'implémentation des opérations
 vectorielles \textbf{avant} et \textbf{après} notre projet, nous devrions avoir des gains
 car nous faisons moins d'appelle de fonction et nous avons vectorisé les
@@ -879,7 +872,7 @@ Le projet nous a permis d'élargir nos connaissances sur les différents thèmes
 que nous avons vus dans nos cours de \textbf{Master}, comme la \textbf{vectorisation} et la
 \textbf{parallélisation}. Ainsi que d'autres thèmes comme la \textbf{compilation} avec le
 projet \textbf{llvm}.
-\vspace{5mm}
+\\ \vspace{5mm}
 De plus il nous a permis de pouvoir contribuer à un projet existant qui a une
 vocation à pourvoir contribuer au domaine du \textbf{HPC} ou du moins à avoir une
 première apporche sur le \textbf{calcul numérique} de par la spécificité de l'outil

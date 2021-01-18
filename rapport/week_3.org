@@ -1,0 +1,216 @@
+#+title: Semaine 3
+#+author: Safecarlo
+#+date: 2020
+
+* Correction wrapper
+** Exemple
+
+     #+BEGIN_SRC c
+#define define_2x_wrapper(precision, operation, operator)                 
+precision##2 _2x##precision##operation(precision##2 a, precision##2 b) {
+  precision##2 c;
+  c[0] = NAN;
+  c[1] = NAN;
+  ddebug(operator);                                                     
+  for (unsigned char i = 0; i < loaded_backends; i++) {                 
+    if (backends[i].interflop_##operation##_##precision##_##vector) {              
+      backends[i].interflop_##operation##_##precision##_##vector(2, a, b, c, context[i]);  
+    }                                                                   
+  }                                                                     
+  return c;                                                             
+}
+     #+END_SRC
+
+* Récapitulatif
+
+  Nous avons vectorisé les probes et les fonctions interfaces des
+  backends. Il ne nous manque plus qu'a vectorisé les petites
+  opération dans les backends.
+
+* ieee
+
+  Une idée pour vectorisé les opérations :
+
+#+begin_src c
+static void _interflop_add_float_vector(const int size, const float *a, const float *b, float *c,
+                                        void *context) {
+  switch (size) {
+    case 2:
+    c[0] = a[0] + b[0];
+    c[1] = a[1] + b[1];
+    debug_print_float(context, ARITHMETIC, "+", *(a + 0), *(b + 0), (c + 0));
+    debug_print_float(context, ARITHMETIC, "+", *(a + 1), *(b + 1), (c + 1));
+    case 4:
+    ...
+    case 8:
+    ...
+    case 16:
+    ...
+    default:
+      exit(1);
+  }
+}
+#+end_src
+
+* vprec
+** Petite opérations vectorielles
+
+  #+begin_src c
+/* perform_vector_bin_op: applies the binary operator (op) to vectors (a) and (b) */
+/* and stores the result in vecro (res) */
+#define perform_vector_binary_op(size, op, res, a, b)
+  switch (size) {
+  case 2:
+    perform_binary_op(op, res[0], a[0], b[0]);
+    perform_binary_op(op, res[1], a[1], b[1]);
+    break;
+  case 4:
+    perform_binary_op(op, res[0], a[0], b[0]);
+    perform_binary_op(op, res[1], a[1], b[1]);
+    perform_binary_op(op, res[2], a[2], b[2]);
+    perform_binary_op(op, res[3], a[3], b[3]);
+    break;
+  case 8:
+    perform_binary_op(op, res[0], a[0], b[0]);
+    perform_binary_op(op, res[1], a[1], b[1]);
+    perform_binary_op(op, res[2], a[2], b[2]);
+    perform_binary_op(op, res[3], a[3], b[3]);
+    perform_binary_op(op, res[4], a[4], b[4]);
+    perform_binary_op(op, res[5], a[5], b[5]);
+    perform_binary_op(op, res[6], a[6], b[6]);
+    perform_binary_op(op, res[7], a[7], b[7]);
+    break;
+  case 16:
+    perform_binary_op(op, res[0], a[0], b[0]);
+    perform_binary_op(op, res[1], a[1], b[1]);
+    perform_binary_op(op, res[2], a[2], b[2]);
+    perform_binary_op(op, res[3], a[3], b[3]);
+    perform_binary_op(op, res[4], a[4], b[4]);
+    perform_binary_op(op, res[5], a[5], b[5]);
+    perform_binary_op(op, res[6], a[6], b[6]);
+    perform_binary_op(op, res[7], a[7], b[7]);
+    perform_binary_op(op, res[8], a[8], b[8]);
+    perform_binary_op(op, res[9], a[9], b[9]);
+    perform_binary_op(op, res[10], a[10], b[10]);
+    perform_binary_op(op, res[11], a[11], b[11]);
+    perform_binary_op(op, res[12], a[12], b[12]);
+    perform_binary_op(op, res[13], a[13], b[13]);
+    perform_binary_op(op, res[14], a[14], b[14]);
+    perform_binary_op(op, res[15], a[15], b[15]);
+    break;
+  default:
+    logger_error("invalid size %d", size);
+  };
+  #+end_src
+
+  Ici *res*, *a* et *b* sont des vecteurs et ona choisis de
+  l'iplémenté comme ça car ca aidera le compilateur à utiliser les
+  registres vectorielles ainsi que les instructions vectorielles.
+
+** Créations des fonctions vectorielles qui gère l'ajout de bruit
+
+   Nous avons pas encore vectorisé cette partis.
+
+*** 32 bits
+
+    #+begin_src c
+// Round the float vector with the given precision
+static void _vprec_round_binary32_vector(int size , float *a, char is_input, void *context,
+					  int binary32_range, int binary32_precision) {
+  for (int i = 0; i < size; ++i) {
+    a[i] = _vprec_round_binary32(a[i], 1, context, binary32_range,
+				 binary32_precision);
+  }
+}
+    #+end_src
+    
+*** 64 bits
+
+    #+begin_src c
+// Round the double vector with the given precision
+static void _vprec_round_binary64_vector(int size , float *a, char is_input, void *context,
+					  int binary64_range, int binary64_precision) {
+  for (int i = 0; i < size; ++i) {
+    a[i] = _vprec_round_binary64(a[i], 1, context, binary64_range,
+				 binary64_precision);
+  }
+}
+    #+end_src
+
+** Création des fonctions vectorielles qui gére les opérations vectorielles
+*** 32 bits
+
+    #+begin_src c
+static inline void _vprec_binary32_vector_binary_op(int size, float *a, float *b,
+                                                    float *c,
+						    const vprec_operation op,
+						    void *context) {
+
+  if ((VPRECLIB_MODE == vprecmode_full) || (VPRECLIB_MODE == vprecmode_ib)) {
+    a = _vprec_round_binary32_vector(size, a, 1, context, VPRECLIB_BINARY32_RANGE,
+				     VPRECLIB_BINARY32_PRECISION);
+    b = _vprec_round_binary32_vector(size, b, 1, context, VPRECLIB_BINARY32_RANGE,
+				     VPRECLIB_BINARY32_PRECISION);
+  }
+
+  perform_vector_binary_op(size, op, c, a, b);
+
+  if ((VPRECLIB_MODE == vprecmode_full) || (VPRECLIB_MODE == vprecmode_ob)) {
+    c = _vprec_round_binary32_vector(size, c, 0, context, VPRECLIB_BINARY32_RANGE,
+				     VPRECLIB_BINARY32_PRECISION);
+  }
+
+  return res;
+}
+    #+end_src
+    
+*** 64 bits
+
+    #+begin_src c
+static inline void _vprec_binary64_vector_binary_op(int size, float *a, float *b,
+                                                    float *c,
+						    const vprec_operation op,
+						    void *context) {
+
+  if ((VPRECLIB_MODE == vprecmode_full) || (VPRECLIB_MODE == vprecmode_ib)) {
+    a = _vprec_round_binary64_vector(size, a, 1, context, VPRECLIB_BINARY64_RANGE,
+				     VPRECLIB_BINARY64_PRECISION);
+    b = _vprec_round_binary64_vector(size, b, 1, context, VPRECLIB_BINARY64_RANGE,
+				     VPRECLIB_BINARY64_PRECISION);
+  }
+
+  perform_vector_binary_op(size, op, c, a, b);
+
+  if ((VPRECLIB_MODE == vprecmode_full) || (VPRECLIB_MODE == vprecmode_ob)) {
+    c = _vprec_round_binary64_vector(size, c, 0, context, VPRECLIB_BINARY64_RANGE,
+                                     VPRECLIB_BINARY64_PRECISION);
+  }
+
+  return res;
+}
+    #+end_src
+
+** Changement dans les fonctions de l'interface
+
+   Voici 2 exemples, un pour chaque type :
+
+   #+begin_src c
+static void _interflop_sub_float_vector(int size, float *a, float *b, float *c, void *context) {
+    _vprec_binary32_vector_binary_op(size, a, b, c, vprec_sub, context);
+}
+
+static void _interflop_mul_double_vector(int size, double *a, double *b, double *c, void *context) {
+    _vprec_binary64_vector_binary_op(size, a, b, c, vprec_mul, context);
+}
+   #+end_src
+
+* mca
+
+  A faire
+* Question
+
+  - Par rapport a la finalité de la vectorisation, est-ce qu'il faut
+    déroulé les opérations d'un même types pour laissé le compilateur
+    revectorisé derrière ou il y a-t-il une meilleur solution ?
+  - Par rapport au fonction qui ajoute du bruit, si on opte pour cette
+    solution alors le code sera gigantesque

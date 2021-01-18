@@ -1,0 +1,148 @@
+#+title: Vectorisation
+#+author: Safecarlo
+#+date: 2020
+
+* Récapitulatif
+
+  - wrapper vectorielles en mode scalaire
+  - function vectorielles des backends ieee, vprec et mca en mode
+    scalaire
+  - check si un des backends implémenente les opération vectorielles
+    (dans le wrapper lui même et non dans le fonction d'init comme
+    pour les opérations scalaire)
+  - test le résultat pour toute les opérations pour toutes les tailles
+    de vecteur et pour les backends ieee, vprec et mca
+  - test si les wrappers vectorielles sont appelé
+  - test si les instruction et registres sont utilisé dans le code
+    assembleur des backends
+
+* Problèmes
+
+  - On a toujours le bug lorsque l'on veut initialisé les vecteurs
+    dynamiquement avec un ~strtod()~ pour les
+    vecteurs *AVX* et *AVX512*par exemple :
+    - supporte le faite d'avoir une seule opération vecorielles et
+      quelle soit connu statiquement sinon dans tout les autres cas
+      cela plante, c'est à dire :
+      
+#+begin_src c
+// Fonctionne
+double4 a = strtod(argv[1], NULL);
+double4 b = strtod(argv[2], NULL);
+double4 c = a + b;
+#+end_src
+
+#+begin_src c
+// Fonctionne
+double4 a = strtod(argv[1], NULL);
+double4 b = strtod(argv[2], NULL);
+double4 c = NAN;
+char op = argv[3][0];
+if (op == '+')
+  c = a + b;
+#+end_src
+
+#+begin_src c
+// Ne fonctionne pas
+double4 a = strtod(argv[1], NULL);
+double4 b = strtod(argv[2], NULL);
+double4 c = NAN;
+char op = argv[3][0];
+if (op == '+')
+  c = a + b;
+else
+  c = a - b;
+#+end_src
+
+  - Il faudrai déplacé le fait de vérifier si le backend implémente
+    l'opération vectorielle dans la fonction d'initialisation des
+    wrappers
+    - soit ajouter en brut sans condition la verification, au quel cas
+      cela impliquerai que tous les backends implémente les opérations
+      vectorielles
+    - soit ajouter une option ~--vector~ ou ~--inst-vector~ comme pour
+      ~--inst-cmp~ ou ~--inst-func~ pour pourvoir faire une condition
+      avec un ~#ifdef INST_FVECTOR~ mais on ne sait pas encore comment 
+      *Verificarlo* défini les constantes ~INST_FCMP~ mais on a vu
+      qu'il y avais un sorte de création de classe dans le fichier
+      ~libVFCinstrument.cpp~.
+
+  - Pour faire passé notre test qui vérifie que le code assembleurs
+    des backends utilise bien les instructions et registres
+    vectorielles on a besoin qu'il compile les backends avec l'option
+    ~-march=native~ or dans le fichier ~configure.ac~ nous avons
+    ajouté comme pour l'option ~-Wall~ un ~AC_ARG_ENABLE~ :
+
+#+begin_src asm
+AC_ARG_ENABLE(march=native, AC_HELP_STRING([--enable-march=native], [Enable -march=native compilation flag]), [MARCH_NATIVE_CFLAGS="yes"])
+AM_CONDITIONAL([MARCH_NATIVE_CFLAGS], [test "x$MARCH_NATIVE_CFLAGS" = "xyes"])
+if test "x$MARCH_NATIVE_CFLAGS" = "xyes"; then
+   AC_DEFINE([MARCH_NATIVE_CFLAGS], [],  ["Enable -march=native compilation flag"])
+   AC_MSG_NOTICE([-march=native is set])
+fi
+#+end_src
+
+    et dans le ~Makefile.am~ du backend ieee :
+
+#+begin_src asm
+if MARCH_NATIVE_CFLAGS
+libinterflop_ieee_la_CFLAGS += -march=native
+endif
+#+end_src
+
+    mais cela ne marche pas, il continu a utilisé les instruction *sse*
+    au lieu des instruction *avx*.
+
+    Nous avons mis ce bout de code dans le backend *ieee* pour gérer
+    les opérations vectorielles car il faut recasté dans le types
+    vectorielles de *clang* pour pouvoir effectuer l'opération
+    vectorielle:
+
+#+begin_src c
+#define define_vector_binary_operation(precision, size, op, a, b, c)	\
+  switch (size) {							\
+  case 2:								\
+    (*(precision##2 *)c) = (*(precision##2 *)a)				\
+      op (*(precision##2 *)b);						\
+    break;								\
+  case 4:								\
+    (*(precision##4 *)c) = (*(precision##4 *)a)				\
+      op (*(precision##4 *)b);						\
+    break;								\
+  case 8:								\
+    (*(precision##8 *)c) = (*(precision##8 *)a)				\
+      op (*(precision##8 *)b);						\
+    break;								\
+  case 16:								\
+    (*(precision##16 *)c) = (*(precision##16 *)a)			\
+      op (*(precision##16 *)b);						\
+    break;								\
+  default:								\
+    fprintf(stderr, "ERROR: Bad size %d\n", size);			\
+    break;								\
+  }
+#+end_src
+
+  et un exemple de fonction :
+
+#+begin_src c
+static void _interflop_add_float_vector(const int size, const float *a, const float *b,
+					float *c, void *context) {
+  define_vector_binary_operation(float, size, +, a, b, c);
+  for (int i = 0; i < size; ++i) {
+    debug_print_float(context, ARITHMETIC, "+", a[i], b[i], c[i]);
+  }
+}
+#+end_src
+
+  cela donne le bon résultat car notre test passe.
+* Question
+  
+  - Pour le rapport devons nous mettre que les points que nous avons
+    réussis à faire où bien tout ce qu'on a compris même si nous
+    n'avons pas réussis à le faire ?
+  - Pour la présentation j'avais pensé a faire des benchmark entre
+    deux code un qui n'utilise pas les opérations vectorielles et un
+    qui les utilise pour voir si on a gagné du temps (mais pour
+    l'instant ca tombe à l'eau car les opération vectorielles ne sont
+    pas complètement implémenté)

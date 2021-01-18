@@ -1,0 +1,524 @@
+#+title: Vectorisation
+#+author: Safecarlo
+#+date: 2020
+
+* wrapper
+** Probes
+
+   Ajout de l'affectation vectorielle à *NAN* au vecteur résultat :
+
+   #+begin_src c
+#define define_float_2x_wrapper(operation, operator)                 
+float2 _2xfloat##operation(float2 a, float2 b) {
+  float2 c;
+  c[0] = NAN;
+  c[1] = NAN;
+  ddebug(operator);                                                     
+  for (unsigned char i = 0; i < loaded_backends; i++) {                 
+    if (backends[i].interflop_##operation##_float_##vector) {              
+      backends[i].interflop_##operation##_float_##vector(2, a, b, c, context[i]);  
+    }                                                                   
+  }                                                                     
+  return c;                                                             
+}
+
+#define define_float_4x_wrapper(operation, operator)                 
+float4 _4xfloat##operation(float4 a, float4 b) {
+  float4 c;
+#ifdef __SSE__
+  c = _mm_set1_ps(NAN);
+#else
+  for (int i = 0; i < 4; ++i) {
+    c[i] = NAN;
+  }
+#endif
+  ddebug(operator);                                                     
+  for (unsigned char i = 0; i < loaded_backends; i++) {                 
+    if (backends[i].interflop_##operation##_float_##vector) {              
+      backends[i].interflop_##operation##_float_##vector(4, a, b, c, context[i]);  
+    }                                                                   
+  }                                                                     
+  return c;                                                             
+}
+   #+end_src
+
+** Check if at least one backend is load
+*** Define general function
+
+    #+begin_src c
+/* Checks that a least one of the loaded backend implements the chosen
+ * operation at a given precision for vector */
+#define check_backends_implements_vector(precision, operation)                 \
+  do {                                                                         \
+    int res = 0;                                                               \
+    for (unsigned char i = 0; i < loaded_backends; i++) {                      \
+      if (backends[i].interflop_##operation##_##precision##_##vector) {        \
+        res = 1;                                                               \
+        break;                                                                 \
+      }                                                                        \
+    }                                                                          \
+    if (res == 0)                                                              \
+      logger_error("No backend instruments " #operation " for " #precision     \
+                   ".\n"                                                       \
+                   "Include one backend in VFC_BACKENDS that provides it");    \
+  } while (0)
+    #+end_src
+
+*** Unroll all possibility
+
+    #+begin_src c
+  check_backends_implements_vector(float, add);
+  check_backends_implements_vector(float, sub);
+  check_backends_implements_vector(float, mul);
+  check_backends_implements_vector(float, div);
+  check_backends_implements_vector(double, add);
+  check_backends_implements_vector(double, sub);
+  check_backends_implements_vector(double, mul);
+  check_backends_implements_vector(double, div);
+#ifdef INST_FCMP
+  check_backends_implements_vector(float, cmp);
+  check_backends_implements_vector(double, cmp);
+#endif
+    #+end_src
+
+* vprec
+** Effectuer les opérations binaires en mode vectorielles
+*** Intrinsics
+
+    Pour vectorisé ces opérations, nous allons utilisé les *intrinsics
+    x86 d'intel* car c'est l'architecture la plus utilisé, et nous
+    allons prévoir une version scalaire pour les architectures que ne
+    supporte pas le *x86*.
+
+*** Flags
+
+    Différent flags de cpu existe pour savoir qu'elle registre et
+    instructions vectorielles sont sur le processeurs.
+
+    Par exemple :
+    
+    - *sse*    : instructions et registres 128 bits
+    - *avx*    : instructions et registres 256 bits
+    - *avx512* : instructions et registres 512 bits
+
+*** Constantes C
+
+    Dans le languages C, il existe des constantes pour savoir si
+    l'architecture utilisé supporte les différentes instructions
+    *sse*, *avx* et *avx512* tel que :
+
+    #+begin_src c
+#ifdef __SSE__
+// sse is availabe
+#else
+// sse is unavailable
+#endif
+    #+end_src
+
+    #+begin_src c
+#ifdef __AVX__
+// avx is availabe
+#else
+// avx is unavailable
+#endif
+    #+end_src
+
+    #+begin_src c
+#ifdef __AVX512__
+// avx512 is availabe
+#else
+// avx512 is unavailable
+#endif
+    #+end_src
+
+*** Nouvelles définintions
+
+    Nous avons du faire 2 vesrions pour les 2 functions en mode
+    scalaire et en mode vectorielle (pour limité les brachement), car
+    nous n'avaon pas pu mettre des *#ifdef* dans des macros c. Donc au
+    total il y a 4 fonction au lieu de 2.
+
+**** En mode scalaire
+***** float
+
+      #+begin_src c
+/* perform float vector operation in scalar mode */
+void perform_float_scalar_vector_binary_op(unsigned long long size, char op,
+					   float *res, float *a, float *b) {
+  switch (op) {
+  case '+':
+    for (int i = 0; i < size; ++i) {
+      res[i] = a[i] + b[i];
+    }
+    break;
+  case '*':
+    for (int i = 0; i < size; ++i) {
+      res[i] = a[i] * b[i];
+    }
+    break;
+  case '-':
+    for (int i = 0; i < size; ++i) {
+      res[i] = a[i] - b[i];
+    }
+    break;
+  case '/':
+    for (int i = 0; i < size; ++i) {
+      res[i] = a[i] / b[i];
+    }
+    break;
+  default:
+    fprintf(stderr, "invalid operator %c", op);
+    exit(EXIT_FAILURE);
+    break;
+  };
+}
+      #+end_src
+
+***** double
+
+      #+begin_src c
+/* perform double vector operation in scalar mode */
+void perform_double_scalar_vector_binary_op(unsigned long long size, char op,
+					    double *res, double *a, double *b) {
+  switch (op) {
+  case '+':
+    for (int i = 0; i < size; ++i) {
+      res[i] = a[i] + b[i];
+    }
+    break;
+  case '*':
+    for (int i = 0; i < size; ++i) {
+      res[i] = a[i] * b[i];
+    }
+    break;
+  case '-':
+    for (int i = 0; i < size; ++i) {
+      res[i] = a[i] - b[i];
+    }
+    break;
+  case '/':
+    for (int i = 0; i < size; ++i) {
+      res[i] = a[i] / b[i];
+    }
+    break;
+  default:
+    fprintf(stderr, "invalid operator %c", op);
+    exit(EXIT_FAILURE);
+    break;
+  };
+}
+      #+end_src
+
+**** En mode vectorielles
+***** float
+
+      #+begin_src c
+/* perform_float_vector_bin_op: applies the binary operator (op) to vectors (a) and (b) */
+/* and stores the result in vector (res) */
+void perform_float_vector_binary_op(unsigned long long size, char op,
+				    void *res, void *a, void *b) {
+  switch (size) {
+  case 2:
+    perform_float_scalar_vector_binary_op(size, op, res, a, b);
+    break;
+  case 4:
+#ifdef __SSE__
+    switch (op) {
+    case '+':
+      *(float4 *)res = (float4)_mm_add_ps(*(float4 *)a, *(float4 *)b);
+      break;
+    case '*':
+      *(float4 *)res = (float4)_mm_mul_ps(*(float4 *)a, *(float4 *)b);
+      break;
+    case '-':
+      *(float4 *)res = (float4)_mm_sub_ps(*(float4 *)a, *(float4 *)b);
+      break;
+    case '/':
+      *(float4 *)res = (float4)_mm_div_ps(*(float4 *)a, *(float4 *)b);
+      break;
+    default:
+      fprintf(stderr, "invalid operator %c for size %llu\n", op, size);
+      exit(EXIT_FAILURE);
+      break;
+    };
+#else
+    perform_float_scalar_vector_binary_op(size, op, res, a, b);
+    break;
+#endif
+  case 8:
+#ifdef __AVX__
+    switch (op) {
+    case '+':
+      *(float8 *)res = (float8)_mm256_add_ps(*(float8 *)a, *(float8 *)b);
+      break;
+    case '*':
+      *(float8 *)res = (float8)_mm256_mul_ps(*(float8 *)a, *(float8 *)b);
+      break;
+    case '-':
+      *(float8 *)res = (float8)_mm256_sub_ps(*(float8 *)a, *(float8 *)b);
+      break;
+    case '/':
+      *(float8 *)res = (float8)_mm256_div_ps(*(float8 *)a, *(float8 *)b);
+      break;
+    default:
+      fprintf(stderr, "invalid operator %c for size %llu\n", op, size);
+      exit(EXIT_FAILURE);
+      break;
+    };
+#else
+    perform_float_scalar_vector_binary_op(size, op, res, a, b);
+    break;
+#endif
+  case 16:
+#ifdef __AVX512__
+    switch (op) {
+    case '+':
+      *(float16 *)res = (float16)_mm512_add_ps(*(float16 *)a, *(float16 *)b);
+      break;
+    case '*':
+      *(float16 *)res = (float16)_mm512_mul_ps(*(float16 *)a, *(float16 *)b);
+      break;
+    case '-':
+      *(float16 *)res = (float16)_mm512_sub_ps(*(float16 *)a, *(float16 *)b);
+      break;
+    case '/':
+      *(float16 *)res = (float16)_mm512_div_ps(*(float16 *)a, *(float16 *)b);
+      break;
+    default:
+      fprintf(stderr, "invalid operator %c for size %llu\n", op, size);
+      exit(EXIT_FAILURE);
+      break;
+    };
+#else
+    perform_float_scalar_vector_binary_op(size, op, res, a, b);
+    break;
+#endif
+  default:
+    fprintf(stderr, "invalid size %llu\n", size);
+    exit(EXIT_FAILURE);
+    break;
+  };
+}
+      #+end_src
+
+***** double
+
+      #+begin_src c
+/* perform_double_vector_bin_op: applies the binary operator (op) to vectors (a) and (b) */
+/* and stores the result in vector (res) */
+void perform_double_vector_binary_op(unsigned long long size, char op,
+				    void *res, void *a, void *b) {
+  switch (size) {
+  case 2:
+#ifdef __SSE__
+    switch (op) {
+    case '+':
+      *(double2 *)res = (double2)_mm_add_ps(*(double2 *)a, *(double2 *)b);
+      break;
+    case '*':
+      *(double2 *)res = (double2)_mm_mul_ps(*(double2 *)a, *(double2 *)b);
+      break;
+    case '-':
+      *(double2 *)res = (double2)_mm_sub_ps(*(double2 *)a, *(double2 *)b);
+      break;
+    case '/':
+      *(double2 *)res = (double2)_mm_div_ps(*(double2 *)a, *(double2 *)b);
+      break;
+    default:
+      fprintf(stderr, "invalid operator %c for size %llu\n", op, size);
+      exit(EXIT_FAILURE);
+      break;
+    };
+#else
+    perform_double_scalar_vector_binary_op(size, op, res, a, b);
+    break;
+#endif
+  case 4:
+#ifdef __AVX__
+    switch (op) {
+    case '+':
+      *(double4 *)res = (double4)_mm256_add_ps(*(double4 *)a, *(double4 *)b);
+      break;
+    case '*':
+      *(double4 *)res = (double4)_mm256_mul_ps(*(double4 *)a, *(double4 *)b);
+      break;
+    case '-':
+      *(double4 *)res = (double4)_mm256_sub_ps(*(double4 *)a, *(double4 *)b);
+      break;
+    case '/':
+      *(double4 *)res = (double4)_mm256_div_ps(*(double4 *)a, *(double4 *)b);
+      break;
+    default:
+      fprintf(stderr, "invalid operator %c for size %llu\n", op, size);
+      exit(EXIT_FAILURE);
+      break;
+    };
+#else
+    perform_double_scalar_vector_binary_op(size, op, res, a, b);
+    break;
+#endif
+  case 8:
+#ifdef __AVX512__
+    switch (op) {
+    case '+':
+      *(double8 *)res = (double8)_mm512_add_ps(*(double8 *)a, *(double8 *)b);
+      break;
+    case '*':
+      *(double8 *)res = (double8)_mm512_mul_ps(*(double8 *)a, *(double8 *)b);
+      break;
+    case '-':
+      *(double8 *)res = (double8)_mm512_sub_ps(*(double8 *)a, *(double8 *)b);
+      break;
+    case '/':
+      *(double8 *)res = (double8)_mm512_div_ps(*(double8 *)a, *(double8 *)b);
+      break;
+    default:
+      fprintf(stderr, "invalid operator %c for size %llu\n", op, size);
+      exit(EXIT_FAILURE);
+      break;
+    };
+#else
+    perform_double_scalar_vector_binary_op(size, op, res, a, b);
+    break;
+#endif
+  case 16:
+    perform_double_scalar_vector_binary_op(size, op, res, a, b);
+    break;
+  default:
+    fprintf(stderr, "invalid size %llu\n", size);
+    exit(EXIT_FAILURE);
+    break;
+  };
+}
+      #+end_src
+** Test
+
+   Nous avons fait un programme test pour tester l'installation de
+   verificarlo qui se trouve dans le répertoire *tests/*.
+
+   Pour les test nous nous sommes grandement inspiré de ce qui a été
+   fait dans les tests suivant :
+
+   - test_vprec_backend_simple
+   - test_cancellation
+
+*** script
+
+    Un script simple qui test si les opérations vectorielles
+    fonctionnes et sinon appelles les fonctions scalaires.
+
+    Nous avons juste testé avec des valeurs simples c'est-à-dire que
+    *1.1* pour toutes les valerus d'entrés et nous testons pour les
+    *float* et les *double*.
+
+    Ensuite on compare la sorti avec le résultat attendu.
+
+    #+begin_src bash
+#!/bin/bash
+# Test the implementation of vector function in vprec backend
+
+bin=binary_compute_vprec_rounding
+
+# Compile test
+verificarlo-c -march=native compute_vprec_rounding.c -o $bin
+
+# Delete past result
+rm -Rf output_vprec.txt
+
+# Vector variable
+vec="1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1 1.1"
+
+# Run test
+touch output_vprec.txt
+export VFC_BACKENDS="libinterflop_vprec.so"
+for i in 2 4 8 16
+do
+    for type in float double
+    do
+    ./$bin $type "+" $i $vec >> output_vprec.txt
+    ./$bin $type "*" $i $vec >> output_vprec.txt
+    ./$bin $type "-" $i $vec >> output_vprec.txt
+    ./$bin $type "/" $i $vec >> output_vprec.txt
+    done
+done
+
+# Test if file is equal
+is_equal=$(diff -U 0 result.txt output_vprec.txt | grep ^@ | wc -l)
+
+# Print result
+echo $is_equal
+
+# Clean folder
+rm -Rf *~ *.o $bin
+
+# Exit
+if [ $is_equal == 0 ] ; then
+    exit 0;
+else
+    exit 1;
+fi
+    #+end_src
+*** main
+
+    #+begin_src c
+int main(int argc, char **argv) {
+
+  if (argc < 3) {
+    fprintf(stderr, "at least 3 arguments expected: type op size [list of member a] [list of member b]\n");
+    exit(EXIT_FAILURE);
+  }
+
+  char *precision = argv[1];
+  char op = argv[2][0];
+  unsigned long long size = strtoll(argv[3], NULL, 10);
+
+  if (strcmp(precision, "float") == 0) {
+    printf("%s %c %lld\n", precision, op, size);
+
+    float16 a;
+    float16 b;
+    float16 res;
+
+    for (unsigned long long i = 0; i < size; ++i) {
+      a[i] = strtof(argv[4 + i], NULL);
+    }
+
+    for (unsigned long long i = 0; i < size; ++i) {
+      b[i] = strtof(argv[4 + size + i], NULL);
+    }
+
+    perform_float_vector_binary_op(size, op, &res, &a, &b);
+
+    for (unsigned long long i = 0; i < size; ++i) {
+      printf("%f\n", res[i]);
+    }
+  }
+  else if (strcmp(precision, "double") == 0) {
+    printf("%s %c %lld\n", precision, op, size);
+
+    double16 a;
+    double16 b;
+    double16 res;
+
+    for (unsigned long long i = 0; i < size; ++i) {
+      a[i] = strtod(argv[4 + i], NULL);
+    }
+
+    for (unsigned long long i = 0; i < size; ++i) {
+      b[i] = strtod(argv[4 + size + i], NULL);
+    }
+
+    perform_double_vector_binary_op(size, op, &res, &a, &b);
+
+    for (unsigned long long i = 0; i < size; ++i) {
+      printf("%lf\n", res[i]);
+    }
+  }
+  else {
+    fprintf(stderr, "Bad type : float | double\n");
+    exit(EXIT_FAILURE);
+  }
+
+  return 0;
+}
+    #+end_src

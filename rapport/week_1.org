@@ -1,0 +1,450 @@
+#+title: Support de la vectorisation dans Verificarlo
+#+author: Safecarlo
+#+date: 2020
+
+* Verificarlo
+** Résumé
+* Support MPI / OpenMP
+* Vectorisation
+
+** Résumé des besoins
+
+Aujourd’hui "vfcinstrument" insert des probes, y compris pour les instruction vectorielles.
+
+Les probes sont des fonctions implémenté dans "vfcwrapper" qui
+est linker avec le programme par la partie compilation de veificarlo.
+
+Celle des instructions vectorielles:
+    - Ne supporte pas les vecteurs de 512 bits (256)
+    - defont le vecteur et appel les versions scalaires
+
+A l’execution le *wrapper* charge (load) les librairie dynamique (.so)
+correspondant au(x) *backend(s)* verificarlo utilisé (vprec, mca).
+
+** Définitions de certains termes technique
+
+*probes :* Les probes sont des fonctions implémenté dans "vfcwrapper" qui
+est linker avec le programme par la partie compilation de veificarlo.
+
+*backend :* Dans le cadre de verifcarlo, c'est la/les librairie dynamique qui seront appeler par wrapper dans les probes. Dans le cadre d'un compilateur c'est la derniere phase qui descend de la representation intermediaire vers le binaires (en general)
+
+*wrapper :* fonctions qui enveloppe l'appel à d'autres fonctions
+
+*link :* c'est la phase de compilation qui consiste a aller chercher toute les librairie externe appeler par l'application pour les lie au programe utilisateur afin de resoudre les reference non defini. 
+
+*sérialisation :* dans le contexte de l'utilisation de vecteur il s'agit d'executer en sequence les elements du vecteur
+
+** Objectifs
+   
+Les changements sont à faire dans les *wrappers* et les *backends*.
+
+   1. Support des vecteurs de 512 et 256 bits
+   2. Ajout de probes vectorielles appellant les fonctions de
+      *backend* vectorielles
+      - Ajout des fonctions dans l'interfaces (par pointeurs)
+   3. Implémenter ces fonctions pour chaque *backend*
+      - Faire une première implémentation sérialisé (dummy)
+   4. Implémenter la version vectorielle des opérations de base dans
+      le backends *vprec*
+      - Prendre en compte les cas spéciaux
+      - Tester la performance sur les NAS (mpi et openMP)
+   5. Pareil pour le *backend* *mca*
+
+** Wrapper
+*** Support des vecteurs 512 / 256 bits
+**** Première approche
+
+Nous avons remarqués que dans le fichier "src/vfcwrapper/main.c" il y
+avait différentes définitions pour les opération aritméthiques tel
+que:
+
+#+BEGIN_SRC c
+define_arithmetic_wrapper(float, add, +);
+define_arithmetic_wrapper(float, sub, -);
+define_arithmetic_wrapper(float, mul, *);
+define_arithmetic_wrapper(float, div, /);
+define_arithmetic_wrapper(double, add, +);
+define_arithmetic_wrapper(double, sub, -);
+define_arithmetic_wrapper(double, mul, *);
+define_arithmetic_wrapper(double, div, /);
+#+END_SRC
+
+Plus loin nous avons remarqué qu'on utilisais des vecteur d'une
+certaines tailles mais à ce moment on ne savait pas à quoi cela
+correspondait :
+
+#+BEGIN_SRC c
+#define define_2x_wrapper(precision, operation)                                \
+  precision##2 _2x##precision##operation(precision##2 a, precision##2 b) {     \
+    precision##2 c;                                                            \
+    c[0] = _##precision##operation(a[0], b[0]);                                \
+    c[1] = _##precision##operation(a[1], b[1]);                                \
+    return c;                                                                  \
+  }
+
+#define define_4x_wrapper(precision, operation)                                \
+  precision##4 _4x##precision##operation(precision##4 a, precision##4 b) {     \
+    precision##4 c;                                                            \
+    c[0] = _##precision##operation(a[0], b[0]);                                \
+    c[1] = _##precision##operation(a[1], b[1]);                                \
+    c[2] = _##precision##operation(a[2], b[2]);                                \
+    c[3] = _##precision##operation(a[3], b[3]);                                \
+    return c;                                                                  \
+  }
+#+END_SRC
+
+où bien :
+
+#+BEGIN_SRC c
+define_2x_wrapper(float, add);
+define_2x_wrapper(float, sub);
+define_2x_wrapper(float, mul);
+define_2x_wrapper(float, div);
+define_2x_wrapper(double, add);
+define_2x_wrapper(double, sub);
+define_2x_wrapper(double, mul);
+define_2x_wrapper(double, div);
+#+END_SRC
+
+Nous nous somme demander à quoi correspondait les valeurs. Dans un
+premier temps nous avons réfléchis et nous nous sommes dit que par
+exemple *define_2x_wrapper(float, add);* correspondait à un vecteur de
+2 float donc un vecteur de taille *2 x 32 = 64*.
+
+Sauf qu'avec ce raisonnement les vecteurs de tailles 256 et 512 était
+déjà implémenté.
+
+**** La solution
+
+En cherchant sur internet nous sommes tombé sur ce post
+[[https://stackoverflow.com/questions/38750994/what-is-ext-vector-type-and-simd][stackoverflow]] qui nous à ramener sur la doumentation sur les
+[[https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html][instructions vectorielles dans gcc]].
+
+Dans ce lien nous avons vu que gcc utilisais une fonction
+*vector_size(number)* qui prenait en paramètre un entier qui
+correspondait au nombre de *byte (octet)* du vecteur. 
+
+Or dans verificarlo on utilise une fonction
+*ext_vector_type(number)*. Dans le même post nous avons trouvé le lien
+pour la documentation de [[https://clang.llvm.org/docs/LanguageExtensions.html#vectors-and-extended-vectors][clang]] qui nous explique que cette fonction
+est la même que pour gcc sauf que *ext_vector_type(number)* ne prend
+pas un nombre de *bytes* mais un nombre d'éléments.
+
+**** Implémentation
+
+Il se trouve que l'implémentation est déjà faites. Mais elle appelle
+les probes scalaires.
+
+***** Définition des types
+
+#+BEGIN_SRC c
+typedef double double8 __attribute__((ext_vector_type(8)));
+typedef double double16 __attribute__((ext_vector_type(16)));
+typedef float float8 __attribute__((ext_vector_type(8)));
+typedef float float16 __attribute__((ext_vector_type(16)));
+typedef int int8 __attribute__((ext_vector_type(8)));
+typedef int int16 __attribute__((ext_vector_type(16)));
+#+END_SRC
+
+***** Opération
+
+****** Règles sur les opération
+
+La règles est simple : on applique la même opération avec la même
+opérations sur tous les éléments du vecteur.
+
+#+BEGIN_SRC c
+#define define_8x_wrapper(precision, operation)                                \
+  precision##8 _8x##precision##operation(precision##8 a, precision##8 b) {     \
+    precision##8 c;                                                            \
+    c[0] = _##precision##operation(a[0], b[0]);                                \
+    c[1] = _##precision##operation(a[1], b[1]);                                \
+    c[2] = _##precision##operation(a[2], b[2]);                                \
+    c[3] = _##precision##operation(a[3], b[3]);                                \
+    c[4] = _##precision##operation(a[4], b[4]);                                \
+    c[5] = _##precision##operation(a[5], b[5]);                                \
+    c[6] = _##precision##operation(a[6], b[6]);                                \
+    c[7] = _##precision##operation(a[7], b[7]);                                \
+    return c;                                                                  \
+  }
+
+#define define_16x_wrapper(precision, operation)                               \
+  precision##16 _16x##precision##operation(precision##16 a, precision##16 b) { \
+    precision##16 c;                                                           \
+    c[0] = _##precision##operation(a[0], b[0]);                                \
+    c[1] = _##precision##operation(a[1], b[1]);                                \
+    c[2] = _##precision##operation(a[2], b[2]);                                \
+    c[3] = _##precision##operation(a[3], b[3]);                                \
+    c[4] = _##precision##operation(a[4], b[4]);                                \
+    c[5] = _##precision##operation(a[5], b[5]);                                \
+    c[6] = _##precision##operation(a[6], b[6]);                                \
+    c[7] = _##precision##operation(a[7], b[7]);                                \
+    c[8] = _##precision##operation(a[8], b[8]);                                \
+    c[9] = _##precision##operation(a[9], b[9]);                                \
+    c[10] = _##precision##operation(a[10], b[10]);                             \
+    c[11] = _##precision##operation(a[11], b[11]);                             \
+    c[12] = _##precision##operation(a[12], b[12]);                             \
+    c[13] = _##precision##operation(a[13], b[13]);                             \
+    c[14] = _##precision##operation(a[14], b[14]);                             \
+    c[15] = _##precision##operation(a[15], b[15]);                             \
+    return c;                                                                  \
+  }
+#+END_SRC
+
+****** Arithmétique
+
+Types d'opération :
+- addition
+- soustraction
+- multiplication
+- division
+
+Types de vecteur :
+- 8 float
+- 8 double
+- 16 float
+- 16 double
+
+#+BEGIN_SRC c
+define_8x_wrapper(float, add);
+define_8x_wrapper(float, sub);
+define_8x_wrapper(float, mul);
+define_8x_wrapper(float, div);
+define_8x_wrapper(double, add);
+define_8x_wrapper(double, sub);
+define_8x_wrapper(double, mul);
+define_8x_wrapper(double, div);
+
+define_16x_wrapper(float, add);
+define_16x_wrapper(float, sub);
+define_16x_wrapper(float, mul);
+define_16x_wrapper(float, div);
+define_16x_wrapper(double, add);
+define_16x_wrapper(double, sub);
+define_16x_wrapper(double, mul);
+define_16x_wrapper(double, div);
+#+END_SRC
+
+Or un double fait 64 bits et *16 * 64 = 1024*.
+Peut-être qu'il y aun explication sur l'implémentation de ce dernier
+mais on ne sait pas.
+
+****** Comparaison
+
+#+BEGIN_SRC c
+int8 _8xdoublecmp(enum FCMP_PREDICATE p, double8 a, double8 b) {
+  int8 c;
+  c[0] = _doublecmp(p, a[0], b[0]);
+  c[1] = _doublecmp(p, a[1], b[1]);
+  c[2] = _doublecmp(p, a[2], b[2]);
+  c[3] = _doublecmp(p, a[3], b[3]);
+  c[4] = _doublecmp(p, a[4], b[4]);
+  c[5] = _doublecmp(p, a[5], b[5]);
+  c[6] = _doublecmp(p, a[6], b[6]);
+  c[7] = _doublecmp(p, a[7], b[7]);
+  return c;
+}
+
+int8 _8xfloatcmp(enum FCMP_PREDICATE p, float8 a, float8 b) {
+  int8 c;
+  c[0] = _floatcmp(p, a[0], b[0]);
+  c[1] = _floatcmp(p, a[1], b[1]);
+  c[2] = _floatcmp(p, a[2], b[2]);
+  c[3] = _floatcmp(p, a[3], b[3]);
+  c[4] = _floatcmp(p, a[4], b[4]);
+  c[5] = _floatcmp(p, a[5], b[5]);
+  c[6] = _floatcmp(p, a[6], b[6]);
+  c[7] = _floatcmp(p, a[7], b[7]);
+  return c;
+}
+
+int16 _16xfloatcmp(enum FCMP_PREDICATE p, float16 a, float16 b) {
+  int16 c;
+  c[0] = _floatcmp(p, a[0], b[0]);
+  c[1] = _floatcmp(p, a[1], b[1]);
+  c[2] = _floatcmp(p, a[2], b[2]);
+  c[3] = _floatcmp(p, a[3], b[3]);
+  c[4] = _floatcmp(p, a[4], b[4]);
+  c[5] = _floatcmp(p, a[5], b[5]);
+  c[6] = _floatcmp(p, a[6], b[6]);
+  c[7] = _floatcmp(p, a[7], b[7]);
+  c[8] = _floatcmp(p, a[8], b[8]);
+  c[9] = _floatcmp(p, a[9], b[9]);
+  c[10] = _floatcmp(p, a[10], b[10]);
+  c[11] = _floatcmp(p, a[11], b[11]);
+  c[12] = _floatcmp(p, a[12], b[12]);
+  c[13] = _floatcmp(p, a[13], b[13]);
+  c[14] = _floatcmp(p, a[14], b[14]);
+  c[15] = _floatcmp(p, a[15], b[15]);
+  return c;
+}
+#+END_SRC
+
+**** Réimplémentation vectorielles
+
+     Les probes vectorielles apelle les probes scalaires. Il
+     faut donc les refaire et apour ppeler les fonctions vectorielles de
+     l'interface comme décrit dans la prochaine section.
+
+     Un exemple :
+
+     #+BEGIN_SRC c
+     
+     #define define_2x_wrapper(precision, operation)                                \
+       precision##2 _2x##precision##operation(precision##2 a, precision##2 b) {     \
+         precision##2 c;                                                            \
+	 ddebug(operator);                                                          \
+	 for (unsigned char i = 0; i < loaded_backends; i++) {                      \
+	   if (backends[i].interflop_##operation##_##precision) {                   \
+	     interflop_##operation##_##precision##_##2x(a, b, c, context[i]);         \
+           }                                                                        \
+         }                                                                          \
+	 return c;                                                                  \
+     }
+     
+     #+END_SRC
+
+** Ajout des fonctions vectorielles dans l'interface
+
+Il faut d'abord identifier quelle est l'interface et où la trouver.
+On a facilement trouver où et comment la modifier. Le fichier se
+trouve dans *src/common/inteflop.h*.
+
+*** Strucure
+
+#+BEGIN_SRC c
+
+struct interflop_backend_interface_t {
+  void (*interflop_add_float)(float a, float b, float *c, void *context);
+  void (*interflop_sub_float)(float a, float b, float *c, void *context);
+  void (*interflop_mul_float)(float a, float b, float *c, void *context);
+  void (*interflop_div_float)(float a, float b, float *c, void *context);
+  void (*interflop_cmp_float)(enum FCMP_PREDICATE p, float a, float b, int *c,
+                              void *context);
+
+  void (*interflop_add_double)(double a, double b, double *c, void *context);
+  void (*interflop_sub_double)(double a, double b, double *c, void *context);
+  void (*interflop_mul_double)(double a, double b, double *c, void *context);
+  void (*interflop_div_double)(double a, double b, double *c, void *context);
+  void (*interflop_cmp_double)(enum FCMP_PREDICATE p, double a, double b,
+                               int *c, void *context);
+
+  void (*interflop_enter_function)(interflop_function_stack_t *stack,
+                                   void *context, int nb_args, va_list ap);
+
+  void (*interflop_exit_function)(interflop_function_stack_t *stack,
+                                  void *context, int nb_args, va_list ap);
+
+  /* interflop_finalize: called at the end of the instrumented program
+   * execution */
+  void (*interflop_finalize)(void *context);
+};
+
+#+END_SRC
+
+*** Ajout à faire
+
+Il faut donc ajouter dans cette strucure les fonction vectorielles des
+backends (pointeur de fonction).
+
+On peut par exemple faire la macro suivante :
+
+#+BEGIN_SRC c
+
+#define define_interflop_arithmetic_vector(precision, operation, size)
+  void (*interflop_##operation##_##precision##_##size##x)(const precision *a, const precision *b, precision *c, void *context);
+
+#+END_SRC
+
+Et ensuite dans la structure de l'interface faire appel à :
+
+#+BEGIN_SRC c
+
+define_interflop_arithmetic_vector(float, add, 2);
+define_interflop_arithmetic_vector(float, add, 4);
+define_interflop_arithmetic_vector(float, add, 8);
+define_interflop_arithmetic_vector(float, add, 16);
+
+#+END_SRC
+
+Pour les vecteur d'additions de float.
+Dans le wrapper on aura donc à appeler *interflop_add_float_2x* au
+lieu de faire appel au fonction scalaire des backends.
+
+** Fonctions vectorielles dans les *backends*
+
+*** Fonctions
+
+Dans tous les *backends* il faudra définir et implémenter ces
+fonctions dans des fonctions *static* comme pour les opérations
+arithmétiques comme par exemple :
+
+#+BEGIN_SRC c
+
+static void _interflop_add_float(const float a, const float b, float *c,
+                                 void *context) {
+  *c = a + b;
+  debug_print_float(context, ARITHMETIC, "+", a, b, *c);
+}
+
+static void _interflop_sub_float(const float a, const float b, float *c,
+                                 void *context) {
+  *c = a - b;
+  debug_print_float(context, ARITHMETIC, "-", a, b, *c);
+}
+
+#+END_SRC
+
+Par exemple on aura :
+
+#+BEGIN_SRC c
+
+static void _interflop_add_float_2x(const float2 a, const float2 b, float2 c,
+                                 void *context) {
+  c[0] = a[0] + b[0];
+  debug_print_float(context, ARITHMETIC, "+", a[0], b[0], c[0]);
+  c[1] = a[1] + b[1];
+  debug_print_float(context, ARITHMETIC, "+", a[1], b[1], c[1]);
+}
+
+#+END_SRC
+
+*** Interfaces internes des backends
+
+Et il faudra aussi ajouter dans la strucure du backend le pointeur de
+cette fonction à la ligne correspondante de la fonction générale
+*interflop_add_float_2x* qui se trouve dans *src/common/interflop.h*.
+
+Par exemple pour le backend *iee* :
+
+#+BEGIN_SRC c
+
+struct interflop_backend_interface_t interflop_backend_iee =  {
+  ...,
+  _interflop_add_float_2x,
+  ...
+};
+
+#+END_SRC
+** Schéma
+
+Voici un schéma qui explique les différents processus pour établir la
+vectorisations dans verificarlo :
+
+[[./scheme.png]]
+
+** Information
+
+   Nous avons encore rien coder pour cette partie.
+
+** Question
+
+   - Pour les tests devons-nous en faire comme ce qui est déjà fait
+     dans verificarlo, c'est-à-dire des test en *bash + c* ?
+   - Pouvez-vous nous réexpliquer les termes techniques tel que les
+     *wrappers* et les *backends* dans verificalo ?
+   - Pouvez vous nous dire si le schéma est correcte et si on a besoin
+     de faire des modification dans *vfcinstrument* car on a un peu
+     regardé son contenu, et c'est un peu compliqué. Normalement
+     d'après le schéma on devrait le modifier si jamais il n'appelle
+     pas les probes vectorielles.

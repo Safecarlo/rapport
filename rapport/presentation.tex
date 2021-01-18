@@ -5,6 +5,15 @@
 \usepackage{graphics}
 \usepackage{framed}
 \usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
 \usetheme{Warsaw}
 
 \title[Support pour Verificarlo]{Support de MPI/OpenMP et de la vectorisation dans Verificarlo}
@@ -31,71 +40,94 @@
   
 \end{frame}
 
-\begin{frame}{Benchmark}
+\begin{frame}{Changements aux niveaux des backends}
 
-  \begin{block}{Backends utilisés}
+  \begin{block}{Fonctions vectorielles en mode scalaire}
+    Tous les backends
+  \end{block}
+
+  \begin{block}{Fonctions vectorielles en mode vectoriel}
     \begin{itemize}
     \item ieee
     \item vprec
     \end{itemize}
   \end{block}
 
-  \begin{block}{Language}
-    Language C
-  \end{block}
-  
-  \begin{block}{Opérations testés:}
+\end{frame}
+
+\begin{frame}{Changements aux niveaux du backend vprec}
+
+  \begin{block}{Fonctionnement du backend}
     \begin{itemize}
-    \item r += v
-    \item r -= v
-    \item r *= v
-    \item r /= v
+    \item norme IEEE754
+    \item fonction de debug
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Opérande constantes}
+    \begin{itemize}
+    \item avertissement de clang sur les types des paramètres de fonction
+    \item ajout d'un pragma pour retirer l'avertissement
     \end{itemize}
   \end{block}
 
 \end{frame}
 
-\begin{frame}{Paramètre}
+\begin{frame}{Changements aux niveaux du backend vprec}
 
-  \begin{block}{Paramètre de la machine de test}
+  \begin{block}{Fonctionnement du backend}
     \begin{itemize}
-    \item OS: Linux Manjaro avec i3
-    \item Jeu d'instruction: SSE
-
+    \item nombres fini et infini
+    \item nombres normaux et dénormaux
     \end{itemize}
   \end{block}
 
-  \begin{block}{Paramètre du Benchmark}
+  \begin{figure}
+    \centering
+    \includegraphics[width=200px]{../ressources/IEEE754_simple_precision.png}
+    \caption{\label{fig:ieee_simple_precision}Représentation d'un nombre flottant simple précision}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}{Compilation}
+
+  \begin{block}{Ajout dans verificarlo}
+    Compilation des \textbf{wrappers} et des \textbf{backends} avec le drapeau
+    \textbf{-march=native}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}{Problèmes rencontrés}
+
+  \begin{block}{Types vectorielles}
+    Vecteur de 4 double précision
+  \end{block}
+
+  \begin{block}{Jeu d'instruction disponnible}
+    SSE
+  \end{block}
+
+  \begin{block}{Clang}
+    Utilise 4 addition vectoriel SSE
+  \end{block}
+
+  \begin{block}{Verificarlo}
     \begin{itemize}
-    \item Programme assigné au dernier coeur
-    \item Test les zones mémoires: caches + DRAM
-    \item Nombres d'itérations: 1000
-    \item Dérivation standard faible
+    \item Backend: vectorisé comme pour clang
+    \item Problème: vecteur passé par registre entre les modules
     \end{itemize}
   \end{block}
 
 \end{frame}
 
-\begin{frame}{Backend ieee}
+\begin{frame}{Conclusion}
 
-  \begin{center}
-    \begin{figure}
-      \includegraphics[scale=0.2]{../ressources/ieee_bw.png}
-      \caption{\label{fig:backend_ieee}Benchmark pour le backend ieee}
-    \end{figure}
-  \end{center}
-  
-\end{frame}
+  \begin{block}{Cours en relation}
+    Architecture Parallèle
+  \end{block}
 
-\begin{frame}{Backend vprec}
-
-  \begin{center}
-    \begin{figure}
-      \includegraphics[scale=0.2]{../ressources/vprec_bw.png}
-      \caption{\label{fig:backend_vprec}Benchmark pour le backend vprec}
-    \end{figure}
-  \end{center}
-  
 \end{frame}
 
 \end{document}

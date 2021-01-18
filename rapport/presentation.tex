@@ -39,7 +39,94 @@
   \textbf{1. Vectorisation dans le calcul scientifique}
   
 \end{frame}
+\begin{frame}{Vectorisation}
+\textbf{1.Introduction :}
+  \begin{itemize}
+        \item \textbf{Compilateur:} \textit{ Clang et gcc} 
+        \item \textbf{probleme:} \textit{ Etant donné que notre encadrant nous a dit que le support de
+gcc était éphémère dû à une dépendance avec fortran}
+         \item \textbf{solutions : } \textit{supporter les types vectoriels de clang et non pas ceux de gcc. }
+         \item \textbf{test: } \textit{ pour tester il faut bien configurer \textbf{verificarlo} avec \textbf {clang} pour le C et C++ avec la commande suivante : }
+         \end{itemize}
+         \begin{center}
+        \textbf{\color{blue} ./configure --without-flang CC=clang CXX=clang++ }      
+          \end{center}
+     
+    
+\end{frame}
 
+\begin{frame}{Vectorisation}
+\textbf{2.Tests :}
+  \begin{itemize}
+        \item\textit{ Suivre le fonctionnement de test que
+Verificarlo a commencé à implémenter. } 
+         \item\textit{Nous avont testé si les résultats obtenus lors de la compilation et de l’exécution sont exactes.} 
+        
+         \item \textit{Les tests sont principale-
+ment écrient en bash, avec un code de test écris en c et un code python}  
+         \item \textit{Les tests se trouvent dans
+le répertoire \textbf{ tests/test-vector-instrumentation/}.} 
+         \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Vectorisation}
+\textbf{2.Tests :}
+  \begin{itemize}
+        \item\textit{Donc en genéral nous avons effectué des tests sur les operations arithmetique vectorielles avec les jeux d'instruction sse ,avx et avx512, et s'assurer du bon fonctionnement. } 
+         \item\textit{Nous avont testé si les résultats obtenus lors de la compilation et de l’exécution sont exactes.} 
+        
+         \item \textit{Nous avos efféctué trois sous tests : le bon resultat des opérations vectorielles ,l'appel aux probes vectorielles et l'utilisation des jeux d'instructions vectorielles .}  
+         
+         \end{itemize}
+         \end{frame}
+\begin{frame}{Vectorisation}         
+\textbf{2.1:le bon resultat des opérations vectorielles}
+  \begin{itemize}
+        \item\textit{Dans ce cas nous avons testé sur les differents backends, les differentes operation vectorielles avec les vecteurs de taille differente sur les précisions qu'on a choisit (float et double);
+        et on a deduit que les résultats retournés sont vrai
+        } 
+        \end{itemize}
+\end{frame}
+
+\begin{frame}{Vectorisation}         
+\textbf{2.2:l'appel des probes vectorielles}
+  \begin{itemize}
+        \item\textit{Nous avons généré le fichier intermédiaire pendant la compilation avec la commande : \textbf{\color{blue} –save-temps }
+        \item\textit{une foit le fichier généré , on remarque que on a effectivement fait appel à notre probe vectorielle}
+        
+        } 
+        \end{itemize}
+        
+\end{frame}
+
+\begin{frame}{Vectorisation}         
+\textbf{2.3:Utilisation des jeux d’instructions vectorielles}
+  \begin{itemize}
+     \item\textit{Dans verificarle, les instructions vectorielles pour les opérations arithmetiques sont présentées par la concaténation suivante :operation##vectoriel##précision } 
+      \item\textit{elle s'utilise sur les registres \textbf{xmm,ymm,zmm } associés respectivement au jeux d'instructions \textbf{sse,avx,avx512} } 
+      \textit{si on prend comme exemple : \textbf{mulps} avec un registre \textbf{xmm} c'est une instruction vectorisée} 
+   \end{itemize}
+\end{frame}
+
+\begin{frame}{Vectorisation}         
+
+  \begin{itemize}
+   \item\textit{les vecteurs 256 et 512 bits sont déja inclus et supportés} 
+   \item\textit{Dans la premieres version de verificarlo , les probes vecctorielles sont implémentées mais elles appelent toujours la version scalaire.donc de notre coté on a rajouté des fonction vectorielles dans les backends que nous avont appelé à partir des wrappers dans les probes,dans le fichier \textbf{src/vfcwrapper/main.c} } 
+   \end{itemize}
+\end{frame}
+
+\begin{frame}{Vectorisation}         
+
+  \begin{itemize}
+  \item\textit{ensuite il faut ajouter les fonctions vectorielles dans l'interface qui se trouve dans le fichier \textbf{src/common/interflop.h}} 
+ \item\textit{Nous avons cherché et tésté comment minimiser le nombre des fonction ,donc la meilleur solution q'uon a trouvé est de mettre la taille des vecteur en paramétre; ca nous a minimisé le nombre à 8 fonctions vectorielles en tout}
+ \item\textit{Comme nous passons la taille en argument, il faudra tester la taille pour permettre à clang d’effectuer une opération vectorielle en changeant le type de notre tableau dans le bon type vectorielles de clang.}
+ 
+ \item\textit{De plus nous avons déplacés la définitions des types vectorielles dans le fichier src/common/inteflop.h .}
+   \end{itemize}
+\end{frame}
 \begin{frame}{Changements aux niveaux des backends}
 
   \begin{block}{Fonctions vectorielles en mode scalaire}

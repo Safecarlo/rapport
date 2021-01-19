@@ -1,0 +1,100 @@
+
+* Récapitulatif
+
+  Pour récapituler un peu ce qui à été dis, nous avons vu le fonctionnement de
+  verificarlo. Il intercepte les opérations flottante et les remplaces par
+  l'appel aux probes dans les wrapper.
+
+  Comme ali l'a dis, la prise en charges des opérations vectorielles ce faisait
+  dans les wrappers car les probes vectorielles appelait les probes scalaires en
+  les appelant élément par élément ce qui n'est pas vectorisé et donc entraîne
+  une baisse des performances. Donc nous avons changes les probes vectorielles
+  pour quelles appeles les fonctions vectorielles des backends qu'il faudra
+  créer.
+
+  Le fait d'appeler des fonctions vectorielles des backends au lieu de gérer les
+  opérations vectorielles dans les wrappers permet de pouvoir apporté une
+  spécificité aux opérations.
+
+* Changement au niveaux des backends
+
+  Aujourd'hui Verificarlo implémente 6 backends. Tous ces backends implémente au
+  moins la vesrion les fonctions vectorielles en mode scalaire qui est le mode
+  par défaut. Elles sont en mode scalaire car elles effectuent les opérations du
+  backend élément par élément.
+
+  Nous avons réussis à vectorisé les opérations pour les backends ieee et vprec.
+
+* Changement au niveaux du backends ieee
+
+  Le backend ieee prend tout simplement charge l'opérations flottantes en suivant
+  la norme IEEE754, c'est-à-dire qu'il ne modifie pas le résultat.
+
+  De plus, il ajoute une fonction de debug de l'opération effectué.
+
+  Il s'uffisait de faire une opération comme pour les types flottant de base du
+  language pour vectorisé le backend.
+
+  Pour la fonction de debug, on ne peut pas la vectorisé car elle est
+  essentiellement composé de sortie.
+
+  Sinon nous avions un avertissement du compilateur car les types dans les
+  paramètres des fonctions car nous avons mis des opérandes constantes. On a
+  retiré l'avertissement avec un pragma.
+
+* Changement au niveaux du backends vprec
+
+  Pour la backend vprec, il permet de changer la taille de l'exposant et de la
+  mantisse. Ainsi que de gérer les nombres dénormaux. Les nombres dénormaux sont
+  des nombres avec un exposant nulle. 
+
+  De plus comme nous pouvont diminuer la taille de l'exposant et de la
+  mantisse. Il faut donc vérifier que le résultat ainsi que les opérandes ne
+  dépasse pas le nombre maximum que l'on peut représenté. Si il le dépasse on
+  dira que le nombre est infini.
+
+  Pour l'instant les fonctions vectorielles ne vectorisent que l'opérations
+  flotnte à effectuer. Mais ne vectorise pas les parties qui gère les nombres
+  infinies et dénormaux.
+
+* Compilation
+
+  Pour activer la vectorisation dans verificarlo il fallais compiler les
+  différent fichier qui implémentait la vectorisation avec les drapeaux des jeux
+  d'instructions disponnibles sur la machine et on a betement mis le drapeau
+  =-march=native= qui les activent automatiquement.
+
+* Problème rencontré
+
+   Nous avons rencontré un problème pendant un bon mois. 
+
+   Par exemple penons une machine qui n'a que les jeux d'instruction SSE.
+   Quand nous compilons un programme avec des vecteur de 4 doubles avec clang
+   nous obttenons 2 instructions SSE. Ce qui est normal car un registre xmm fait
+   128 bits et 4 doubles font 256 bits.
+
+   Pour verificarlo, dans les backends vectorisé cela fait la même chose. Et
+   toutes l'instumentations est bonnes. Mais au niveaux des wrappers nos
+   opérandes n'avais pas les bonnes valeurs.
+
+   Du coup on en a conclu que le problème venait du fait que nous compilions
+   différent modules de verificarlo séparément et que clang passait les vecteur
+   par registre sans vérifier la taille du vecteur et donc passait a notre
+   wrapper la partie basse du registre c'est à dire le registre xmm.
+
+   Cela est un peu embêtant car nous voulions que verificarlo est le même
+   comportement que clang, or il ne l'a pas pour le moment.
+
+* Conclusion
+
+  Pour la partie vectorisation, nous avons fait un test pour les opérations
+  arithmétiques vectorielles simple. Nous n'avons pas testé les banchment ni les
+  spécificité de tout les backends.
+
+  Pour les backends vectorisés, nous devions vectorisé le backends vprec et
+  mca. Comme nous avons vu le backends vprec est entrain d'être vectorisé et le
+  backend mca pas encore.
+
+  Pour finir ce projet nous a permis d'étendre nos connaissances que nous avons
+  vu dans le cours d'Architecture Parallèle pour la Vectorisation et la
+  Parallélisation.

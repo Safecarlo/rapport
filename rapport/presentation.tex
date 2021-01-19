@@ -177,7 +177,7 @@ Verificarlo a commencé à implémenter. }
         \end{itemize}   
 \end{block}
 \begin{block}{exemple}
- \centering\includegraphics[scale=1.0]{../ressources/bon_resultat.png}
+ \centering\includegraphics[scale=1.0]{../resources/bon_resultat.png}
 \end{block}
 \end{frame}
 
@@ -191,7 +191,7 @@ Verificarlo a commencé à implémenter. }
         \end{itemize}
 \end{block}
 \begin{block}{exemple}
-  \centering\includegraphics[scale=0.5]{../ressources/appel_des_fonction.png}
+  \centering\includegraphics[scale=0.5]{../resources/appel_des_fonction.png}
 \end{block}
 
 
@@ -209,7 +209,7 @@ Verificarlo a commencé à implémenter. }
    \end{itemize}
   \end{block}
   \begin{block}{exemple}
-  \centering\includegraphics[scale=0.4]{../ressources/ajout_instructions.png}
+  \centering\includegraphics[scale=0.4]{../resources/ajout_instructions.png}
 \end{block}
  \end{frame}
 
@@ -223,16 +223,17 @@ Verificarlo a commencé à implémenter. }
 \begin{block}{Ajout des probes vectorielles}
     \begin{itemize}
     \item\textit{les probes vectorielles sont implémentées avec la version scalaire.}
+    \item\textit{ajout des fonctions vectorielles pour toutes les operations et mettre la taille des vecteur en paramétre dans les backends}
     \item\textit{Appel des fonction vectorielles des backends dans: \textbf{src/vfcwrapper/main.c} } 
    \end{itemize}  
 \end{block}
  \end{frame}
 
 \begin{frame}{Vectorisation}         
-\begin{block}{Ajout des fonctions vectorielles dans l’interface}
+\begin{block}{Ajout des fonctions vectorielles des backends dans l’interface}
   \begin{itemize}
-  \item\textit{ajouter les fonctions vectorielles dans l'interface qui se trouve dans le fichier \textbf{src/common/interflop.h}} 
- \item\textit{mettre la taille des vecteur en paramétre dans les fonctions vectorielles}
+  \item\textit{ajouter dans l'interface qui se trouve dans le fichier \textbf{src/common/interflop.h}} 
+ 
  \item\textit{Comme nous passons la taille en argument, il faudra tester la taille pour permettre à clang d’effectuer une opération vectorielle en changeant le type de notre tableau dans le bon type vectorielles de clang.}
  \item\textit{changer le type vectorielles en son pointeur sur sa précision.}
  \item\textit{Deplacer la définitions des types vectorielles dans le fichier src/common/inteflop.h .}

@@ -30,15 +30,99 @@
 \maketitle
 
 \begin{frame}{Verificarlo}
-
-  \begin{itemize}
-  \item Compilateur: \textbf{ Clang et llvm} 
-  \item Domaine d'utilisation: \textbf{ Instrumentation des opérations flottantes}
-  \end{itemize}
-  
-  \textbf{1. Vectorisation dans le calcul scientifique}
-  
+    \begin{block}{Compilateur de base pour verificarlo}
+      \begin{itemize}
+          \item CLANG
+          \item LLVM
+      \end{itemize}
+    \end{block}
+  \begin{block}{Domaine d'utilisation de verificarlo}
+    Verificarlo permet par instrumentation des opérations flottantes, de pouvoir déboguer les erreurs, dû à la précision machine.
+  \end{block}
+  \begin{block}{Vectorisation dans le calcul scientifique}
+    Jeux d'instruction 
+        \begin{itemize}
+            \item 128 = sse
+            \item 256 = avx
+            \item 512 = avx512
+        \end{itemize}
+  \end{block}
 \end{frame}
+
+\begin{frame}{Verificarlo}
+    \begin{block}{Compilation}
+      \begin{figure}
+          \centering
+          \includegraphics[width=6cm,height=4cm]{../ressources/compilation.png}
+          \caption{Fonctionnement de base d'un compilateur}
+          \label{fig:my_label}
+      \end{figure}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Verificarlo}
+    \begin{block}{Compilation pour verificarlo}
+      \begin{figure}
+          \centering
+          \includegraphics[width=6cm,height=6cm]{../ressources/verificarlo_works.png}
+          \caption{Fonctionnement de verificarlo}
+          \label{fig:my_label}
+      \end{figure}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Définition de certains termes techniques}
+      \begin{itemize}
+          \item probes : Les probes sont des fonctions implémenté dans vfcwrapper qui est linker avec le programme par la partie compilation de verificarlo.
+          \item backend : Dans le cadre de verifcarlo, c’est la/les librairie(s) dynamique(s) qui seront appelées par le wrapper dans les probes. Dans le cadre d’un compilateur c’est la derniere phase qui descend de la représentation intermédiaire vers le binaires
+          \item wrapper : Ce sont des fonctions qui enveloppent l’appel à d’autres fonctions.
+          \item link : Il s’agit de la phase de compilation qui consiste à aller chercher toute les librairies externes appelé par l’application pour les liées au programme utilisateur afin de résoudre les références non défini.
+          \item sérialisation : Dans le contexte de l’utilisation de vecteur il s’agit d’exécuter en séquence les éléments du vecteur.
+      \end{itemize}
+\end{frame}
+
+\begin{frame}{Support MPI/openMP}
+    \begin{block}{Notion indispensable pour le parallélisme}
+      \begin{itemize}
+          \item Système à mémoire partage
+            \begin{itemize}
+                \item SMP
+                \item NUMA
+            \end{itemize}
+          \item Système à mémoire distribuée
+          \item Thread ou flot d'exécution
+          \item Processus
+          \Calcul parallèle
+      \end{itemize}
+    \end{block}
+    
+    \begin{block}{Présentation d'open MPI}
+      \begin{itemize}
+          \item Installation : source: https://www.open-mpi.org/software/ompi/v4.1/
+          \item Configuration : ./configure --prefix='/chemin/bin'
+          \item Compilation : \textbf{make}
+          \item Installation : \textbf{sudo make install}
+          \item Préparation de l'environnement : 
+      \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Présentation d'open MPI}
+    \begin{block}{Description de communication dans Open MPI}
+      \begin{itemize}
+          \item l’environnement d’exécution
+          \item les communication point à point
+          \item les communication collectives
+          \item les groupes de processus
+          \item les topologies de processus
+      \end{itemize}
+    \end{block}
+    
+    \begin{block}{Compilation d’un programme parallèle avec verificarlo}
+      \textbf{CC=OMPI\_CC=verificarlo mpicc}
+    \end{block}
+\end{frame}
+
 \begin{frame}{Vectorisation}
 \textbf{1.Introduction :}
   \begin{itemize}

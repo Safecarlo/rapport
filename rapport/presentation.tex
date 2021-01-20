@@ -5,6 +5,7 @@
 \usepackage{graphics}
 \usepackage{framed}
 \usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage{grffile}
 \usepackage{longtable}
 \usepackage{wrapfig}
@@ -82,127 +83,28 @@
 \end{frame}
 
 \begin{frame}{Vectorisation}
-\begin{block}{Introduction }
-    \begin{itemize}
-        \item \textbf{Compilateurs:} \textit{ Clang et gcc} 
-        \item \textbf{probleme:} \textit{  le support de
-gcc était éphémère dû à une dépendance avec fortran qui vas étre enlevé dans le futur}
-         \item \textbf{solutions : } \textit{supporter les types vectoriels de \textbf{clang} }
-         \item \textbf{test: } \textit{ configurer \textbf{verificarlo} avec \textbf {clang} pour le C et C++ avec la commande suivante : }
-         \end{itemize}
-         \begin{center}
-        \textbf{\color{blue} ./configure --without-flang CC=clang CXX=clang++ }      
-          \end{center}
-  \end{block}
-\end{frame}
-
-\begin{frame}{Vectorisation}
-\begin{block}{Tests}
-    \begin{itemize}
-        \item\textit{ Suivre le fonctionnement de test que
-Verificarlo a commencé à implémenter. } 
-         \item \textit{Les tests sont principalement écrient en bash, avec un code de test écris en c et un code python}  
-          
-         \end{itemize}  
-\end{block}
-\end{frame}
-
-
-\begin{frame}{Vectorisation}
-\begin{block}{Tests}
-      \begin{itemize}
-        \item\textit{Donc en genéral nous avons effectué des tests sur les operations arithmetique vectorielles avec les jeux d'instruction sse ,avx et avx512, et s'assurer du bon fonctionnement } 
-         
-        \item \textit{Nous avons efféctué trois sous tests pour s'assurer du bon fonctionnement.}   
-         
-         \end{itemize}
-\end{block}
-\end{frame}
-
-
-\begin{frame}{Vectorisation} 
-\begin{block}{sous test 1 / : le bon resultat des opérations vectorielles}
- \begin{itemize}
-        \item\textit{Dans ce cas nous avons testé sur les differents backends, les differentes operations, avec les vecteurs de taille differente sur les précisions qu'on a choisit (float et double);
-        et on a deduit que les résultats retournés sont vrai
-        } 
-        \end{itemize}   
-\end{block}
-\begin{block}{exemple}
- \centering\includegraphics[scale=1.0]{../ressources/bon_resultat.png}
-\end{block}
-\end{frame}
-
-\begin{frame}{Vectorisation}
-\begin{block}{sous test 2 / : l'appel des probes vectorielles}
-\begin{itemize}
-        \item\textit {Nous avons généré le fichier intermédiaire pendant la compilation avec la commande : \textbf{\color{blue} –save-temps }
-        \item\textit{une foit le fichier généré , on remarque que on a effectivement fait appel à notre probe vectorielle}} 
-        
-
-        \end{itemize}
-\end{block}
-\begin{block}{exemple}
-  \centering\includegraphics[scale=0.5]{../ressources/appel_des_fonction.png}
-\end{block}
-
-
-  
-        
-\end{frame}
-
-\begin{frame}{Vectorisation}   
-
-\begin{block}{sous test3 / :Utilisation des jeux d’instructions vectorielles}
-     \begin{itemize}
-     \item\textit{Dans verificarle, les instructions vectorielles pour les opérations arithmetiques sont présentées par la concaténation de  : operation,vectoriel,précision } 
-      \item\textit{elle s'utilise sur les registres \textbf{xmm,ymm,zmm } associés respectivement au jeux d'instructions \textbf{sse,avx,avx512} } 
-      
-   \end{itemize}
-  \end{block}
-  \begin{block}{exemple}
-  \centering\includegraphics[scale=0.4]{../ressources/ajout_instructions.png}
-\end{block}
- \end{frame}
-
-\begin{frame}{Vectorisation}         
-\begin{block}{support des vecteurs 512/256 bits}
-     \begin{itemize}
-         \item les vecteurs 256 et 512 bits sont déja inclus et supportés
-     \end{itemize}
-     
-\end{block}
-\begin{block}{Ajout des probes vectorielles}
-    \begin{itemize}
-    \item\textit{les probes vectorielles sont implémentées avec la version scalaire.}
-    \item\textit{ajout des fonctions vectorielles pour toutes les operations et mettre la taille des vecteur en paramétre dans les backends}
-    \item\textit{Appel des fonction vectorielles des backends dans: \textbf{src/vfcwrapper/main.c} } 
-   \end{itemize}  
-\end{block}
- \end{frame}
-
-\begin{frame}{Vectorisation}         
-\begin{block}{Ajout des fonctions vectorielles des backends dans l’interface}
-  \begin{itemize}
-  \item\textit{ajouter dans l'interface qui se trouve dans le fichier \textbf{src/common/interflop.h}} 
- 
- \item\textit{Comme nous passons la taille en argument, il faudra tester la taille pour permettre à clang d’effectuer une opération vectorielle en changeant le type de notre tableau dans le bon type vectorielles de clang.}
- \item\textit{changer le type vectorielles en son pointeur sur sa précision.}
- \item\textit{Deplacer la définitions des types vectorielles dans le fichier src/common/inteflop.h .}
-   \end{itemize}
-    
-\end{block}
-\end{frame}
-
-\begin{frame}{Vectorisation}
-    \begin{block}{Récapitulatif}
-      \begin{figure}
+  \begin{block}{Compilation}
+    \begin{columns}[T]
+      \begin{column}{.5\textwidth}
+        \begin{center}
+          \begin{figure}
+            \centering
+            \includegraphics[scale=0.4]{../ressources/compilation.png}
+            \caption{Fonctionnement de base d'un compilateur}
+            \label{fig:compilateur}
+          \end{figure}
+        \end{center}
+      \end{column}
+      \begin{column}{.5\textwidth}
+        \begin{figure}
           \centering
           \includegraphics[scale=0.3]{../ressources/verificarlo_works.png}
           \caption{Fonctionnement de verificarlo}
           \label{fig:fonctionnement_verificarlo}
-      \end{figure}
-    \end{block}
+        \end{figure}
+      \end{column}
+    \end{columns}
+  \end{block}
 \end{frame}
 
 \begin{frame}{Changements aux niveaux des backends}
@@ -249,7 +151,7 @@ Verificarlo a commencé à implémenter. }
 
   \begin{block}{Fonctionnement du backend}
     \begin{itemize}
-    \item nombres fini et infini
+    \item nombres finis et infinis
     \item nombres normaux et dénormaux
     \end{itemize}
   \end{block}
@@ -272,36 +174,39 @@ Verificarlo a commencé à implémenter. }
   \end{block}
 
   \begin{block}{Avantage}
-    Détection automatique des jeux d'instructions disponnibles
+    Détection automatique des jeux d'instructions disponibles
   \end{block}
 
 
 \end{frame}
 
-\begin{frame}{Problèmes rencontrés}
+\begin{frame}{Test}
 
-  \begin{block}{Jeu d'instruction disponnible}
-    SSE
-  \end{block}
-
-  \begin{block}{Types vectorielles}
-    Vecteur de 4 double précision = 256 bits
-  \end{block}
-
-  \begin{block}{Clang}
-    Utilise 4 addition vectoriel SSE
-  \end{block}
-
-  \begin{block}{Verificarlo}
+  \begin{block}{Languages}
     \begin{itemize}
-    \item Backend: vectorisé comme pour clang
-    \item Problème: vecteur passé par registre entre les modules
+    \item bash (script de test)
+    \item c (programme principale)
+    \item python
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{3 chose à faire}
+    \begin{itemize}
+    \item tester le résultat
+    \item vérifier l'appel aux probes vectorielles
+    \item vérifier les jeux d'instruction utilisé dans les backends
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Test}
+    \begin{itemize}
+    \item opérations arithmétiques vectorielles
     \end{itemize}
   \end{block}
 
 \end{frame}
 
-\begin{frame}{Conclusion}
+\begin{frame}{Conclusion de la Vectorisation}
 
   \begin{block}{Fait}
     \begin{itemize}
@@ -316,15 +221,27 @@ Verificarlo a commencé à implémenter. }
     \begin{itemize}
     \item test des conditions vectorielles
     \item test des opérations vectorielles spécifique aux backends
-    \item vectorisé les backends manquants
+    \item vectoriser les backends manquants
     \item test des performances
     \end{itemize}
   \end{alertblock}
 
+\end{frame}
+
+\begin{frame}{Conclusion}
+
+  \begin{block}{Domaine étudié}
+    \begin{itemize}
+    \item Parallélisation
+    \item Vectorisation
+    \end{itemize}
+  \end{block}
+  
   \begin{block}{Cours en relation}
     Architecture Parallèle
   \end{block}
 
 \end{frame}
+
 
 \end{document}

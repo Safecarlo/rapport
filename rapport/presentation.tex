@@ -42,9 +42,9 @@
   \begin{block}{Vectorisation dans le calcul scientifique}
     Jeux d'instruction 
         \begin{itemize}
-            \item 128 bits = sse
-            \item 256 bits = avx
-            \item 512 bits = avx512
+            \item 2*double = sse
+            \item 4*double = avx
+            \item 8*double = avx512
         \end{itemize}
   \end{block}
 \end{frame}
@@ -52,9 +52,9 @@
 \begin{frame}{Définition de certains termes techniques}
       \begin{itemize}
           \item wrapper : Ce sont des fonctions qui enveloppent l’appel à d’autres fonctions.
+          \item link : Il s’agit de la phase de compilation qui consiste à aller chercher toute les librairies externes appelé par l’application pour les liées au programme utilisateur afin de résoudre les références non défini.
           \item probes : Les probes sont des fonctions implémenté dans vfcwrapper qui est linker avec le programme par la partie compilation de verificarlo.
           \item backend : Dans le cadre de verifcarlo, c’est la/les librairie(s) dynamique(s) qui seront appelées par le wrapper dans les probes. Dans le cadre d’un compilateur c’est la derniere phase qui descend de la représentation intermédiaire vers le binaires
-          \item link : Il s’agit de la phase de compilation qui consiste à aller chercher toute les librairies externes appelé par l’application pour les liées au programme utilisateur afin de résoudre les références non défini.
           \item sérialisation : Dans le contexte de l’utilisation de vecteur il s’agit d’exécuter en séquence les éléments du vecteur.
       \end{itemize}
 \end{frame}

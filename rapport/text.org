@@ -98,3 +98,42 @@
   Pour finir ce projet nous a permis d'étendre nos connaissances que nous avons
   vu dans le cours d'Architecture Parallèle pour la Vectorisation et la
   Parallélisation.
+
+* Compilation
+
+  Pour comprendre le support de la vectorisation dans verificarlo, il faut
+  d'abord comprendre comment fonctionne verificarlo. Verificarlo étant un
+  compilateur, il prend un fichier source en entrée et produit un binaire en
+  sortie.
+
+  Verificarlo permet d'intercèpter les opérations flottante grace au module
+  *vfcinstrument*. Qui change les opérations flottantes en des appels aux probes
+  des wrapper. Qui eux même font appel au fonction des backend. Ici la boite du
+  bakend signifie uniquement que les probes des wrappers appelles les fonctions
+  des backends car les backends sont des librairies dynamiques et sont lié
+  dunamiquement à l'exécution du programme.
+
+  Le problème qu'il y avait au niveau de la vectorisation était que les probes
+  vectorielles appelait les probes scalaires des backends. Ce qui n'est pas
+  vectorisé et entraine une baisse des performance. De plus le fait que la
+  gestion des opérations vectorielles se fassent dans les wrappers ne permettait
+  pas de faire un traitement spécifique pour chaque backend sur le fait de
+  pouvoir vectorisé ou non le backend.
+
+  Donc on a modifié les probes vectorielles pour qu'elle appellent les fonctions
+  vectorielles des backends.
+
+* Backend
+
+  Aujourd'hui Verificarlo implémente 6 backend. Nous devions vectorisé les 3
+  premiers, cad le backend ieee, vprec et mca.
+
+  Nous avons implémenté les fonctions vectorielles des backends en mode scalaire
+  pour tout les backends qui est le mode par défaut.
+
+  Néanmoins on a réussis a vectorisé 2 backend, le backend ieee et le backend
+  vprec.
+
+* ieee
+
+* vprec

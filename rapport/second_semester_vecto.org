@@ -1,0 +1,126 @@
+#+TITLE: Rapport Second Semestre pour le support de la Vectorisation
+#+AUTHOR: Sholde
+#+DATE: 2021
+
+* Vectorisation du backend *vprec*
+
+  Ce backend permet de gérer les cas des *dénormaux* et des nombres
+  *infinis*. Cepandant ces cas restes rares dans les codes de calculs. C'est
+  pourquoi nous avons décidé de priorisé la vectorisation pour les cas des
+  *normaux*.
+
+  _Petit rappel des cas spéciaux:_
+  Prenons comme exemple une précision de 2 et une taille de 3 pour un type flottant.
+    - *cas normal:* exposant compris entre -1 et 1.
+    - *cas dénormal:* exposant compris entre -2 et -4. Le bit de l'exposant est
+      implicite et seul les valeur de la mantisse compte. Or ici la mantisse à 3
+      bits, donc le cas des dénormaux s'étend sur 3 bits d'exposant.
+    - *cas infinis:* exposant < -4 et exposant > 1.
+
+** Stuctures
+
+   Le backend utilise des structures pour faciliter la compréhension des
+   calculs. Or les structures comportent des types scalaires. Il faut donc créer
+   de nouvelles structures pour les types vectorielles que proposent *clang*.
+
+*** Flottant simple précision
+**** Version scalaire
+
+#+BEGIN_SRC c
+typedef union {
+
+  float f32;
+  uint32_t u32;
+  int32_t s32;
+
+  /* Generic fields */
+  float type;
+  uint32_t u;
+
+  struct {
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+    uint32_t sign : FLOAT_SIGN_SIZE;
+    uint32_t exponent : FLOAT_EXP_SIZE;
+    uint32_t mantissa : FLOAT_PMAN_SIZE;
+#endif
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    uint32_t mantissa : FLOAT_PMAN_SIZE;
+    uint32_t exponent : FLOAT_EXP_SIZE;
+    uint32_t sign : FLOAT_SIGN_SIZE;
+#endif
+  } ieee;
+
+} binary32;
+#+END_SRC
+
+**** Version vectorielles
+
+     Nous avons un problèmes car nous ne pouvant pas assigner une valeur par
+     défaut à un type vectorielles de *clang* dans une structure. Donc la
+     strucure ci-dessous ne fonctionne pas.
+
+#+BEGIN_SRC c
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+
+#define define_binary32_vector(size)                                           \
+  typedef union {                                                              \
+                                                                               \
+  float##size f32;                                                             \
+  int##size u32;                                                               \
+  int##size s32;                                                               \
+                                                                               \
+  /* Generic fields */                                                         \
+  float##size type;                                                            \
+  int##size u;                                                                 \
+                                                                               \
+  struct {                                                                     \
+    int##size sign : FLOAT_SIGN_SIZE;                                          \
+    int##size exponent : FLOAT_EXP_SIZE;                                       \
+    int##size mantissa : FLOAT_PMAN_SIZE;                                      \
+  } ieee;                                                                      \
+                                                                               \
+  } binary32_x##size;
+
+#endif
+
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+
+#define define_binary32_vector(size)                                           \
+  typedef union {                                                              \
+                                                                               \
+    float##size f32;                                                           \
+    int##size u32;                                                             \
+    int##size s32;                                                             \
+                                                                               \
+    /* Generic fields */                                                       \
+    float##size type;                                                          \
+    int##size u;                                                               \
+                                                                               \
+    struct {                                                                   \
+      int##size mantissa : FLOAT_PMAN_SIZE;                                    \
+      int##size exponent : FLOAT_EXP_SIZE;                                     \
+      int##size sign : FLOAT_SIGN_SIZE;                                        \
+    } ieee;                                                                    \
+                                                                               \
+  } binary32_x##size;
+
+#endif
+
+define_binary32_vector(2);
+define_binary32_vector(4);
+define_binary32_vector(8);
+define_binary32_vector(16);
+#+END_SRC
+
+*** Flottant double précision
+
+    En attente de la fin de la vectorisation des flottants simple précision.
+
+** Fonctions
+
+   Pour ce qui est des fonctions, elles utilisent elles aussi des types
+   scalaires ainsi que les structures scalaires du *backend*. Il faut donc créer
+   des fonctions utilisant les types vectorielles.
+
+*** Flottant simple précision
+*** Flottant double précision

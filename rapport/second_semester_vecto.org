@@ -1,0 +1,22 @@
+#+TITLE: Rapport Second Semestre pour le support de la Vectorisation
+#+AUTHOR: Sholde
+#+DATE: 2021
+
+* Vectorisation du backend *vprec*
+
+  Ce backend permet de gérer les cas des *dénormaux* et des nombres
+  *infinis*. Cepandant ces cas restes rares dans les codes de calculs. C'est
+  pourquoi nous avons décidé de priorisé la vectorisation pour les cas des
+  *normaux*.
+
+  _Petit rappel des cas spéciaux:_
+  Prenons comme exemple une précision de 2 et une taille de 3 pour un type floattant.
+    - *cas normal:* exposant compris entre -1 et 1.
+    - *cas dénormal:* exposant compris entre -2 et -4. Le bit de l'exposant est
+      implicite et seul les valeur de la mantisse compte. Or ici la mantisse à 3
+      bits, donc le cas des dénormaux s'étend sur 3 bits d'exposant.
+    - *cas infinis:* exposant < -4 et exposant > 1.
+
+** Stucture
+** Fonction
+

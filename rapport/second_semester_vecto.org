@@ -9,13 +9,19 @@
   pourquoi nous avons décidé de priorisé la vectorisation pour les cas des
   *normaux*.
 
-  _Petit rappel des cas spéciaux:_
-  Prenons comme exemple une précision de 2 et une taille de 3 pour un type flottant.
-    - *cas normal:* exposant compris entre -1 et 1.
-    - *cas dénormal:* exposant compris entre -2 et -4. Le bit de l'exposant est
-      implicite et seul les valeur de la mantisse compte. Or ici la mantisse à 3
-      bits, donc le cas des dénormaux s'étend sur 3 bits d'exposant.
-    - *cas infinis:* exposant < -4 et exposant > 1.
+** Petit rappel des cas spéciaux
+
+   Prenons comme exemple une précision de 3 et une taille de 2 pour un type flottant.
+   - *cas normal:* exposant compris entre -1 et 1.
+   - *cas dénormal:* exposant compris entre -2 et -4. Le bit de l'exposant est
+     implicite et seul les valeur de la mantisse compte. Or ici la mantisse à 3
+     bits, donc le cas des dénormaux s'étend sur 3 bits d'exposant.
+   - *cas infinis:* exposant < -4 et exposant > 1.
+
+   #+CAPTION: Rappel des cas spéciaux
+   #+NAME: fig:rappel_des_cas_speciaux
+   #+ATTR_LATEX: :width 200px
+   [[../ressources/special_case.png]]
 
 ** Stuctures
 

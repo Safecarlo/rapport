@@ -130,3 +130,6 @@ define_binary32_vector(16);
 
 *** Flottant simple précision
 *** Flottant double précision
+*** vprec
+*** Rounding
+*** Cas Normal

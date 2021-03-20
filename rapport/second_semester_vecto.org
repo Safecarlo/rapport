@@ -62,8 +62,11 @@ typedef union {
 **** Version vectorielles
 
      Nous avons un problèmes car nous ne pouvant pas assigner une valeur par
-     défaut à un type vectorielles de *clang* dans une structure. Donc la
-     strucure ci-dessous ne fonctionne pas.
+     défault à un type vectoriel de *clang* dans une structure. On ne peut
+     également pas initialisé ces arguments dans la fonction d'initialisation du
+     backend *vprec* car ils font partis d'une structure et il faut que lorsque
+     l'on créer cette structure n'importe ou dans le code, on puisse avoir les
+     valeurs par défault. Donc la structure ci-dessous ne fonctionne pas.
 
 #+BEGIN_SRC c
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
@@ -125,8 +128,84 @@ define_binary32_vector(16);
 ** Fonctions
 
    Pour ce qui est des fonctions, elles utilisent elles aussi des types
-   scalaires ainsi que les structures scalaires du *backend*. Il faut donc créer
-   des fonctions utilisant les types vectorielles.
+   scalaires. Il faut donc créer des fonctions utilisant les types vectorielles.
 
 *** Flottant simple précision
+
+    Comme nous passons la taille du vecteur en paramètre il faut donc que l'on
+    appelle la bonne fonction suivant la taille du vecteur.
+
+    Pour ce qu'il est du calcul, c'est juste un calcul de vecteur comme dans le
+    backend *ieee*.
+
+#+BEGIN_SRC c
+static inline void _vprec_binary32_binary_op_vector(const int size, float *a,
+                                                    float *b, float *c,
+                                                    const vprec_operation op,
+                                                    void *context) {
+  if ((VPRECLIB_MODE == vprecmode_full) || (VPRECLIB_MODE == vprecmode_ib)) {
+    switch (size)
+      {
+      case 2:
+        _vprec_round_binary32_float2(a, 1, context, VPRECLIB_BINARY32_RANGE,
+                                     VPRECLIB_BINARY32_PRECISION);
+        _vprec_round_binary32_float2(b, 1, context, VPRECLIB_BINARY32_RANGE,
+                                     VPRECLIB_BINARY32_PRECISION);
+        break;
+      case 4:
+        _vprec_round_binary32_float4(a, 1, context, VPRECLIB_BINARY32_RANGE,
+                                     VPRECLIB_BINARY32_PRECISION);
+        _vprec_round_binary32_float4(b, 1, context, VPRECLIB_BINARY32_RANGE,
+                                     VPRECLIB_BINARY32_PRECISION);
+        break;
+      case 8:
+        _vprec_round_binary32_float8(a, 1, context, VPRECLIB_BINARY32_RANGE,
+                                     VPRECLIB_BINARY32_PRECISION);
+        _vprec_round_binary32_float8(b, 1, context, VPRECLIB_BINARY32_RANGE,
+                                     VPRECLIB_BINARY32_PRECISION);
+        break;
+      case 16:
+        _vprec_round_binary32_float16(a, 1, context, VPRECLIB_BINARY32_RANGE,
+                                      VPRECLIB_BINARY32_PRECISION);
+        _vprec_round_binary32_float16(b, 1, context, VPRECLIB_BINARY32_RANGE,
+                                      VPRECLIB_BINARY32_PRECISION);
+        break;
+      default:
+        break;
+      }
+  }
+
+  perform_vector_binary_op(float, size, op, c, a, b);
+
+  if ((VPRECLIB_MODE == vprecmode_full) || (VPRECLIB_MODE == vprecmode_ib)) {
+    switch (size)
+      {
+      case 2:
+        _vprec_round_binary32_float2(c, 0, context, VPRECLIB_BINARY32_RANGE,
+                                     VPRECLIB_BINARY32_PRECISION);
+        break;
+      case 4:
+        _vprec_round_binary32_float4(c, 0, context, VPRECLIB_BINARY32_RANGE,
+                                     VPRECLIB_BINARY32_PRECISION);
+        break;
+      case 8:
+        _vprec_round_binary32_float8(c, 0, context, VPRECLIB_BINARY32_RANGE,
+                                     VPRECLIB_BINARY32_PRECISION);
+        break;
+      case 16:
+        _vprec_round_binary32_float16(c, 0, context, VPRECLIB_BINARY32_RANGE,
+                                      VPRECLIB_BINARY32_PRECISION);
+        break;
+      default:
+        break;
+      }
+  }
+}
+#+END_SRC
+
 *** Flottant double précision
+
+    En attente des résultat des simples précision.
+
+*** Rounding
+*** Cas Normal

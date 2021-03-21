@@ -224,6 +224,12 @@ static inline void _vprec_binary32_binary_op_vector(const int size, float *a,
     vecteur de 8 flottants simple précision. Alors on reparcours le vecteurs
     pour gérer les 7 nombres normaux qui n'ont pas encore été traités.
 
+    _Complexité:_
+    - cas *size* nombres infini : O(2n)
+    - cas *size* nombres dénormal : O(3n)
+    - cas *size* nombres normal : O(3n)
+    - sinon : O(4n)
+
 #+BEGIN_SRC c
 // Round the float vector with the given precision
 #define define_vprec_round_binary32_vector(precision, size)                    \

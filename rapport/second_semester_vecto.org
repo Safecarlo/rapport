@@ -343,3 +343,70 @@ static inline void _vprec_binary32_binary_op_vector(const int size, float *a,
     normaux. Il faut donc vectoriser ces 2 fonctions.
 
 *** Cas des nombres normaux
+*** Cas des nombres normaux avec erreurs absolue
+
+    Ici aussi on a opter pour la même technique de vectorisation. Comme on ne
+    peut vectoriser le calcul que si tout les éléments du vecteurs ont le même
+    comportement, on a choisis de vectoriser lorsque l'on se trouve dans le cas
+    des nombres normaux. Car c'est le cas le plus fréquents.
+
+    On parcours la aussi le vecteur éléments par éléments pour savoir si un
+    élément du vecteur est en dessous de l'erreur absolue fixé. Si aucun élément
+    n'est en dessous alors ils sont tous normaux et on peut vectoriser. Sinon on
+    re-parcours le vecteur pour calculer les éléments normaux.
+
+    _Complexité:_
+    - cas 0 ou size éléments en dessous de la valeur absolue fixé : O(n)
+    - cas entre 1 et size-1 éléments en dessous de la valeur absolue fixé :
+      O(2n)
+
+#+BEGIN_SRC c
+#define define_handle_binary32_vector_normal_absErr(size)                      \
+  void handle_binary32_normal_absErr_x##size(float *a,                         \
+                                             int##size aexp,                   \
+                                             int binary32_precision,           \
+                                             t_context *currentContext) {      \
+                                                                               \
+    /* absolute error mode, or both absolute and relative error modes */       \
+    int##size expDiff = aexp - currentContext->absErr_exp;                     \
+    float##size retVal;                                                        \
+    int##size set = 0;                                                         \
+    int count = 0;                                                             \
+                                                                               \
+    for (int i = 0; i < size; i++) {                                           \
+      if (expDiff[i] < -1) {                                                   \
+        /* equivalent to underflow on the precision given by absolute error */ \
+        a[i] = 0;                                                              \
+        set[i] = 1;                                                            \
+        count++;                                                               \
+      } else if (expDiff[i] == -1) {                                           \
+        /* case when the number is just below the absolute error threshold,    \
+           but will round to one ulp on the format given by the absolute error;\
+           this needs to be handled separately, as round_binary32_normal cannot\
+           generate this number */                                             \
+        a[i] = copysignf(exp2f(currentContext->absErr_exp), a[i]);             \
+        set[i] = 1;                                                            \
+        count++;                                                               \
+      }                                                                        \
+    }                                                                          \
+                                                                               \
+    if (count == 0) { /* we can vectorize */                                   \
+      /* normal case for the absolute error mode */                            \
+      int##size binary32_precision_adjusted =                                  \
+        compute_absErr_vprec_binary32_x##size(false, currentContext, expDiff,  \
+                                      binary32_precision);                     \
+      round_binary32_normal_x##size(a, binary32_precision_adjusted);           \
+    } else if (count == size) { /* all vector is set */                        \
+      return;                                                                  \
+    } else { /* we can't vectorize */                                          \
+      for (int i = 0; i < size; i++) {                                         \
+        if (!set[i]) {                                                         \
+          int binary32_precision_adjusted =                                    \
+            compute_absErr_vprec_binary32(false, currentContext, expDiff[i],   \
+                                          binary32_precision);                 \
+          round_binary32_normal_x(a[i], binary32_precision_adjusted);          \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+  }
+#+END_SRC

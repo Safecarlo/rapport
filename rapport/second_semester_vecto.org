@@ -10,6 +10,18 @@
 
 * Support de la parallélisation
 * Support de la vectorisation
+** Point git
+
+   Durant le semestre, des modifications ont été apporté sur la branche master
+   de *verificarlo*. Pour ne pas être trop éloigner de la version scalaire de
+   cette branche nous avons donc décidé de rappatrier les modifications sur
+   notre branches master de notre fork.
+
+   Le problème étant que nous avons utilisé la stratégie par fusion (qui était
+   par défault) au lieu de faire un rebasage afin de grouper les modifications
+   (commits) au lieu de les éparpiller.
+   
+** Ajout du compte des opérations flottantes vectorielles dans le backend *ieee*
 ** Vectorisation du backend *vprec*
 
    Ce backend permet de gérer les cas des nombres spéciaux comme les nombres
@@ -138,10 +150,10 @@ typedef union {
 **** Cas des nombres normaux
 ***** Normal
 ***** Absolute error
-*** Cas des nombres normaux
+**** Cas des nombres normaux
 
-    Pour vectoriser la fonction qui calcul les arrondis pour les nombres normaux
-    il suffit d'utiliser les opérations avec des types vectorielles de *clang*.
+     Pour vectoriser la fonction qui calcul les arrondis pour les nombres normaux
+     il suffit d'utiliser les opérations avec des types vectorielles de *clang*.
     
 #+BEGIN_SRC c
 /**
@@ -176,7 +188,7 @@ define_round_binary32_normal_vector(8);
 define_round_binary32_normal_vector(16);
 #+END_SRC
 
-*** Cas des nombres normaux avec erreurs absolue
+**** Cas des nombres normaux avec erreurs absolue
 
     Ici aussi on a opter pour la même technique de vectorisation. Comme on ne
     peut vectoriser le calcul que si tout les éléments du vecteurs ont le même
@@ -189,8 +201,8 @@ define_round_binary32_normal_vector(16);
     re-parcours le vecteur pour calculer les éléments normaux.
 
     _Complexité:_
-    - cas 0 ou size éléments en dessous de la valeur absolue fixé : O(n)
-    - cas entre 1 et size-1 éléments en dessous de la valeur absolue fixé :
+    - cas *0* ou *size* éléments en dessous de la valeur absolue fixé : O(n)
+    - cas entre *1* et *size - 1* éléments en dessous de la valeur absolue fixé :
       O(2n)
 
 #+BEGIN_SRC c

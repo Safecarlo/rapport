@@ -2,35 +2,43 @@
 #+AUTHOR: Sholde
 #+DATE: 2021
 
-* Vectorisation du backend *vprec*
+* Introduction
 
-  Ce backend permet de gérer les cas des *dénormaux* et des nombres
-  *infinis*. Cepandant ces cas restes rares dans les codes de calculs. C'est
-  pourquoi nous avons décidé de priorisé la vectorisation pour les cas des
-  *normaux*.
+  Ce rapport fait suite au précédent. Les informations rédigé sur le prédécent
+  rapport doivent donc être comprisent afin de pouvoir comprendre la suite du
+  rapport.
 
-** Petit rappel des cas spéciaux
+* Support de la parallélisation
+* Support de la vectorisation
+** Vectorisation du backend *vprec*
 
-   Prenons comme exemple une précision de 3 et une taille de 2 pour un type flottant.
-   - *cas normal:* exposant compris entre -1 et 1.
-   - *cas dénormal:* exposant compris entre -2 et -4. Le bit de l'exposant est
-     implicite et seul les valeur de la mantisse compte. Or ici la mantisse à 3
-     bits, donc le cas des dénormaux s'étend sur 3 bits d'exposant.
-   - *cas infinis:* exposant < -4 et exposant > 1.
+   Ce backend permet de gérer les cas des nombres spéciaux comme les nombres
+   *dénormaux* et les nombres *infinis*. Cepandant ces cas restent rares dans les
+   codes de calculs. C'est pourquoi nous avons décidé de priorisé la
+   vectorisation pour les cas des nombres *normaux*.
 
-   #+CAPTION: Rappel des cas spéciaux
-   #+NAME: fig:rappel_des_cas_speciaux
-   #+ATTR_LATEX: :width 200px
-   [[../ressources/special_case.png]]
+*** Petit rappel des cas spéciaux (A revoir)
 
-** Stuctures
+    Prenons comme exemple une précision de 3 et une taille de 2 pour un type flottant.
+    - *cas normal:* exposant compris entre -1 et 1.
+    - *cas dénormal:* exposant compris entre -2 et -4. Le bit de l'exposant est
+      implicite et seul les valeur de la mantisse compte. Or ici la mantisse à 3
+      bits, donc le cas des dénormaux s'étend sur 3 bits d'exposant.
+    - *cas infinis:* exposant < -4 et exposant > 1.
 
-   Le backend utilise des structures pour faciliter la compréhension des
-   calculs. Or les structures comportent des types scalaires. Il faut donc créer
-   de nouvelles structures pour les types vectorielles que proposent *clang*.
+    #+CAPTION: Rappel des cas spéciaux
+    #+NAME: fig:rappel_des_cas_speciaux
+    #+ATTR_LATEX: :width 200px
+    [[../ressources/special_case.png]]
+   
+*** Stuctures
 
-*** Flottant simple précision
-**** Version scalaire
+    Tout d'abord nous avons remarqué que le backend utilise des structures pour
+    faciliter la compréhension des calculs. Or les structures comportent des
+    types scalaires. Il faut donc créer de nouvelles structures pour les types
+    vectorielles que propose *clang*.
+
+**** Code de la version scalaire pour les flottants
 
 #+BEGIN_SRC c
 typedef union {
@@ -59,162 +67,52 @@ typedef union {
 } binary32;
 #+END_SRC
 
-**** Version vectorielles
+**** Pour la version vectorielles
 
-     Nous avons un problèmes car nous ne pouvant pas assigner une valeur par
-     défault à un type vectoriel de *clang* dans une structure. On ne peut
-     également pas initialisé ces arguments dans la fonction d'initialisation du
-     backend *vprec* car ils font partis d'une structure et il faut que lorsque
-     l'on créer cette structure n'importe ou dans le code, on puisse avoir les
-     valeurs par défault. Donc la structure ci-dessous ne fonctionne pas.
+      Comme nous ne pouvons pas faire des conditions de *preprocessing* dans les
+      *macros* nous avons englobé nos *macros* dans les conditions de
+      *preprocessing* afin de pouvoir définir les structures pour toutes les
+      tailles de vecteur.
 
-#+BEGIN_SRC c
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+*** Types vectorielles
 
-#define define_binary32_vector(size)                                           \
-  typedef union {                                                              \
-                                                                               \
-  float##size f32;                                                             \
-  int##size u32;                                                               \
-  int##size s32;                                                               \
-                                                                               \
-  /* Generic fields */                                                         \
-  float##size type;                                                            \
-  int##size u;                                                                 \
-                                                                               \
-  struct {                                                                     \
-    int##size sign : FLOAT_SIGN_SIZE;                                          \
-    int##size exponent : FLOAT_EXP_SIZE;                                       \
-    int##size mantissa : FLOAT_PMAN_SIZE;                                      \
-  } ieee;                                                                      \
-                                                                               \
-  } binary32_x##size;
+    Cependant au cours de l'écriture des structures vectorielles nous nous somme
+    rendu compte qu'il nous fallais des vecteurs d'entiers signés de 64 bits
+    pour les types flottants de 64 bits.
 
-#endif
+    C'est pourquoi nous les avons rajouté et que nous avons créer un fichier
+    nommé *float_type.h* pour regroupé toutes les définitions des types
+    vectorielles pour éviter de les redéfinir dans chaque fichier.
 
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    Cependant nous n'avons pas réussis à introduire se fichier dans les
+    *include* des wrappers. C'est pourquoi nous avons redéfini les types dans le
+    fichier *interflop.h* car il est inclu dans le fichier final des wrappers.
 
-#define define_binary32_vector(size)                                           \
-  typedef union {                                                              \
-                                                                               \
-    float##size f32;                                                           \
-    int##size u32;                                                             \
-    int##size s32;                                                             \
-                                                                               \
-    /* Generic fields */                                                       \
-    float##size type;                                                          \
-    int##size u;                                                               \
-                                                                               \
-    struct {                                                                   \
-      int##size mantissa : FLOAT_PMAN_SIZE;                                    \
-      int##size exponent : FLOAT_EXP_SIZE;                                     \
-      int##size sign : FLOAT_SIGN_SIZE;                                        \
-    } ieee;                                                                    \
-                                                                               \
-  } binary32_x##size;
+*** Fonctions
 
-#endif
+    Il nous restait à vectoriser les fonctions du backends.
 
-define_binary32_vector(2);
-define_binary32_vector(4);
-define_binary32_vector(8);
-define_binary32_vector(16);
-#+END_SRC
+    Pour ce qui est des fonctions, elles utilisent elles aussi des types
+    scalaires. Il faut donc créer des fonctions utilisant les types vectorielles.
 
-*** Flottant double précision
+**** Fonction principale
 
-    En attente de la fin de la vectorisation des flottants simple précision.
+     Comme nous passons la taille du vecteur en paramètre il faut donc que l'on
+     appelle la bonne fonction suivant la taille du vecteur. Le plus optimial
+     dans notre cas était d'englober tout le code pour la même taille de vecteur
+     afin de ne pas a devoir la retester par la suite.
 
-** Fonctions
+     Pour ce qu'il est du calcul de l'opération originale, c'est le même procédé
+     que pour le backend *ieee*.
 
-   Pour ce qui est des fonctions, elles utilisent elles aussi des types
-   scalaires. Il faut donc créer des fonctions utilisant les types vectorielles.
-
-*** Flottant simple précision
-
-    Comme nous passons la taille du vecteur en paramètre il faut donc que l'on
-    appelle la bonne fonction suivant la taille du vecteur.
-
-    Pour ce qu'il est du calcul, c'est juste un calcul de vecteur comme dans le
-    backend *ieee*.
-
-#+BEGIN_SRC c
-static inline void _vprec_binary32_binary_op_vector(const int size, float *a,
-                                                    float *b, float *c,
-                                                    const vprec_operation op,
-                                                    void *context) {
-  if ((VPRECLIB_MODE == vprecmode_full) || (VPRECLIB_MODE == vprecmode_ib)) {
-    switch (size)
-      {
-      case 2:
-        _vprec_round_binary32_float2(a, 1, context, VPRECLIB_BINARY32_RANGE,
-                                     VPRECLIB_BINARY32_PRECISION);
-        _vprec_round_binary32_float2(b, 1, context, VPRECLIB_BINARY32_RANGE,
-                                     VPRECLIB_BINARY32_PRECISION);
-        break;
-      case 4:
-        _vprec_round_binary32_float4(a, 1, context, VPRECLIB_BINARY32_RANGE,
-                                     VPRECLIB_BINARY32_PRECISION);
-        _vprec_round_binary32_float4(b, 1, context, VPRECLIB_BINARY32_RANGE,
-                                     VPRECLIB_BINARY32_PRECISION);
-        break;
-      case 8:
-        _vprec_round_binary32_float8(a, 1, context, VPRECLIB_BINARY32_RANGE,
-                                     VPRECLIB_BINARY32_PRECISION);
-        _vprec_round_binary32_float8(b, 1, context, VPRECLIB_BINARY32_RANGE,
-                                     VPRECLIB_BINARY32_PRECISION);
-        break;
-      case 16:
-        _vprec_round_binary32_float16(a, 1, context, VPRECLIB_BINARY32_RANGE,
-                                      VPRECLIB_BINARY32_PRECISION);
-        _vprec_round_binary32_float16(b, 1, context, VPRECLIB_BINARY32_RANGE,
-                                      VPRECLIB_BINARY32_PRECISION);
-        break;
-      default:
-        break;
-      }
-  }
-
-  perform_vector_binary_op(float, size, op, c, a, b);
-
-  if ((VPRECLIB_MODE == vprecmode_full) || (VPRECLIB_MODE == vprecmode_ib)) {
-    switch (size)
-      {
-      case 2:
-        _vprec_round_binary32_float2(c, 0, context, VPRECLIB_BINARY32_RANGE,
-                                     VPRECLIB_BINARY32_PRECISION);
-        break;
-      case 4:
-        _vprec_round_binary32_float4(c, 0, context, VPRECLIB_BINARY32_RANGE,
-                                     VPRECLIB_BINARY32_PRECISION);
-        break;
-      case 8:
-        _vprec_round_binary32_float8(c, 0, context, VPRECLIB_BINARY32_RANGE,
-                                     VPRECLIB_BINARY32_PRECISION);
-        break;
-      case 16:
-        _vprec_round_binary32_float16(c, 0, context, VPRECLIB_BINARY32_RANGE,
-                                      VPRECLIB_BINARY32_PRECISION);
-        break;
-      default:
-        break;
-      }
-  }
-}
-#+END_SRC
-
-*** Flottant double précision
-
-    En attente des résultat des simples précision.
-
-*** Gestion des arrondis
+**** Gestion des arrondis
 
     Ici commence la vectorisation du bakend.
 
     Comme dit dans le préambule un nombre flottant peut être dans 3 catégories:
-    normal, dénormal et infini. Etant donné que les 2 derniers cas reste des cas
-    rares dans les codes de calculs. Nous avons décidé de vectoriser que le cas
-    des nombres flottants normal.
+    normal, dénormal et infini. Etant donné que les 2 derniers cas restent des
+    cas rares dans les codes de calculs. Nous avons décidé de vectoriser que le
+    cas des nombres flottants normal.
 
     Mais pour pouvoir vectoriser il faut que tous les éléments de vecteurs aient
     le même comportement. C'est pourquoi on parcours une fois le vecteur élément
@@ -224,122 +122,13 @@ static inline void _vprec_binary32_binary_op_vector(const int size, float *a,
     vecteur de 8 flottants simple précision. Alors on reparcours le vecteurs
     pour gérer les 7 nombres normaux qui n'ont pas encore été traités.
 
-#+BEGIN_SRC c
-// Round the float vector with the given precision
-#define define_vprec_round_binary32_vector(precision, size)                    \
-  static void _vprec_round_binary32_##precision##size(float *a,                \
-                                                      char is_input,           \
-                                                      void *context,           \
-                                                      int binary32_range,      \
-                                                      int binary32_precision) {\
-    t_context *currentContext = (t_context *)context;                          \
-    int##size set = 0;                                                         \
-    int count = 0;                                                             \
-                                                                               \
-    for (int i = 0; i < size; ++i) {                                           \
-      if (!isfinite(a[i])) {                                                   \
-        set[i] = 1;                                                            \
-        count++;                                                               \
-      }                                                                        \
-    }                                                                          \
-                                                                               \
-    /* test if all vector is set */                                            \
-    if (count == size) {                                                       \
-      return;                                                                  \
-    }                                                                          \
-                                                                               \
-    /* round to zero or set to infinity if underflow or overflow compare to */ \
-    /* VPRECLIB_BINARY32_RANGE */                                              \
-    int emax = (1 << (binary32_range - 1)) - 1;                                \
-    /* here emin is the smallest exponent in the *normal* range */             \
-    int emin = 1 - emax;                                                       \
-                                                                               \
-    binary32_##precision##size aexp = {.f32 = *(precision##size *)a};          \
-    aexp.s32 = ((FLOAT_GET_EXP & aexp.u32) >> FLOAT_PMAN_SIZE);                \
-    aexp.s32 -= FLOAT_EXP_COMP;                                                \
-                                                                               \
-    /* check for overflow in target range */                                   \
-    int##size is_overflow = aexp.s32 > emax;                                   \
-    for (int i = 0; i < size; i++) {                                           \
-      if (is_overflow[i] && !set[i]) {                                         \
-        a[i] = a[i] * INFINITY;                                                \
-        set[i] = 1;                                                            \
-        count++;                                                               \
-      }                                                                        \
-    }                                                                          \
-                                                                               \
-    /* test if all vector is set */                                            \
-    if (count == size) {                                                       \
-      return;                                                                  \
-    }                                                                          \
-                                                                               \
-    int check = 0;                                                             \
-                                                                               \
-    for (int i = 0; i < size; i++) {                                           \
-      /* check for underflow in target range */                                \
-      if (aexp.s32[i] < emin && !set[i]) {                                     \
-        /* underflow case: possibly a denormal */                              \
-        if ((currentContext->daz && is_input) ||                               \
-            (currentContext->ftz && !is_input)) {                              \
-          /* preserve sign */                                                  \
-          a[i] = a[i] * 0;                                                     \
-        } else if (FP_ZERO == fpclassify(a[i])) {                              \
-          continue;                                                            \
-        } else {                                                               \
-          if (currentContext->absErr == true) {                                \
-            /* absolute error mode, or both absolute and relative error        \
-               modes */                                                        \
-            int binary32_precision_adjusted =                                  \
-              compute_absErr_vprec_binary32(true, currentContext, 0,           \
-                                            binary32_precision);               \
-            a[i] = handle_binary32_denormal(a[i], emin,                        \
-                                            binary32_precision_adjusted);      \
-          } else {                                                             \
-            /* relative error mode */                                          \
-            a[i] = handle_binary32_denormal(a[i], emin, binary32_precision);   \
-          }                                                                    \
-        }                                                                      \
-        set[i] = 1;                                                            \
-        count++;                                                               \
-      }                                                                        \
-    }                                                                          \
-                                                                               \
-    /* test if all vector is set */                                            \
-    if (count == size) {                                                       \
-      return;                                                                  \
-    } else if (count != 0) {                                                   \
-      /* if one element is set we can't vectorized */                          \
-      for (int i = 0; i < size; i++) {                                         \
-        /* else, normal case: can be executed even if a                        \
-           previously rounded and truncated as denormal */                     \
-        if (currentContext->absErr == true) {                                  \
-          /* absolute error mode, or both absolute and relative error modes */ \
-          a[i] = handle_binary32_normal_absErr(a[i], aexp.s32[i],              \
-                                               binary32_precision,             \
-                                               currentContext);                \
-        } else {                                                               \
-          /* relative error mode */                                            \
-          a[i] = round_binary32_normal(a[i], binary32_precision);              \
-        }                                                                      \
-      }                                                                        \
-    } else {                                                                   \
-      /* we can vectorize because we are sure that the vector is normal */     \
-      /* else, normal case: can be executed even if a                          \
-         previously rounded and truncated as denormal */                       \
-      if (currentContext->absErr == true) {                                    \
-        /* absolute error mode, or both absolute and relative error modes */   \
-        handle_binary32_normal_absErr_x##size(a, aexp.s32,                     \
-                                              binary32_precision,              \
-                                              currentContext);                 \
-      } else {                                                                 \
-        /* relative error mode */                                              \
-        round_binary32_normal_x##size(a, binary32_precision);                  \
-      }                                                                        \
-    }                                                                          \
-  }
-#+END_SRC
+    ici exemple cas 1 dénormal et 7 normal
+    ici exemple cas full normal
 
-    Nous voyons que ce code utilise 2 fonctions pour gérer le cas des nombres
-    normaux. Il faut donc vectoriser ces 2 fonctions.
+    Dans le cod nous voyons qu'il utilise 2 fonctions pour gérer le cas des
+    nombres normaux, une avec la calcul d'une erreur absolue et l'autre sans. Il
+    faut donc vectoriser ces 2 fonctions.
 
-*** Cas des nombres normaux
+**** Cas des nombres normaux
+***** Normal
+***** Absolute error

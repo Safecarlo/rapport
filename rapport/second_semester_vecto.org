@@ -8,7 +8,6 @@
   rapport doivent donc être comprisent afin de pouvoir comprendre la suite du
   rapport.
 
-* Support de la parallélisation
 * Support de la vectorisation
 ** Point git
 
@@ -21,7 +20,8 @@
    par défault) au lieu de faire un rebasage afin de grouper les modifications
    (commits) au lieu de les éparpiller.
    
-** Ajout du compte des opérations flottantes vectorielles dans le backend *ieee*
+** Mise à jour du backend *ieee*
+*** Ajout du compte des opérations flottantes vectorielles dans le backend *ieee*
 
    Lors de le mise à jours de notre branche master, nous nous sommes rendu
    comptes que des changements ont été apportés au backend *ieee*. Notemmant
@@ -80,6 +80,13 @@ operations count:
    Le problème avec cette dernière version est qu'elle est moins lisible que
    laprécédente où toutes les informations sont alignés.
    
+*** Tests
+
+    Nous avons aussi ajouté des tests plus approfondie pour ce backend avec des
+    nombres aléatoirement choisis de sorte à avoir des nombres négatif, des
+    nombres avec un exposant négatif ou bien même des nombre avec un exposant
+    positif afin de s'assurer que l'implémentation fonctionne.
+    
 ** Vectorisation du backend *vprec*
 
    Ce backend permet de gérer les cas des nombres spéciaux comme les nombres
@@ -101,6 +108,33 @@ operations count:
     #+ATTR_LATEX: :width 200px
     [[../ressources/special_case.png]]
    
+*** Tests
+
+    Tout d'abord comme pour le premier semestre nous avons ajouté des tests pour
+    tester notre implémentations vectorielles des opérations vectorielles. Nous
+    avons choisis de faire des tests simple c'est pourquoi nous avons modifié
+    le test *tests_vprec_backend_simple*.
+
+    Pour ce faire nous avons "copié/collé" les input scalaires car nous étions
+    sûr que c'est input fonctionne. Notre code prends donc 2 line d'entrée car il
+    ne test que les vecteurs de taille 2 (c'est pourquoi il prends 2 ligne
+    d'entrée). La première ligne correspond au premier élément de chaque vecteur
+    d'entrée (a et b), et la deuxième ligne le deuxième élement de chaque
+    vecteur. Il garde ainsi les mêmes opérations que pour les sacalaires ce qui
+    peut facilité le changement d'un calcul si jamais il s'avère qu'il y en est
+    un qui soit mauvais.
+
+    Cependant le test ne test que la multiplication. Mais nous testons pour les
+    2 formats floattans du *C*, le format *simple précision* et le format
+    *double précision*.
+
+    Ici nous n'avons pas vraiment besoin de tester les autres tailles ainsi que
+    les autres opérateurs car nous avions fait au premier semestre un test qui
+    le faisait, certes simple mais il le faisait. De plus nous avons ajouter les
+    tests pour les nombres normaux mais pas pour les nombres infini car nous
+    avions un problème avec le retour du script qui calcul avec la librairie
+    *mpfr*.
+    
 *** Stuctures
 
     Tout d'abord nous avons remarqué que le backend utilise des structures pour
@@ -228,3 +262,5 @@ typedef union {
     - cas entre *1* et *size - 1* éléments en dessous de la valeur absolue fixé :
       O(2n)
 
+* Support de la parallélisation
+* Conclusion

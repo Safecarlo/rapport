@@ -66,15 +66,15 @@ operations count:
    fait un affichage en 2 lignes:
 
    #+BEGIN_SRC shell
-operations count:
-     mul = 57000496 total count;  47.37% vectorized
-           by size:  27.19% 2x;  13.60% 4x;   6.58% 8x;   0.00% 16x
-     div = 56751036 total count;  47.14% vectorized
-           by size:  27.31% 2x;  13.22% 4x;   6.61% 8x;   0.00% 16x
-     add = 57501440 total count;  46.09% vectorized
-           by size:  26.09% 2x;  13.48% 4x;   6.52% 8x;   0.00% 16x
-     sub = 56750960 total count;  47.14% vectorized
-           by size:  27.31% 2x;  13.22% 4x;   6.61% 8x;   0.00% 16x
+operations count:                                                                                                                                                                              
+     mul = 1 total count; 100.00% vectorized;
+           by size:   0.00% 2x; 100.00% 4x;   0.00% 8x;   0.00% 16x                                                                                                  
+     div = 0 total count;   0.00% vectorized;
+           by size:   0.00% 2x;   0.00% 4x;   0.00% 8x;   0.00% 16x                                                                                                  
+     add = 0 total count;   0.00% vectorized;
+           by size:   0.00% 2x;   0.00% 4x;   0.00% 8x;   0.00% 16x                                                                                                  
+     sub = 0 total count;   0.00% vectorized;
+           by size:   0.00% 2x;   0.00% 4x;   0.00% 8x;   0.00% 16x
    #+END_SRC
 
    Le problème avec cette dernière version est qu'elle est moins lisible que

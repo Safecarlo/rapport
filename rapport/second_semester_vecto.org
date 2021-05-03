@@ -22,6 +22,64 @@
    (commits) au lieu de les éparpiller.
    
 ** Ajout du compte des opérations flottantes vectorielles dans le backend *ieee*
+
+   Lors de le mise à jours de notre branche master, nous nous sommes rendu
+   comptes que des changements ont été apportés au backend *ieee*. Notemmant
+   celle du comptage des opérations. Cependant le comptage des opérations
+   flottante de comptait que les opérations scalaire comme ci-dessous:
+
+   #+BEGIN_SRC shell
+operations count:
+     mul = 1 total count;
+     div = 0 total count;
+     add = 0 total count;
+     sub = 0 total count;
+   #+END_SRC
+
+   Nous avons donc ajouter le compte spécifiques de chaque opérations
+   vectorielles et décidé d'afficher un pourcentage de vectorisation.
+
+   #+BEGIN_SRC shell
+operations count:
+     mul = 1 total count; 100.00% vectorized;
+     div = 0 total count;   0.00% vectorized;
+     add = 0 total count;   0.00% vectorized;
+     sub = 0 total count;   0.00% vectorized;
+   #+END_SRC
+
+   Cependant, l'affichage ne nous semblait pas suffisant car nous avions
+   l'information du nombre de chaque opérations flottantes par taille mais nous
+   ne l'utilisions pas. Nous avonc donc rajouté le pourcentage pour chaque
+   taille de vecteur.
+
+   #+BEGIN_SRC shell
+operations count:
+     mul = 1 total count; 100.00% vectorized;   0.00% 2x; 100.00% 4x;   0.00% 8x;   0.00% 16x
+     div = 0 total count;   0.00% vectorized;   0.00% 2x;   0.00% 4x;   0.00% 8x;   0.00% 16x
+     add = 0 total count;   0.00% vectorized;   0.00% 2x;   0.00% 4x;   0.00% 8x;   0.00% 16x
+     sub = 0 total count;   0.00% vectorized;   0.00% 2x;   0.00% 4x;   0.00% 8x;   0.00% 16x
+   #+END_SRC
+
+   Comme vous pouvez le constatez, la ligne afficher est très grandes, et il
+   arrive que l'on veuille séparer notre écran en 2 (pour x ou y raison) et que
+   l'affichage est environ restreint à 80 caractères. C'est pourquoi nous avons
+   fait un affichage en 2 lignes:
+
+   #+BEGIN_SRC shell
+operations count:
+     mul = 57000496 total count;  47.37% vectorized
+           by size:  27.19% 2x;  13.60% 4x;   6.58% 8x;   0.00% 16x
+     div = 56751036 total count;  47.14% vectorized
+           by size:  27.31% 2x;  13.22% 4x;   6.61% 8x;   0.00% 16x
+     add = 57501440 total count;  46.09% vectorized
+           by size:  26.09% 2x;  13.48% 4x;   6.52% 8x;   0.00% 16x
+     sub = 56750960 total count;  47.14% vectorized
+           by size:  27.31% 2x;  13.22% 4x;   6.61% 8x;   0.00% 16x
+   #+END_SRC
+
+   Le problème avec cette dernière version est qu'elle est moins lisible que
+   laprécédente où toutes les informations sont alignés.
+   
 ** Vectorisation du backend *vprec*
 
    Ce backend permet de gérer les cas des nombres spéciaux comme les nombres

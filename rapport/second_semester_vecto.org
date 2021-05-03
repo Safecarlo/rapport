@@ -262,5 +262,12 @@ typedef union {
     - cas entre *1* et *size - 1* éléments en dessous de la valeur absolue fixé :
       O(2n)
 
+*** Benchmark
+**** Explication
+**** Résultat
+***** Sur une machine virtuel
+***** Sur un laptop sans AVX
+***** Sur le SuperCalculateur
+** Mise au point sur le non support des tailles de vecteurs plus grandes que celles supportés
 * Support de la parallélisation
 * Conclusion

@@ -8,6 +8,17 @@
   rapport doivent donc être comprisent afin de pouvoir comprendre la suite du
   rapport.
 
+  Les sources sont toujours disponnible sur notre Organisation github:
+  https://github.com/Safecarlo
+
+  Notement les sources pour le support de la vectorisation qui se trouvent sur
+  la branche vectorisation de notre fork:
+  https://github.com/Safecarlo/verificarlo/tree/vectorization
+
+  Un autre répertoire important est celui du benchmark que nous avons utiliser
+  pour évaluer l'efficacité de notre implémentation vectorielle:
+  https://github.com/Safecarlo/benchmark
+
 * Support de la vectorisation
 ** Point git
 
@@ -66,13 +77,13 @@ operations count:
    fait un affichage en 2 lignes:
 
    #+BEGIN_SRC shell
-operations count:                                                                                                                                                                              
+operations count:
      mul = 1 total count; 100.00% vectorized;
-           by size:   0.00% 2x; 100.00% 4x;   0.00% 8x;   0.00% 16x                                                                                                  
+           by size:   0.00% 2x; 100.00% 4x;   0.00% 8x;   0.00% 16x
      div = 0 total count;   0.00% vectorized;
-           by size:   0.00% 2x;   0.00% 4x;   0.00% 8x;   0.00% 16x                                                                                                  
+           by size:   0.00% 2x;   0.00% 4x;   0.00% 8x;   0.00% 16x
      add = 0 total count;   0.00% vectorized;
-           by size:   0.00% 2x;   0.00% 4x;   0.00% 8x;   0.00% 16x                                                                                                  
+           by size:   0.00% 2x;   0.00% 4x;   0.00% 8x;   0.00% 16x
      sub = 0 total count;   0.00% vectorized;
            by size:   0.00% 2x;   0.00% 4x;   0.00% 8x;   0.00% 16x
    #+END_SRC
@@ -105,7 +116,7 @@ operations count:
 
     #+CAPTION: Rappel des cas spéciaux
     #+NAME: fig:rappel_des_cas_speciaux
-    #+ATTR_LATEX: :width 200px
+    #+ATTR_LATEX: :width 400px
     [[../ressources/special_case.png]]
    
 *** Tests
@@ -262,12 +273,108 @@ typedef union {
     - cas entre *1* et *size - 1* éléments en dessous de la valeur absolue fixé :
       O(2n)
 
-*** Benchmark
-**** Explication
-**** Résultat
-***** Sur une machine virtuel
-***** Sur un laptop sans AVX
-***** Sur le SuperCalculateur
+** Benchmark
+*** Explication
+
+    Le but du *benchmark* est de tester les performances de notre implémentation
+    vectorielles en les comparant avec la version scalaire. Seul le format
+    simple précision est testé ainsi que les tailes de vecteur pour *SSE* et
+    *AVX* donc les vecteurs de 2, 4 et 8 simple précision. Nous n'avons pas mis
+    le vecteur de 16 simple précision car très peu de processeur le possède et
+    cela nous ferai une case vide pour nos plot si on gardait les mêmes
+    scripts. Pour ce qui est des doubles précisions, c'est aussi pour des
+    raisons de script car le vecteur de 16 double précision n'existe pas
+    vraiment et donc il n'y a que 3 taille de vecteur, contrairement au simple
+    précision qui en a 4.
+
+    Le benchmark test les backends *ieee* et *vprec*, qui pour ce dernier test
+    le cas où l'opération donne un vecteur avec uniquement des nombres normaux
+    car c'est le cas que nous avons vectorisé et le cas où l'opération donne un
+    vecteur contenant uniquement des nombres dénormaux, qui est un cas non
+    vectorisés. Et nous utilisons le mode par défaut où uniquement le vecteur
+    final est traité spécifiquement par le backend *vprec*.
+
+    Nous avons utiliser ce que nous avons appris au premier semestre dans le
+    cours d'Architecture Parallèle pour mesurer les performances. C'est à dire
+    que nous avons changer le gouverneur du processeur en espace utilisateur
+    pour pouvoir affecter la fréquence maximum de notre processeur (sauf pour la
+    machine virtuel ou nous ne pouvons pas mais elle est ici car sur
+    l'ordinateur portable nous n'avons pas *AVX*). De plus nous avons affecter
+    notre programme au dernier coeur de notre processeur pour l'éloigner le plus
+    possible du coeur 0 qui est le coeur privilégier du système d'exploitation.
+
+    Nous avons aussi vu les métriques à prendre en compte, comme le temps que
+    prend notre micro-benchmark. Mais pour s'assurer que le temps ne soit pas
+    faussé il faut calculer la déviation standart qui indique l'écart moyen
+    entre chaque échantillon. Il nous faut donc aussi plusieurs échantillons
+    / executions du micro-benchmark à évaluer. Pour ce qui est du seuil de
+    validation, il est un peu arbitraire. Il faudrai voir selon notre benchmark
+    quelle est le seuil pour lequel on peut dire que la mesure n'est pas faussé
+    mais nous n'avons pas vraiment pris le temps de le faire. Donc le seuil de
+    6% est plus la pour indication.
+
+    Nous avons aussi appris qu'il fallait gardé les résultats brut afin de
+    pouvoir comparer avec une autre machine, chose que nous faisons.
+
+    Les résultats espérer avec notre implémentation est à peut près la moitier
+    du maximum possible car beaucoup d'appel de fonction sont fait ainsi que de
+    condition.
+
+    Les speedups calculés corespondent pour la première barre le speedup de la
+    *version sérial* d'une opération vectorielle par rapport à l'opération
+    scalaire. Pour la deuxième barre le speedup de la *vesion vectorielle* d'une
+    opération vectorielle par rapport à l'opération scalaire. Et pour la
+    dernière barre le speedup de la *version vectorielle* par rapport à la
+    *version sériale* pour la même taille de vecteur.
+    
+*** Résultat
+**** Sur une machine virtuel
+
+     #+CAPTION: Résultat du backend IEEE
+     #+NAME: fig:res_vm_ieee
+     #+ATTR_LATEX: :width 400px
+     [[../ressources/vm_ieee.png]]
+
+     #+CAPTION: Dérivation standart du backend IEEE
+     #+NAME: fig:stddev_vm_ieee
+     #+ATTR_LATEX: :width 400px
+     [[../ressources/vm_ieee_stddev.png]]
+
+     #+CAPTION: Résultat du backend VPREC
+     #+NAME: fig:res_vm_vprec
+     #+ATTR_LATEX: :width 400px
+     [[../ressources/vm_vprec.png]]
+
+     #+CAPTION: Dérivation standart du backend VPREC avec des nombres normaux
+     #+NAME: fig:stddev_vm_vprec_normal_stddev
+     #+ATTR_LATEX: :width 400px
+     [[../ressources/vm_vprec_normal_stddev.png]]
+
+     #+CAPTION: Dérivation standart du backend VPREC avec des nombres dénormaux
+     #+NAME: fig:stddev_vm_vprec_denormal_stddev
+     #+ATTR_LATEX: :width 400px
+     [[../ressources/vm_vprec_denormal_stddev.png]]
+
+     Bien que nous utilisions une machine virtuelle, nous pouvons voir que les
+     résultats sont assez stable exepté 1 ou 2 fois.
+
+     Pour ce qui concerne le backend *ieee* nous avons un speedup d'environ de
+     la moitier du maximum possible et les résultats sont assez semblable
+     suivant le type d'opération.
+
+     Pour ce qui concerne le backend *vprec* nous pouvons constater que pour une
+     opération où le vecteur final contient que des nombres normaux va plus vite
+     à être calculer qu'une opération où le vecteur final contient uniquement
+     des nombres dénormaux. Ce qui est normal car dans le cas où le vecteur
+     final ne contient que des nombres normaux le calcul est vectorisé. Mais le
+     problème étant que la différence n'est pas très grandes. Cela veut dire que
+     le faite de faire moins d'appel de fonction entraîne la majorité du gain de
+     performance. Nous avons donc essayer de sérialiser le calcul des nombres
+     normaux pour pouvoir comparer mais en vain. Nous avons rencontrer quelque
+     soucis.
+
+**** Sur un ordinateur portable sans AVX
+**** Sur le SuperCalculateur
 ** Mise au point sur le non support des tailles de vecteurs plus grandes que celles supportés
 * Support de la parallélisation
 * Conclusion

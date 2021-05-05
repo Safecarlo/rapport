@@ -21,16 +21,41 @@
 
 * Support de la vectorisation
 ** Point git
+*** Rebasage
+    
+    Durant le semestre, des modifications ont été apporté sur la branche master
+    de *verificarlo*. Pour ne pas être trop éloigner de la version scalaire de
+    cette branche nous avons donc décidé de rappatrier les modifications sur
+    notre branches master de notre fork.
 
-   Durant le semestre, des modifications ont été apporté sur la branche master
-   de *verificarlo*. Pour ne pas être trop éloigner de la version scalaire de
-   cette branche nous avons donc décidé de rappatrier les modifications sur
-   notre branches master de notre fork.
+    Le problème étant que nous avons utilisé la stratégie par fusion (qui était
+    par défault) au lieu de faire un rebasage afin de grouper les modifications
+    (commits) au lieu de les éparpiller.
 
-   Le problème étant que nous avons utilisé la stratégie par fusion (qui était
-   par défault) au lieu de faire un rebasage afin de grouper les modifications
-   (commits) au lieu de les éparpiller.
-   
+*** Pull requests sur verificarlo
+
+    Des pull requests ont été fait sur verificarlo, notamment pour nettoyer le
+    répertoire de tests qui n'était pas nétoyer par la cible "clean" du
+    makefile. Comme verificarlo utilise les *autotools*, la cible n'est pas
+    directement disponnible et nous avons du utiliser une dépendence de la cible
+    "clean" des *autotools* qui est "clean-local". Et avec cette cible nous
+    appelons notre cible en la mettant comme dépendance de la cible
+    "clean-local" qui nettoye le répertoire ~tests/~.
+
+    Nous avons fait cette PR (pull requests) car nous développions des tests
+    dans verificarlo afin de s'assurer que nos changement dans le code soit
+    bon. Le problème était que de multiple fichiers était créés mais j'avais
+    supprimés. Et cela était un peu embêtant lorsque nous voulions lister nos
+    fichier (avec la commadne ls) ou bien utiliser un script car les anciens
+    résultat n'était pas éffacé (enfin on les enlevé manuellement au début puis
+    nous avons vite arrêté). De plus il y avait 2 fichier qui était créer à la
+    configuration de verificarlo dans le répertoire qui n'était pas non plus
+    nettoyé.
+
+    Tous ces fichier non nettoyais nous embêter pour utiliser git car comme nous
+    éditions aussi d'autre fichier nous avions les 2 fichiers créer par la
+    configuration à chaque fois.
+    
 ** Mise à jour du backend *ieee*
 *** Ajout du compte des opérations flottantes vectorielles dans le backend *ieee*
 

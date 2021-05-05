@@ -114,7 +114,7 @@ operations count:
    #+END_SRC
 
    Le problème avec cette dernière version est qu'elle est moins lisible que
-   laprécédente où toutes les informations sont alignés.
+   la précédente où toutes les informations sont alignés.
    
 *** Tests
 
@@ -139,10 +139,8 @@ operations count:
       bits, donc le cas des dénormaux s'étend sur 3 bits d'exposant.
     - *cas infinis:* exposant < -4 et exposant > 1.
 
-    #+CAPTION: Rappel des cas spéciaux
-    #+NAME: fig:rappel_des_cas_speciaux
-    #+ATTR_LATEX: :width 500px
-    [[../ressources/special_case.png]]
+
+    Voir la [[figure 1][figure 1]].
    
 *** Tests
 
@@ -355,17 +353,18 @@ typedef union {
 *** Résultat
 
     Bien que nous utilisions une machine virtuelle, nous pouvons voir que les
-    résultats sont assez stable exepté 1 ou 2 fois.
+    résultats sont assez stable exepté 1 ou 2 fois. (voir les figures [[figure 3][3]], [[figure 5][5]] et [[figure 6][6]])
 
-    Pour ce qui concerne le backend *ieee* nous avons un speedup d'environ de
-    la moitier du maximum possible et les résultats sont assez semblable
-    suivant le type d'opération.
+    Pour ce qui concerne le backend *ieee* (voir la figure [[figure 2][2]]),nous avons un
+    speedup d'environ de la moitier du maximum possible et les résultats sont
+    assez semblable suivant le type d'opération.
 
-    Pour ce qui concerne le backend *vprec* nous pouvons constater que pour une
-    opération où le vecteur final contient que des nombres normaux va beaucoup
-    plus vite à être calculer qu'une opération où le vecteur final contient
-    uniquement des nombres dénormaux. Ce qui est normal car dans le cas où le
-    vecteur final ne contient que des nombres normaux le calcul est vectorisé.
+    Pour ce qui concerne le backend *vprec* (voir la figure [[figure 4][4]]), nous pouvons
+    constater que pour une opération où le vecteur final contient que des
+    nombres normaux va beaucoup plus vite à être calculer qu'une opération où le
+    vecteur final contient uniquement des nombres dénormaux. Ce qui est normal
+    car dans le cas où le vecteur final ne contient que des nombres normaux le
+    calcul est vectorisé.
 
     La différence est flagrante mais le calcul des nombres dénormaux va plus
     vite sur notre branche. On peut se demander si le fait de faire moins
@@ -373,7 +372,6 @@ typedef union {
     implémentation. C'est pourquoi nous avons fait une version sérialisé ou on
     appelle les fonctions qui s'occupe des nombres normaux à partir de notre
     implémentation pour voir les performances.
-
 
     Nous avons donc mesurer les performances pour cette nouvelle implémentation
     et l'avons comparé avec la vesrion vectorisé sur le même graphique afin de
@@ -385,35 +383,51 @@ typedef union {
 * Support de la parallélisation
 * Conclusion
 * Annexe
+** Rappel des cas spéciaux
+
+    <<figure 1>>
+   #+CAPTION: Rappel des cas spéciaux
+   #+NAME: fig:rappel_des_cas_speciaux
+   #+ATTR_LATEX: :width 500px
+   [[../ressources/special_case.png]]
+
 ** Résultat
 *** Sur une machine virtuel
-    
+
+    <<figure 2>>
     #+CAPTION: Résultat du backend IEEE
     #+NAME: fig:res_vm_ieee
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_ieee.png]]
 
+    <<figure 3>>
     #+CAPTION: Dérivation standart du backend IEEE
     #+NAME: fig:stddev_vm_ieee
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_ieee_stddev.png]]
 
+    <<figure 4>>
     #+CAPTION: Résultat du backend VPREC
     #+NAME: fig:res_vm_vprec
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_vprec.png]]
 
+    <<figure 5>>
     #+CAPTION: Dérivation standart du backend VPREC avec des nombres normaux
     #+NAME: fig:stddev_vm_vprec_normal_stddev
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_vprec_normal_stddev.png]]
 
+    <<figure 6>>
     #+CAPTION: Dérivation standart du backend VPREC avec des nombres dénormaux
     #+NAME: fig:stddev_vm_vprec_denormal_stddev
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_vprec_denormal_stddev.png]]
 
+    <<figure 7>>
     #+CAPTION: Résultat du backend VPREC entre l'implémentaion sérial et l'implémentation vectorielle des nombres normaux
     #+NAME: fig:res_vm_vprec_vs
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_vprec_serial_vs_vector.png]]
+
+* Référence

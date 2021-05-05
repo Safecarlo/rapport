@@ -130,15 +130,17 @@ operations count:
    codes de calculs. C'est pourquoi nous avons décidé de priorisé la
    vectorisation pour les cas des nombres *normaux*.
 
-*** Petit rappel des cas spéciaux (A revoir)
+*** Petit rappel des cas spéciaux
 
-    Prenons comme exemple une précision de 3 et une taille de 2 pour un type flottant.
-    - *cas normal:* exposant compris entre -1 et 1.
-    - *cas dénormal:* exposant compris entre -2 et -4. Le bit de l'exposant est
-      implicite et seul les valeur de la mantisse compte. Or ici la mantisse à 3
-      bits, donc le cas des dénormaux s'étend sur 3 bits d'exposant.
-    - *cas infinis:* exposant < -4 et exposant > 1.
-
+    Prenons comme exemple une précision de 3 et une porté de 2 pour un type
+    flottant simple précision (donc nous avons 1 bit de signe, 2 bit d'exposant
+    et 3 bit de pseudo-mantisse). Prenons [[stdieee][la formule du standart *IEEE*]] qui est:
+    (-1)^S * 2^(E - (2^(e - 1) - 1)) * (1 + P / 2^p)
+    - *plus petit normal:* 0
+    - *plus grand normal:* 1,75 (2^1 * (7 / 8))
+    - *plus petit dénormal:* 0,125
+    - *plus grand dénormal:* 0,875
+    - *infini*: nombre supérieur à 1,75 ou inférieur à 0,125
 
     Voir la [[figure 1][figure 1]].
    
@@ -263,11 +265,11 @@ typedef union {
     ici exemple cas 1 dénormal et 7 normal
     ici exemple cas full normal
 
-    _Complexité:_
-    - cas *size* nombres infini : O(2n)
-    - cas *size* nombres dénormal : O(3n)
-    - cas *size* nombres normal : O(3n)
-    - mélange *normal* avec *infini* ou *dénormal* : O(4n)
+    _Complexité en terme d'accès aux éléments:_
+    - cas *size* nombres infini : O(n)
+    - cas *size* nombres dénormal : O(n)
+    - cas *size* nombres normal : O(n)
+    - mélange de *normal* avec *infini* ou *dénormal* : O(2n)
 
     Dans le code nous voyons que l'on utilise 2 fonctions pour gérer le cas des
     nombres normaux, une avec la calcul d'une erreur absolue et l'autre sans. Il
@@ -284,14 +286,14 @@ typedef union {
     Ici aussi on a opté pour la même technique de vectorisation. Comme on ne
     peut vectoriser le calcul que si tout les éléments du vecteurs ont le même
     comportement, on a choisis de vectoriser lorsque l'on se trouve dans le cas
-    des nombres normaux. Car c'est le cas le plus fréquents.
+    où tout le vecteur contient des nombres normaux. Car c'est le cas le plus fréquents.
 
-    On parcours la aussi le vecteur éléments par éléments pour savoir si un
+    On parcours la aussi le vecteur élément par élément pour savoir si un
     élément du vecteur est en dessous de l'erreur absolue fixé. Si aucun élément
     n'est en dessous alors ils sont tous normaux et on peut vectoriser. Sinon on
     re-parcours le vecteur pour calculer les éléments normaux restant.
 
-    _Complexité:_
+    _Complexité en terme d'accès aux éléments:_
     - cas *0* ou *size* éléments en dessous de la valeur absolue fixé : O(n)
     - cas entre *1* et *size - 1* éléments en dessous de la valeur absolue fixé :
       O(2n)
@@ -379,9 +381,23 @@ typedef union {
     et on peut dire qu'elle prend environ 1/4 du gain. Donc le gain pur pour la
     vectorisation est en fait de 3/4 du gain.
 
+    Nous pouvons donc constater que le gain apporté avec notre implémentation
+    est d'environ la moitié de ce que l'on peut espérer en vectorisant des
+    opérations. Il est donc possible de faire une implémentation plus efficace
+    qui sera détaillé dans la conclusion de la vectorisation.
+
 ** Mise au point sur le non support des tailles de vecteurs plus grandes que celles supportés
+** Conclusion de la vectorisation
 * Support de la parallélisation
 * Conclusion
+* Référence
+
+  <<stdieee>>
+  - Aide Mémoire sur le standart IEEE754, Pablo de Oliveira Castro,
+    https://sifflez.org/lectures/archi-ord/AideMemoireIEEE754.pdf
+  - Extension des vecteurs de Clang, Clang / LLVM,
+    https://clang.llvm.org/docs/LanguageExtensions.html#vectors-and-extended-vectors
+
 * Annexe
 ** Rappel des cas spéciaux
 
@@ -430,4 +446,3 @@ typedef union {
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_vprec_serial_vs_vector.png]]
 
-* Référence

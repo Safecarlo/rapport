@@ -337,18 +337,25 @@ typedef union {
     suivant le type d'opération.
 
     Pour ce qui concerne le backend *vprec* nous pouvons constater que pour une
-    opération où le vecteur final contient que des nombres normaux va plus vite
-    à être calculer qu'une opération où le vecteur final contient uniquement
-    des nombres dénormaux. Ce qui est normal car dans le cas où le vecteur
-    final ne contient que des nombres normaux le calcul est vectorisé. Mais le
-    problème étant que la différence n'est pas très grandes. Cela veut dire que
-    le faite de faire moins d'appel de fonction entraîne la majorité du gain de
-    performance. Nous avons donc essayer de sérialiser le calcul des nombres
-    normaux pour pouvoir comparer mais en vain. Nous avons rencontrer quelque
-    soucis.
+    opération où le vecteur final contient que des nombres normaux va beaucoup
+    plus vite à être calculer qu'une opération où le vecteur final contient
+    uniquement des nombres dénormaux. Ce qui est normal car dans le cas où le
+    vecteur final ne contient que des nombres normaux le calcul est vectorisé.
 
-**** Sur un ordinateur portable sans AVX
-**** Sur le SuperCalculateur
+    La différence est flagrante mais le calcul des nombres dénormaux va plus
+    vite sur notre branche. On peut se demander si le fait de faire moins
+    d'appel de fonction joue donc un grand rôle sur le gain de notre
+    implémentation. C'est pourquoi nous avons fait une version sérialisé ou on
+    appelle les fonctions qui s'occupe des nombres normaux à partir de notre
+    implémentation pour voir les performances.
+
+
+    Nous avons donc mesurer les performances pour cette nouvelle implémentation
+    et l'avons comparé avec la vesrion vectorisé sur le même graphique afin de
+    voir la proportion que prend la réduction des appels dans le gain de temps
+    et on peut dire qu'elle prend environ 1/4 du gain. Donc le gain pur pour la
+    vectorisation est en fait de 3/4 du gain.
+
 ** Mise au point sur le non support des tailles de vecteurs plus grandes que celles supportés
 * Support de la parallélisation
 * Conclusion

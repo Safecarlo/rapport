@@ -21,16 +21,41 @@
 
 * Support de la vectorisation
 ** Point git
+*** Rebasage
+    
+    Durant le semestre, des modifications ont été apporté sur la branche master
+    de *verificarlo*. Pour ne pas être trop éloigner de la version scalaire de
+    cette branche nous avons donc décidé de rappatrier les modifications sur
+    notre branches master de notre fork.
 
-   Durant le semestre, des modifications ont été apporté sur la branche master
-   de *verificarlo*. Pour ne pas être trop éloigner de la version scalaire de
-   cette branche nous avons donc décidé de rappatrier les modifications sur
-   notre branches master de notre fork.
+    Le problème étant que nous avons utilisé la stratégie par fusion (qui était
+    par défault) au lieu de faire un rebasage afin de grouper les modifications
+    (commits) au lieu de les éparpiller.
 
-   Le problème étant que nous avons utilisé la stratégie par fusion (qui était
-   par défault) au lieu de faire un rebasage afin de grouper les modifications
-   (commits) au lieu de les éparpiller.
-   
+*** Pull requests sur verificarlo
+
+    Des pull requests ont été fait sur verificarlo, notamment pour nettoyer le
+    répertoire de tests qui n'était pas nétoyer par la cible "clean" du
+    makefile. Comme verificarlo utilise les *autotools*, la cible n'est pas
+    directement disponnible et nous avons du utiliser une dépendence de la cible
+    "clean" des *autotools* qui est "clean-local". Et avec cette cible nous
+    appelons notre cible en la mettant comme dépendance de la cible
+    "clean-local" qui nettoye le répertoire ~tests/~.
+
+    Nous avons fait cette PR (pull requests) car nous développions des tests
+    dans verificarlo afin de s'assurer que nos changement dans le code soit
+    bon. Le problème était que de multiple fichiers était créés mais j'avais
+    supprimés. Et cela était un peu embêtant lorsque nous voulions lister nos
+    fichier (avec la commadne ls) ou bien utiliser un script car les anciens
+    résultat n'était pas éffacé (enfin on les enlevé manuellement au début puis
+    nous avons vite arrêté). De plus il y avait 2 fichier qui était créer à la
+    configuration de verificarlo dans le répertoire qui n'était pas non plus
+    nettoyé.
+
+    Tous ces fichier non nettoyais nous embêter pour utiliser git car comme nous
+    éditions aussi d'autre fichier nous avions les 2 fichiers créer par la
+    configuration à chaque fois.
+    
 ** Mise à jour du backend *ieee*
 *** Ajout du compte des opérations flottantes vectorielles dans le backend *ieee*
 
@@ -89,7 +114,7 @@ operations count:
    #+END_SRC
 
    Le problème avec cette dernière version est qu'elle est moins lisible que
-   laprécédente où toutes les informations sont alignés.
+   la précédente où toutes les informations sont alignés.
    
 *** Tests
 
@@ -105,19 +130,19 @@ operations count:
    codes de calculs. C'est pourquoi nous avons décidé de priorisé la
    vectorisation pour les cas des nombres *normaux*.
 
-*** Petit rappel des cas spéciaux (A revoir)
+*** Petit rappel des cas spéciaux
 
-    Prenons comme exemple une précision de 3 et une taille de 2 pour un type flottant.
-    - *cas normal:* exposant compris entre -1 et 1.
-    - *cas dénormal:* exposant compris entre -2 et -4. Le bit de l'exposant est
-      implicite et seul les valeur de la mantisse compte. Or ici la mantisse à 3
-      bits, donc le cas des dénormaux s'étend sur 3 bits d'exposant.
-    - *cas infinis:* exposant < -4 et exposant > 1.
+    Prenons comme exemple une précision de 3 et une porté de 2 pour un type
+    flottant simple précision (donc nous avons 1 bit de signe, 2 bit d'exposant
+    et 3 bit de pseudo-mantisse). Prenons [[stdieee][la formule du standart *IEEE*]] qui est:
+    (-1)^S * 2^(E - (2^(e - 1) - 1)) * (1 + P / 2^p)
+    - *plus petit normal:* 0
+    - *plus grand normal:* 1,75 (2^1 * (7 / 8))
+    - *plus petit dénormal:* 0,125
+    - *plus grand dénormal:* 0,875
+    - *infini*: nombre supérieur à 1,75 ou inférieur à 0,125
 
-    #+CAPTION: Rappel des cas spéciaux
-    #+NAME: fig:rappel_des_cas_speciaux
-    #+ATTR_LATEX: :width 400px
-    [[../ressources/special_case.png]]
+    Voir la [[figure 1][figure 1]].
    
 *** Tests
 
@@ -240,11 +265,11 @@ typedef union {
     ici exemple cas 1 dénormal et 7 normal
     ici exemple cas full normal
 
-    _Complexité:_
-    - cas *size* nombres infini : O(2n)
-    - cas *size* nombres dénormal : O(3n)
-    - cas *size* nombres normal : O(3n)
-    - mélange *normal* avec *infini* ou *dénormal* : O(4n)
+    _Complexité en terme d'accès aux éléments:_
+    - cas *size* nombres infini : O(n)
+    - cas *size* nombres dénormal : O(n)
+    - cas *size* nombres normal : O(n)
+    - mélange de *normal* avec *infini* ou *dénormal* : O(2n)
 
     Dans le code nous voyons que l'on utilise 2 fonctions pour gérer le cas des
     nombres normaux, une avec la calcul d'une erreur absolue et l'autre sans. Il
@@ -261,14 +286,14 @@ typedef union {
     Ici aussi on a opté pour la même technique de vectorisation. Comme on ne
     peut vectoriser le calcul que si tout les éléments du vecteurs ont le même
     comportement, on a choisis de vectoriser lorsque l'on se trouve dans le cas
-    des nombres normaux. Car c'est le cas le plus fréquents.
+    où tout le vecteur contient des nombres normaux. Car c'est le cas le plus fréquents.
 
-    On parcours la aussi le vecteur éléments par éléments pour savoir si un
+    On parcours la aussi le vecteur élément par élément pour savoir si un
     élément du vecteur est en dessous de l'erreur absolue fixé. Si aucun élément
     n'est en dessous alors ils sont tous normaux et on peut vectoriser. Sinon on
     re-parcours le vecteur pour calculer les éléments normaux restant.
 
-    _Complexité:_
+    _Complexité en terme d'accès aux éléments:_
     - cas *0* ou *size* éléments en dessous de la valeur absolue fixé : O(n)
     - cas entre *1* et *size - 1* éléments en dessous de la valeur absolue fixé :
       O(2n)
@@ -328,53 +353,96 @@ typedef union {
     *version sériale* pour la même taille de vecteur.
     
 *** Résultat
-**** Sur une machine virtuel
 
-     #+CAPTION: Résultat du backend IEEE
-     #+NAME: fig:res_vm_ieee
-     #+ATTR_LATEX: :width 400px
-     [[../ressources/vm_ieee.png]]
+    Bien que nous utilisions une machine virtuelle, nous pouvons voir que les
+    résultats sont assez stable exepté 1 ou 2 fois. (voir les figures [[figure 3][3]], [[figure 5][5]] et [[figure 6][6]])
 
-     #+CAPTION: Dérivation standart du backend IEEE
-     #+NAME: fig:stddev_vm_ieee
-     #+ATTR_LATEX: :width 400px
-     [[../ressources/vm_ieee_stddev.png]]
+    Pour ce qui concerne le backend *ieee* (voir la figure [[figure 2][2]]),nous avons un
+    speedup d'environ de la moitier du maximum possible et les résultats sont
+    assez semblable suivant le type d'opération.
 
-     #+CAPTION: Résultat du backend VPREC
-     #+NAME: fig:res_vm_vprec
-     #+ATTR_LATEX: :width 400px
-     [[../ressources/vm_vprec.png]]
+    Pour ce qui concerne le backend *vprec* (voir la figure [[figure 4][4]]), nous pouvons
+    constater que pour une opération où le vecteur final contient que des
+    nombres normaux va beaucoup plus vite à être calculer qu'une opération où le
+    vecteur final contient uniquement des nombres dénormaux. Ce qui est normal
+    car dans le cas où le vecteur final ne contient que des nombres normaux le
+    calcul est vectorisé.
 
-     #+CAPTION: Dérivation standart du backend VPREC avec des nombres normaux
-     #+NAME: fig:stddev_vm_vprec_normal_stddev
-     #+ATTR_LATEX: :width 400px
-     [[../ressources/vm_vprec_normal_stddev.png]]
+    La différence est flagrante mais le calcul des nombres dénormaux va plus
+    vite sur notre branche. On peut se demander si le fait de faire moins
+    d'appel de fonction joue donc un grand rôle sur le gain de notre
+    implémentation. C'est pourquoi nous avons fait une version sérialisé ou on
+    appelle les fonctions qui s'occupe des nombres normaux à partir de notre
+    implémentation pour voir les performances.
 
-     #+CAPTION: Dérivation standart du backend VPREC avec des nombres dénormaux
-     #+NAME: fig:stddev_vm_vprec_denormal_stddev
-     #+ATTR_LATEX: :width 400px
-     [[../ressources/vm_vprec_denormal_stddev.png]]
+    Nous avons donc mesurer les performances pour cette nouvelle implémentation
+    et l'avons comparé avec la vesrion vectorisé sur le même graphique afin de
+    voir la proportion que prend la réduction des appels dans le gain de temps
+    et on peut dire qu'elle prend environ 1/4 du gain. Donc le gain pur pour la
+    vectorisation est en fait de 3/4 du gain.
 
-     Bien que nous utilisions une machine virtuelle, nous pouvons voir que les
-     résultats sont assez stable exepté 1 ou 2 fois.
+    Nous pouvons donc constater que le gain apporté avec notre implémentation
+    est d'environ la moitié de ce que l'on peut espérer en vectorisant des
+    opérations. Il est donc possible de faire une implémentation plus efficace
+    qui sera détaillé dans la conclusion de la vectorisation.
 
-     Pour ce qui concerne le backend *ieee* nous avons un speedup d'environ de
-     la moitier du maximum possible et les résultats sont assez semblable
-     suivant le type d'opération.
-
-     Pour ce qui concerne le backend *vprec* nous pouvons constater que pour une
-     opération où le vecteur final contient que des nombres normaux va plus vite
-     à être calculer qu'une opération où le vecteur final contient uniquement
-     des nombres dénormaux. Ce qui est normal car dans le cas où le vecteur
-     final ne contient que des nombres normaux le calcul est vectorisé. Mais le
-     problème étant que la différence n'est pas très grandes. Cela veut dire que
-     le faite de faire moins d'appel de fonction entraîne la majorité du gain de
-     performance. Nous avons donc essayer de sérialiser le calcul des nombres
-     normaux pour pouvoir comparer mais en vain. Nous avons rencontrer quelque
-     soucis.
-
-**** Sur un ordinateur portable sans AVX
-**** Sur le SuperCalculateur
 ** Mise au point sur le non support des tailles de vecteurs plus grandes que celles supportés
+** Conclusion de la vectorisation
 * Support de la parallélisation
 * Conclusion
+* Référence
+
+  <<stdieee>>
+  - Aide Mémoire sur le standart IEEE754, Pablo de Oliveira Castro,
+    https://sifflez.org/lectures/archi-ord/AideMemoireIEEE754.pdf
+  - Extension des vecteurs de Clang, Clang / LLVM,
+    https://clang.llvm.org/docs/LanguageExtensions.html#vectors-and-extended-vectors
+
+* Annexe
+** Rappel des cas spéciaux
+
+    <<figure 1>>
+   #+CAPTION: Rappel des cas spéciaux
+   #+NAME: fig:rappel_des_cas_speciaux
+   #+ATTR_LATEX: :width 500px
+   [[../ressources/special_case.png]]
+
+** Résultat
+*** Sur une machine virtuel
+
+    <<figure 2>>
+    #+CAPTION: Résultat du backend IEEE
+    #+NAME: fig:res_vm_ieee
+    #+ATTR_LATEX: :width 500px
+    [[../ressources/vm_ieee.png]]
+
+    <<figure 3>>
+    #+CAPTION: Dérivation standart du backend IEEE
+    #+NAME: fig:stddev_vm_ieee
+    #+ATTR_LATEX: :width 500px
+    [[../ressources/vm_ieee_stddev.png]]
+
+    <<figure 4>>
+    #+CAPTION: Résultat du backend VPREC
+    #+NAME: fig:res_vm_vprec
+    #+ATTR_LATEX: :width 500px
+    [[../ressources/vm_vprec.png]]
+
+    <<figure 5>>
+    #+CAPTION: Dérivation standart du backend VPREC avec des nombres normaux
+    #+NAME: fig:stddev_vm_vprec_normal_stddev
+    #+ATTR_LATEX: :width 500px
+    [[../ressources/vm_vprec_normal_stddev.png]]
+
+    <<figure 6>>
+    #+CAPTION: Dérivation standart du backend VPREC avec des nombres dénormaux
+    #+NAME: fig:stddev_vm_vprec_denormal_stddev
+    #+ATTR_LATEX: :width 500px
+    [[../ressources/vm_vprec_denormal_stddev.png]]
+
+    <<figure 7>>
+    #+CAPTION: Résultat du backend VPREC entre l'implémentaion sérial et l'implémentation vectorielle des nombres normaux
+    #+NAME: fig:res_vm_vprec_vs
+    #+ATTR_LATEX: :width 500px
+    [[../ressources/vm_vprec_serial_vs_vector.png]]
+

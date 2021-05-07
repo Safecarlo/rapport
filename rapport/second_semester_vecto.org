@@ -62,14 +62,15 @@
     code soit bon. Le problème était que de multiples fichiers était créés mais
     j'avais supprimés. Et cela était un peu embêtant lorsque nous voulions
     lister nos fichier (avec la commande ls) ou bien utiliser un script car les
-    anciens résultats n'étaient pas effacés (enfin on les enlevé manuellement au
-    début puis nous avons vite arrêté). De plus il y avait 2 fichiers qui était
-    créer à la configuration de verificarlo dans le répertoire qui n'était pas
-    non plus nettoyé.
+    anciens résultats n'étaient pas effacés. Donc nous les enlevions
+    manuellement au début puis nous avons vite arrêté. De plus il y avait 2
+    fichiers qui était créer à la configuration de verificarlo dans le
+    répertoire qui n'était pas non plus nettoyé.
 
-    Tous ces fichiers non nettoyais nous embêter pour utiliser git car comme nous
-    éditions aussi d'autre fichier nous avions les 2 fichiers créer par la
-    configuration à chaque fois.
+    Tous ces fichiers non nettoyés nous embêtais pour utiliser git car nous
+    éditions aussi d'autre fichier et nous avions les 2 fichiers créer par la
+    configuration qui apparaissaient dans la liste des fichiers possible à
+    indexer (git status).
     
 ** Mise à jour du backend *ieee*
 *** Ajout du compte des opérations flottantes vectorielles dans le backend *ieee*
@@ -130,6 +131,14 @@ operations count:
 
    Le problème avec cette dernière version est qu'elle est moins lisible que
    la précédente où toutes les informations sont alignés.
+
+   Cette fonctionnalité supplémentaire pourra permettre aux utilisateur de
+   pouvoir très simplement voir si leurs code est vectorisé sans passé par le
+   code assembleur. De plus les outils qui permettents d'évaluer le taux de
+   vectorisation des opérations dans un code mélange les opérations sur les
+   entiers avec celles des opérations flottantes. D'où un intérêt particulier
+   d'utiliser cette fonctionnalité sur un code de calcul utilisant des nombres
+   flottants.
    
 *** Tests
 
@@ -471,6 +480,9 @@ typedef union {
      accélération d'environ de la moitié du maximum possible et les résultats sont
      assez semblable suivant le type d'opération.
 
+     Le gain de vitesse obtenu peut atteindre jusqu'à 4 si nous utilisons des
+     vecteurs de 8 flottants simple précision avec ce backend.
+
 **** Backend VPREC
 
      Pour ce qui concerne le backend *vprec* (voir la figure [[figure 4][4]]), nous pouvons
@@ -479,6 +491,10 @@ typedef union {
      vecteur final contient uniquement des nombres dénormaux. Ce qui est normal
      car dans le cas où le vecteur final ne contient que des nombres normaux le
      calcul est vectorisé.
+
+     Comme pour le backends *ieee*, nous pouvons atteindre un gain de 4 en
+     accélération si on utilise des vecteurs de 8 flottants simple précision
+     avec ce backend.
 
 **** Conclusion
 
@@ -497,11 +513,36 @@ typedef union {
 
      Nous pouvons donc constater que le gain apporté avec notre implémentation
      est d'environ la moitié de ce que l'on peut espérer en vectorisant des
-     opérations. Il est donc possible de faire une implémentation plus efficace
-     qui sera détaillé dans la conclusion de la vectorisation.
+     opérations. Bien qu'apportant un gain significatif par rapport à la version
+     courante de *verificarlo*, il reste un potentiel d'optimisation non
+     exploité. Afin d'ameliorer l'implementation que nous avons proposé, nous
+     avons identifié des hypothèses de travaux futurs que nous détaillerons en
+     conclusion.
 
-** Mise au point sur le non support des tailles de vecteurs plus grandes que celles supportés
 ** Conclusion de la vectorisation
+
+   Pour conclure, les résultats obtenus correspondent à nos attentes bien qu'il
+   reste une marge de gain potentiel. Effectivement comme dis précédement il est
+   donc possible de faire une implémentation plus efficace en supprimant par
+   exemples la factorisation du nombre de fonctions dans l'interface des
+   backends.
+
+   Si vous ne vous en rappelez pas, les opérations flottantes sont
+   remplacés par les appels aux wrappers qui appellent les fonctions de
+   l'interface avec les backends. Mais nous avions décidé de mettre en paramètre
+   la taille des vecteurs ce qui nous économisait de faire plus de fonction (1
+   pour chaque opération donc 8 au total au lieu de 4 pour chaque opération donc
+   16 au total). Mais avec cela nous testons la taille du vecteur dans des
+   conditions pour appelé les bonnes fonctions avec les bon types
+   vectoriels. C'est pourquoi nous pensons que le fait de rajouter une fonction
+   dans l'interface pour chaque taille nous fera gagné du temps.
+
+   Grâce à notre effort, les utilisateurs pourront bénéficier d'un gain en
+   performance sur leurs code de calcul en activant la vectorisation à la
+   compilation. Ils pourront bénéficier d'un gain jusqu'à 4 fois moins de temps
+   si ils utilisent des vecteurs de 8 nombres flottant simple précision. Ce qui
+   permettra de réduire le temps, les ressources et l'énergie consommé.
+
 * Support de la parallélisation
 ** Introduction
 

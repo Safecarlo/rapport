@@ -20,7 +20,7 @@
   https://github.com/Safecarlo/benchmark
 
   Un dernier répertoire qui affiche les flottants simple et double précision
-  sous différent format:
+  sous différents formats:
   https://github.com/Safecarlo/print_floating_point
 
 * Support de la vectorisation
@@ -160,17 +160,19 @@ operations count:
 
     Voir la [[figure 1][figure 1]].
 
-    Nous avons aussi écrit un mini code qui permet de visualiser sous différent
-    format les flottants simple et double précision, ce qui nous à aidé à
-    vérifier si nos calcul était juste pour créer cette partie et ce schéma.
-    https://github.com/Safecarlo/print_floating_point
+**** Parenthèse sur notre mini code pour afficher les flottants sous différents formats
+     
+     Nous avons aussi écrit un mini code qui permet de visualiser sous différent
+     format les flottants simple et double précision, ce qui nous à aidé à
+     vérifier si nos calcul était juste pour créer cette partie et ce schéma.
+     https://github.com/Safecarlo/print_floating_point
 
-    Les résultats affichés sont sous le format *IEEE754*. Donc si on utilise
-    *verificarlo* avec son backend *vprec* qui nous permet de simulé une
-    précision custom sur les calculs, c'est pourquoi nous faisons une addition
-    avec *0* pour l'activer, alors le résultat peut sembler faux mais est
-    correct du fait que c'est une simulation et que le stockage reste sous le
-    format *IEEE754*.
+     Les résultats affichés sont sous le format *IEEE754*. Donc si on utilise
+     *verificarlo* avec son backend *vprec* qui nous permet de simulé une
+     précision custom sur les calculs, c'est pourquoi nous faisons une addition
+     avec *0* pour l'activer, alors le résultat peut sembler faux mais est
+     correct du fait que c'est une simulation et que le stockage reste sous le
+     format *IEEE754*.
 
 *** Tests
 

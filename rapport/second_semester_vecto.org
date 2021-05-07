@@ -552,8 +552,41 @@ typedef union {
    - Classe S pour des tests rapides .
    
   **Résultats et discussion
+  Pour les tests, vu que nos machine ne supporte pas les tailles pour les tests standard et gros problème,
+  donc on est reste sur la classe "S". Ici on a utilise comme compilateur la nouvelle version de verificarlo,
+  c'est à dire la version vectorisé.
+  Comme example on va prendre le benchmark BT et de classe S. Pour pouvoir execute le benchmark, il nous
+  demande un nombre de coeur qui répresente le carré d'un nombre. La figure suivant répresente le résume 
+  du compilation du benchmark BT:
   
-
+   <<figure 1>>
+   #+CAPTION: Rappel des cas spéciaux
+   #+NAME: fig:Résume BT benchmark
+   #+ATTR_LATEX: :width 500px
+   [[../ressources/btcompleted.png]]
+   
+   Après avoir compile et éxecuté le benchmarck bt, la vectorisation au niveau du programme est répresenter
+   dans la figure suivante:
+   
+    <<figure 2>>
+   #+CAPTION: Vectorisation au niveau du benckmark BT
+   #+NAME: fig:Résume BT benchmark
+   #+ATTR_LATEX: :width 500px
+   [[../ressources/vect1.png]]
+   
+   Le bechmarck que nous avons testé est ecrit avec le langage fotran et parallèlisé avec MPI. Du coup on peut constaté
+   sur la figure que le niveau de véctorisation est null. Celle-ci peut être dû à la difference de syntax de langage entre
+   le langage C et fortran. 
+   Pour bien observer le niveau de véctorisation sur le benchmark BT, on a récuperé une source de benchmark qui est écrit avec
+   le langace C et parallèliser avec openmp.
+   Les figures suivantes répresenter l'évaluation des véctorisations au niveau du benchmark BT avec 8 threads:
+   
+   <<figure 3>>
+   #+CAPTION: Vectorisation au niveau u benckmark BT
+   #+NAME: fig:Résume BT benchmark
+   #+ATTR_LATEX: :width 500px
+   [[../ressources/vcopenmp.png]]
+   
 * Conclusion
 * Référence
 
@@ -569,7 +602,7 @@ typedef union {
 * Annexe
 ** Rappel des cas spéciaux
 
-    <<figure 1>>
+    <<figure 4>>
    #+CAPTION: Rappel des cas spéciaux
    #+NAME: fig:rappel_des_cas_speciaux
    #+ATTR_LATEX: :width 500px
@@ -578,37 +611,37 @@ typedef union {
 ** Résultat
 *** Sur une machine virtuel
 
-    <<figure 2>>
+    <<figure 5>>
     #+CAPTION: Résultat du backend IEEE
     #+NAME: fig:res_vm_ieee
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_ieee.png]]
 
-    <<figure 3>>
+    <<figure 4>>
     #+CAPTION: Dérivation standart du backend IEEE
     #+NAME: fig:stddev_vm_ieee
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_ieee_stddev.png]]
 
-    <<figure 4>>
+    <<figure 6>>
     #+CAPTION: Résultat du backend VPREC
     #+NAME: fig:res_vm_vprec
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_vprec.png]]
 
-    <<figure 5>>
+    <<figure 7>>
     #+CAPTION: Dérivation standart du backend VPREC avec des nombres normaux
     #+NAME: fig:stddev_vm_vprec_normal_stddev
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_vprec_normal_stddev.png]]
 
-    <<figure 6>>
+    <<figure 8>>
     #+CAPTION: Dérivation standart du backend VPREC avec des nombres dénormaux
     #+NAME: fig:stddev_vm_vprec_denormal_stddev
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_vprec_denormal_stddev.png]]
 
-    <<figure 7>>
+    <<figure 8>>
     #+CAPTION: Résultat du backend VPREC entre l'implémentaion sérial et l'implémentation vectorielle des nombres normaux
     #+NAME: fig:res_vm_vprec_vs
     #+ATTR_LATEX: :width 500px

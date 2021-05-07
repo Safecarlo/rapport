@@ -8,7 +8,7 @@
   rapport doivent donc être comprises afin de pouvoir comprendre la suite du
   rapport.
 
-  Les sources sont toujours disponible sur notre Organisation github:
+  Les sources sont toujours disponibles sur notre Organisation github:
   https://github.com/Safecarlo
 
   Notamment les sources pour le support de la vectorisation qui se trouvent sur
@@ -19,18 +19,33 @@
   pour évaluer l'efficacité de notre implémentation vectorielle:
   https://github.com/Safecarlo/benchmark
 
+  Un dernier répertoire qui affiche les flottants simple et double précision
+  sous différents formats:
+  https://github.com/Safecarlo/print_floating_point
+
 * Support de la vectorisation
 ** Point git
 *** Rebasage
     
-    Durant le semestre, des modifications ont été apporté sur la branche master
-    de *verificarlo*. Pour ne pas être trop éloigner de la version scalaire de
-    cette branche nous avons donc décidé de rapatrier les modifications sur
-    notre branches master de notre fork.
+    Durant le semestre, des modifications ont été apportées sur la branche master
+    du répertoire public *verificarlo* qui est disponnible sur la fore
+    *Github*. Pour ne pas être trop éloigné de la version scalaire de
+    cette branche nous avons donc décidés de rapatrier les modifications de la
+    branche master de *verificarlo* vers notre branche master de notre fork
+    *Safecarlo*.
 
     Le problème étant que nous avons utilisé la stratégie par fusion (qui était
-    par défaut) au lieu de faire un rebasage afin de grouper les modifications
-    (commits) au lieu de les éparpiller.
+    par défaut) qui tri les modifications (commits) des deux branches (celle
+    de verificarlo et la notre dans Safecarlo) par date.
+
+    Nous avons donc constatés que ce n'était pas la meilleur version pour
+    rapatrier les modifications (commits) car ils se retrouvaient mélangés avec
+    les notres.
+
+    Nous aurions pû et dû utiliser la statégie par rebasage afin de grouper les
+    modifications de la branche master de *verificarlo* à la fin de nos
+    modifications (commits) pour éviter de les éparpiller dans nos modifications
+    (commits).
 
 *** Pull requests sur verificarlo
 
@@ -39,22 +54,23 @@
     makefile. Comme verificarlo utilise les *autotools*, la cible n'est pas
     directement disponible et nous avons du utiliser une dépendance de la cible
     "clean" des *autotools* qui est "clean-local". Et avec cette cible nous
-    appelons notre cible en la mettant comme dépendance de la cible
-    "clean-local" qui nettoie le répertoire ~tests/~.
+    appelons notre cible, qui nettoie le répertoire ~tests/~, en la mettant
+    comme dépendance de la cible "clean-local".
 
     Nous avons fait cette PR (pull requests) car nous développions des tests
-    dans verificarlo afin de s'assurer que nos changement dans le code soit
-    bon. Le problème était que de multiples fichiers était créés mais j'avais
-    supprimés. Et cela était un peu embêtant lorsque nous voulions lister nos
-    fichier (avec la commande ls) ou bien utiliser un script car les anciens
-    résultats n'étaient pas effacés (enfin on les enlevé manuellement au début puis
-    nous avons vite arrêté). De plus il y avait 2 fichiers qui était créer à la
-    configuration de verificarlo dans le répertoire qui n'était pas non plus
-    nettoyé.
+    dans notre fork de verificarlo afin de s'assurer que nos changement dans le
+    code soit bon. Le problème était que de multiples fichiers était créés mais
+    j'avais supprimés. Et cela était un peu embêtant lorsque nous voulions
+    lister nos fichier (avec la commande ls) ou bien utiliser un script car les
+    anciens résultats n'étaient pas effacés. Donc nous les enlevions
+    manuellement au début puis nous avons vite arrêté. De plus il y avait 2
+    fichiers qui était créer à la configuration de verificarlo dans le
+    répertoire qui n'était pas non plus nettoyé.
 
-    Tous ces fichiers non nettoyais nous embêter pour utiliser git car comme nous
-    éditions aussi d'autre fichier nous avions les 2 fichiers créer par la
-    configuration à chaque fois.
+    Tous ces fichiers non nettoyés nous embêtais pour utiliser git car nous
+    éditions aussi d'autre fichier et nous avions les 2 fichiers créer par la
+    configuration qui apparaissaient dans la liste des fichiers possible à
+    indexer (git status).
     
 ** Mise à jour du backend *ieee*
 *** Ajout du compte des opérations flottantes vectorielles dans le backend *ieee*
@@ -62,7 +78,7 @@
    Lors de la mise à jour de notre branche master, nous nous sommes rendus
    comptes que des changements ont été apportés au backend *ieee*. Notamment
    celle du comptage des opérations. Cependant le comptage des opérations
-   flottante de comptait que les opérations scalaire comme ci-dessous:
+   flottante ne comptait que les opérations scalaire comme ci-dessous:
 
    #+BEGIN_SRC shell
 operations count:
@@ -115,6 +131,14 @@ operations count:
 
    Le problème avec cette dernière version est qu'elle est moins lisible que
    la précédente où toutes les informations sont alignés.
+
+   Cette fonctionnalité supplémentaire pourra permettre aux utilisateur de
+   pouvoir très simplement voir si leurs code est vectorisé sans passé par le
+   code assembleur. De plus les outils qui permettents d'évaluer le taux de
+   vectorisation des opérations dans un code mélange les opérations sur les
+   entiers avec celles des opérations flottantes. D'où un intérêt particulier
+   d'utiliser cette fonctionnalité sur un code de calcul utilisant des nombres
+   flottants.
    
 *** Tests
 
@@ -134,7 +158,8 @@ operations count:
 
     Prenons comme exemple une précision de 3 et une portée de 2 pour un type
     flottant simple précision (donc nous avons 1 bit de signe, 2 bit d'exposant
-    et 3 bit de pseudo-mantisse). Prenons [[stdieee][la formule du standard *IEEE*]] qui est:
+    et 3 bit de pseudo-mantisse). Prenons [[stdieee][la formule du standard *IEEE754*]] qui
+    est:
     (-1)^S * 2^(E - (2^(e - 1) - 1)) * (1 + P / 2^p)
     - *plus petit normal:* 0
     - *plus grand normal:* 1,75 (2^1 * (7 / 8))
@@ -143,7 +168,21 @@ operations count:
     - *infini*: nombre supérieur à 1,75 ou inférieur à 0,125
 
     Voir la [[figure 1][figure 1]].
-   
+
+**** Parenthèse sur notre mini code pour afficher les flottants sous différents formats
+     
+     Nous avons aussi écrit un mini code qui permet de visualiser sous différent
+     format les flottants simple et double précision, ce qui nous à aidé à
+     vérifier si nos calcul était juste pour créer cette partie et ce schéma.
+     https://github.com/Safecarlo/print_floating_point
+
+     Les résultats affichés sont sous le format *IEEE754*. Donc si on utilise
+     *verificarlo* avec son backend *vprec* qui nous permet de simulé une
+     précision custom sur les calculs, c'est pourquoi nous faisons une addition
+     avec *0* pour l'activer, alors le résultat peut sembler faux mais est
+     correct du fait que c'est une simulation et que le stockage reste sous le
+     format *IEEE754*.
+
 *** Tests
 
     Tout d'abord comme pour le premier semestre nous avons ajouté des tests pour
@@ -151,10 +190,10 @@ operations count:
     avons choisis de faire des tests simple c'est pourquoi nous avons modifié
     le test *tests_vprec_backend_simple*.
 
-    Pour ce faire nous avons "copié/collé" les input scalaires car nous étions
-    sûr que c'est input fonctionne. Notre code prend donc 2 line d'entrée car il
-    ne test que les vecteurs de taille 2 (c'est pourquoi il prends 2 ligne
-    d'entrée). La première ligne correspond au premier élément de chaque vecteur
+    Pour ce faire nous avons "copié/collé" les entrées scalaires car nous étions
+    sûr que ces entrées fonctionnaient. Notre code prend donc 2 lignes d'entrées car il
+    ne test que les vecteurs de taille 2 (c'est pourquoi il prends 2 lignes
+    d'entrées). La première ligne correspond au premier élément de chaque vecteur
     d'entrée (a et b), et la deuxième ligne le deuxième élément de chaque
     vecteur. Il garde ainsi les mêmes opérations que pour les scalaires ce qui
     peut facilité le changement d'un calcul si jamais il s'avère qu'il y en est
@@ -333,17 +372,22 @@ typedef union {
      notre programme au dernier cœur de notre processeur pour l'éloigner le plus
      possible du cœur 0 qui est le cœur privilégier du système d'exploitation.
 
+**** Définitions des micro benchmark
+
+      Les micro-benchmark sont les boucles qui font le calcul que l'on mesure,
+      comme l'addition, la soustraction, la multiplication et la division.
+      
 **** Métriques
 
      Nous avons aussi vu les métriques à prendre en compte, comme le temps que
      prend notre micro-benchmark. Mais pour s'assurer que le temps ne soit pas
-     faussé il faut calculer la écart type qui indique l'écart moyen
+     faussé il faut calculer l'écart type qui indique l'écart moyen
      entre chaque échantillon. Il nous faut donc aussi plusieurs échantillons
      / exécutions du micro-benchmark à évaluer. Pour ce qui est du seuil de
      validation, il est un peu arbitraire. Il faudrait voir selon notre benchmark
      quel est le seuil pour lequel on peut dire que la mesure n'est pas faussé
-     mais nous n'avons pas vraiment pris le temps de le faire. Donc le seuil de
-     6% est plus la à titre représentatif.
+     Pour approfondir, sur des bencmarks plus compliqués il faudra bien
+     identifié le seuil. Ici le seuil de 6% est à titre représentatif.
 
 **** Sauvegarde des résultats bruts
      
@@ -357,11 +401,6 @@ typedef union {
      condition.
 
 **** Explication du calcul des métriques
-***** Définitions des micro benchmark
-
-      Les micro-benchmark sont les boucles qui font le calcul que l'on mesure,
-      comme l'addition, la soustraction, la multiplication et la division.
-      
 ***** Nombres d'exécutions des micro-benchmark
 
       Le nombre d'exécution des micro-benchmark est choisis arbitrairement. Il
@@ -415,24 +454,35 @@ typedef union {
       
 ***** Accélération
 
-      Les accélérations calculées correspondent pour la première barre l’accélération de la
-      *version sérial* d'une opération vectorielle par rapport à l'opération
-      scalaire. Pour la deuxième barre l’accélération de la *version vectorielle* d'une
-      opération vectorielle par rapport à l'opération scalaire. Et pour la
-      dernière barre l’accélération de la *version vectorielle* par rapport à la
-      *version sérial* pour la même taille de vecteur.
+      Les accélérations calculées correspondent:
+      - pour la première barre à l’accélération de la
+        *version sérial* d'une opération vectorielle, c'est-à-dire une opération
+        avec des vecteurs de 2 à 16 flottants qui est calculé non pas
+        vectoriellement mais élément par élément, par rapport à l'opération
+        scalaire, qui est une opération entre deux flottants.
+      - pour la deuxième barre à l’accélération de la *version vectorielle* d'une
+        opération vectorielle, c'est-à-dire une opération avec des vecteurs de 2
+        à 16 flottants qui est calculé vectoriellement, par rapport à
+        l'opération scalaire, qui est une opération entre deux flottants.
+      - pour la dernière barre à l’accélération de la *version vectorielle* par
+        rapport à la *version sérial* pour la même taille de vecteur,
+        c'est-à-dire que le compart le temps avec une taille de vecteur de 2
+        flottants pour les 2 versions puis de 4 etc...
     
 *** Résultat
 **** Ecart type
      
      Bien que nous utilisions une machine virtuelle, nous pouvons voir que les
-     résultats sont assez stable excepté 1 ou 2 fois. (voir les figures [[figure 3][3]], [[figure 5][5]] et [[figure 6][6]])
+     résultats sont assez stable excepté 3 ou 4 fois. (voir les figures [[figure 3][3]], [[figure 5][5]] et [[figure 6][6]])
 
 **** Backend IEEE
 
      Pour ce qui concerne le backend *ieee* (voir la figure [[figure 2][2]]), nous avons une
      accélération d'environ de la moitié du maximum possible et les résultats sont
      assez semblable suivant le type d'opération.
+
+     Le gain de vitesse obtenu peut atteindre jusqu'à 4 si nous utilisons des
+     vecteurs de 8 flottants simple précision avec ce backend.
 
 **** Backend VPREC
 
@@ -443,28 +493,64 @@ typedef union {
      car dans le cas où le vecteur final ne contient que des nombres normaux le
      calcul est vectorisé.
 
-**** Conclusion
+     Comme pour le backends *ieee*, nous pouvons atteindre un gain de 4 en
+     accélération si on utilise des vecteurs de 8 flottants simple précision
+     avec ce backend.
 
-     La différence est flagrante mais le calcul des nombres dénormaux va plus
-     vite sur notre branche. On peut se demander si le fait de faire moins
-     d'appel de fonction joue donc un grand rôle sur le gain de notre
-     implémentation. C'est pourquoi nous avons fait une version sérialisée ou on
-     appelle les fonctions qui s'occupe des nombres normaux à partir de notre
-     implémentation pour voir les performances.
+**** Remarque sur les résultats du backends VPREC et nouveaux test
+
+     La différence entre le calcul avec des vecteurs de nombres normaux et du
+     calcul avec des vecteurs de nombres dénormaux est flagrante mais le calcul
+     des nombres dénormaux va plus vite sur notre branche (environ 1 MFLOP ce
+     qui n'est pas beaucoup comparé au gain des nombres normaux).
+
+     On peut se demander si le fait de faire moins d'appel de fonction joue
+     un grand rôle sur le gain de notre implémentation. C'est pourquoi nous
+     avons fait une version sérialisée ou on appelle les fonctions qui s'occupe
+     des nombres normaux à partir de notre implémentation pour voir les
+     performances.
 
      Nous avons donc mesuré les performances pour cette nouvelle implémentation
      et l'avons comparé avec la version vectorisé sur le même graphique afin de
      voir la proportion que prend la réduction des appels dans le gain de temps
      et on peut dire qu'elle prend environ 1/4 du gain. Donc le gain pur pour la
-     vectorisation est en fait de 3/4 du gain.
+     vectorisation est en fait de 3/4 du gain pour les vecteurs contenant que
+     des nombres normaux.
+
+**** Conclusion
 
      Nous pouvons donc constater que le gain apporté avec notre implémentation
      est d'environ la moitié de ce que l'on peut espérer en vectorisant des
-     opérations. Il est donc possible de faire une implémentation plus efficace
-     qui sera détaillé dans la conclusion de la vectorisation.
+     opérations. Bien qu'apportant un gain significatif par rapport à la version
+     courante de *verificarlo*, il reste un potentiel d'optimisation non
+     exploité. Afin d'ameliorer l'implementation que nous avons proposé, nous
+     avons identifié des hypothèses de travaux futurs que nous détaillerons en
+     conclusion.
 
-** Mise au point sur le non support des tailles de vecteurs plus grandes que celles supportés
 ** Conclusion de la vectorisation
+
+   Pour conclure, les résultats obtenus correspondent à nos attentes bien qu'il
+   reste une marge de gain potentiel. Effectivement comme dis précédement il est
+   donc possible de faire une implémentation plus efficace en supprimant par
+   exemples la factorisation du nombre de fonctions dans l'interface des
+   backends.
+
+   Si vous ne vous en rappelez pas, les opérations flottantes sont
+   remplacés par les appels aux wrappers qui appellent les fonctions de
+   l'interface avec les backends. Mais nous avions décidé de mettre en paramètre
+   la taille des vecteurs ce qui nous économisait de faire plus de fonction (1
+   pour chaque opération donc 8 au total au lieu de 4 pour chaque opération donc
+   16 au total). Mais avec cela nous testons la taille du vecteur dans des
+   conditions pour appelé les bonnes fonctions avec les bon types
+   vectoriels. C'est pourquoi nous pensons que le fait de rajouter une fonction
+   dans l'interface pour chaque taille nous fera gagné du temps.
+
+   Grâce à notre effort, les utilisateurs pourront bénéficier d'un gain en
+   performance sur leurs code de calcul en activant la vectorisation à la
+   compilation. Ils pourront bénéficier d'un gain jusqu'à 4 fois moins de temps
+   si ils utilisent des vecteurs de 8 nombres flottant simple précision. Ce qui
+   permettra de réduire le temps, les ressources et l'énergie consommé.
+
 * Support de la parallélisation
 ** Introduction
 
@@ -583,9 +669,9 @@ typedef union {
     https://sifflez.org/lectures/archi-ord/AideMemoireIEEE754.pdf
   - Extension des vecteurs de Clang, Clang / LLVM,
     https://clang.llvm.org/docs/LanguageExtensions.html#vectors-and-extended-vectors
-  - Benchmark de NAS Parallèle ave MPI, NASA
+  - Benchmark de NAS Parallèle avec MPI et OpenMP en fortran, NASA
     https://www.nas.nasa.gov/publications/npb.html
-  - Benchmark de NAS Parallèle avec OpenMP,
+  - Benchmark de NAS Parallèle avec OpenMP en C,
     https://github.com/benchmark-subsetting/NPB3.0-omp-C
 
 * Annexe

@@ -381,7 +381,8 @@ typedef union {
      / exécutions du micro-benchmark à évaluer. Pour ce qui est du seuil de
      validation, il est un peu arbitraire. Il faudrait voir selon notre benchmark
      quel est le seuil pour lequel on peut dire que la mesure n'est pas faussé
-     Donc le seuil de 6% est plus la à titre représentatif.
+     Pour approfondir, sur des bencmarks plus compliqués il faudra bien
+     identifié le seuil. Ici le seuil de 6% est à titre représentatif.
 
 **** Sauvegarde des résultats bruts
      

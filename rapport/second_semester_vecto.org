@@ -570,7 +570,7 @@ typedef union {
   demande un nombre de coeur qui répresente le carré d'un nombre. La figure suivant répresente le résume 
   du compilation du benchmark BT:
   
-   <<figure 1>>
+   <<figure a>>
    #+CAPTION: Rappel des cas spéciaux
    #+NAME: fig:Résume BT benchmark
    #+ATTR_LATEX: :width 500px
@@ -579,7 +579,7 @@ typedef union {
    Après avoir compile et éxecuté le benchmarck bt, la vectorisation au niveau du programme est répresenter
    dans la figure suivante:
    
-    <<figure 2>>
+    <<figure b>>
    #+CAPTION: Vectorisation au niveau du benckmark BT
    #+NAME: fig:Résume BT benchmark
    #+ATTR_LATEX: :width 500px
@@ -591,7 +591,7 @@ typedef union {
    Pour bien observer le niveau de véctorisation sur le benchmark BT, on a récuperé une source de benchmark qui est écrit avec
    le langace C et parallèliser avec openmp.
    Les figures suivantes répresenter l'évaluation des véctorisations au niveau du benchmark BT avec 8 threads:
-   <<figure 3>>
+   <<figure c>>
    #+CAPTION: Vectorisation au niveau u benckmark BT
    #+NAME: fig:Résume BT benchmark
    #+ATTR_LATEX: :width 500px
@@ -618,7 +618,7 @@ typedef union {
 * Annexe
 ** Rappel des cas spéciaux
 
-    <<figure 4>>
+    <<figure 1>>
    #+CAPTION: Rappel des cas spéciaux
    #+NAME: fig:rappel_des_cas_speciaux
    #+ATTR_LATEX: :width 500px
@@ -627,37 +627,37 @@ typedef union {
 ** Résultat
 *** Sur une machine virtuel
 
-    <<figure 5>>
+    <<figure 2>>
     #+CAPTION: Résultat du backend IEEE
     #+NAME: fig:res_vm_ieee
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_ieee.png]]
 
-    <<figure 4>>
+    <<figure 3>>
     #+CAPTION: Dérivation standart du backend IEEE
     #+NAME: fig:stddev_vm_ieee
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_ieee_stddev.png]]
 
-    <<figure 6>>
+    <<figure 4>>
     #+CAPTION: Résultat du backend VPREC
     #+NAME: fig:res_vm_vprec
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_vprec.png]]
 
-    <<figure 7>>
+    <<figure 5>>
     #+CAPTION: Dérivation standart du backend VPREC avec des nombres normaux
     #+NAME: fig:stddev_vm_vprec_normal_stddev
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_vprec_normal_stddev.png]]
 
-    <<figure 8>>
+    <<figure 6>>
     #+CAPTION: Dérivation standart du backend VPREC avec des nombres dénormaux
     #+NAME: fig:stddev_vm_vprec_denormal_stddev
     #+ATTR_LATEX: :width 500px
     [[../ressources/vm_vprec_denormal_stddev.png]]
 
-    <<figure 8>>
+    <<figure 7>>
     #+CAPTION: Résultat du backend VPREC entre l'implémentaion sérial et l'implémentation vectorielle des nombres normaux
     #+NAME: fig:res_vm_vprec_vs
     #+ATTR_LATEX: :width 500px

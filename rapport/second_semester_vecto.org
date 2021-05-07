@@ -468,6 +468,7 @@ typedef union {
 * Support de la parallélisation
 
 **Introduction
+
   Avant de commencer avec les benchmark NAS parallèle avec un peut d’historique .
   Les benchmarks traditionnels existant bien avant les NPB étaient généralement limités
   pour être spécialisé pour les ordinateurs vectoriels.Du coup malgré leurs capacités ils ont toujours des
@@ -484,6 +485,7 @@ typedef union {
   Pour definir les NAS, c'est un outil développés et améliorer pour évaluer la perfomances des super calculateur.
   
 ** Evolution des NAS Benchmarks Parallèle
+
   Comme tous les outils et programmes, le NPB pendant son évolution et
   développement est passé par plusieurs phase et plusieurs versions amélioré
   avec le temps et dépendant des besoins et problème rencontrés ; pour cela
@@ -492,6 +494,7 @@ typedef union {
   version.
   
   *** La version NPB1:
+  
   NPB1 est la première version appliquée, ces spécifications sont implémentées en utilisant des algorithmes et des
   modèles de programmation adaptés à leurs différentes machines.Dans cette version, ils ont utilises des algorithmes 
   spécifier pour l’ensemble des problèmes rencontrés a des points de référence qui puissent assurer :
@@ -501,6 +504,7 @@ typedef union {
   et communication multicœurs.
   
   *** La version NPB2:
+  
   Après avoir utilisé la version NPB1 , des problèmes de performances ainsi que du parallélisme sont résolus, 
   d’un autre coté des problèmes et faiblesses nouveaux sont rencontrés. La majorité des implémentations NPB 
   n’ont pas entaient a la porté du grand public qui veut travailler dessus, en cachant leurs techniques d’optimisations 
@@ -514,6 +518,7 @@ typedef union {
   - Et enfin la version NPB2 a permis d’être implémenter des codes basé sur MPI .
   
  ***  La version NPB3:
+ 
  Après l’apparition et l’implémentation de la version NPB2 MPI; la version NPB3 est apparue et a conservé l’implémentation
  dans MPI vue en NPB2 et a effectué des améliorations afin d’être implémenté dans OpenMP.
  Mais en plus de ça des implémentations qui étais en série dans NPB2 , sont amélioré afin d’être en parallèle avec des 
@@ -523,10 +528,12 @@ typedef union {
  dynamique.
 
  ** Spécification des références
+ 
   Ils existent plusieurs types de benchmark dont on va citer après. Les types des benchmarks sont différent 
   d’une version à une autre , chaque version a ses propres spécifications.
   
-  ****cinq noyaux :
+  **** Cinq noyaux :
+  
   -IS : Il consiste le tri d’entiers et l’accès en mémoire aléatoire.
   -EP : embrassement parallèle : dans le calcul parallèle, une charge de
         travail où un problème est parallèlement embarrassant ou parfaitement
@@ -539,19 +546,22 @@ typedef union {
    -FT : Transformé de fourrier permet de résoudre les équations
           différentielles partielles en 3D et communication tous à tous.
           
-   ****Trois pseudos applications :
+   **** Trois pseudos applications :
+   
     Ils existe 3 types de pseudo application pour le NPB:
     - solveur tri_diagonale de blocs (BT) 
     - solveur scalaire pentadiagonale (SP)
     - solveur Gauss Seidel inférieur ou supérieur(LU)
     
-   ****Classes de référence pour le NPB:
+   **** Classes de référence pour le NPB:
+   
    Ils existent plusieurs classes pour NPB,et que chaque classe a ces propres caractéristiques.
    - Classes A , B , C utilisées pour les problèmes de tests standards.
    - Classes D , E , F utilisée pour les gros problèmes de tests 
    - Classe S pour des tests rapides .
    
-  **Résultats et discussion
+  ** Résultats et discussion
+  
   Pour les tests, vu que nos machine ne supporte pas les tailles pour les tests standard et gros problème,
   donc on est reste sur la classe "S". Ici on a utilise comme compilateur la nouvelle version de verificarlo,
   c'est à dire la version vectorisé.

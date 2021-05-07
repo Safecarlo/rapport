@@ -536,14 +536,18 @@ typedef union {
 **** Cinq noyaux :
   
   -IS : Il consiste le tri d’entiers et l’accès en mémoire aléatoire.
+  
   -EP : embrassement parallèle : dans le calcul parallèle, une charge de
         travail où un problème est parallèlement embarrassant ou parfaitement
         parallèle est celui ou peu d’effort est nécessaire pour séparer le problème
         en un certain nombre de taches parallèles.
+        
   -CG : gradient conjugué , veut dire l’accès irrégulier à la mémoire .
+  
   -MG : multi-grille ,sur une séquence de maillage , la communication
         courte et longue distance. Donc L'idée principale du multi grille est
          d'accélérer la convergence d'une méthode itérative de base.
+         
    -FT : Transformé de fourrier permet de résoudre les équations
          différentielles partielles en 3D et communication tous à tous.
           
@@ -551,7 +555,9 @@ typedef union {
    
     Ils existe 3 types de pseudo application pour le NPB:
     - solveur tri_diagonale de blocs (BT) 
+    
     - solveur scalaire pentadiagonale (SP)
+    
     - solveur Gauss Seidel inférieur ou supérieur(LU)
     
 **** Classes de référence pour le NPB:

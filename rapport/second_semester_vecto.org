@@ -493,7 +493,7 @@ typedef union {
   spécification a des référence plus améliorées par rapport à l’ancienne
   version.
   
-  *** La version NPB1:
+*** La version NPB1:
   
   NPB1 est la première version appliquée, ces spécifications sont implémentées en utilisant des algorithmes et des
   modèles de programmation adaptés à leurs différentes machines.Dans cette version, ils ont utilises des algorithmes 
@@ -503,7 +503,7 @@ typedef union {
   -Faciliter de travailler et de s’adapter avec les systèmes multicœurs fiable ,ainsi que la facilité de la distribution
   et communication multicœurs.
   
-  *** La version NPB2:
+*** La version NPB2:
   
   Après avoir utilisé la version NPB1 , des problèmes de performances ainsi que du parallélisme sont résolus, 
   d’un autre coté des problèmes et faiblesses nouveaux sont rencontrés. La majorité des implémentations NPB 
@@ -517,7 +517,7 @@ typedef union {
   modification des résultats.
   - Et enfin la version NPB2 a permis d’être implémenter des codes basé sur MPI .
   
- ***  La version NPB3:
+***  La version NPB3:
  
  Après l’apparition et l’implémentation de la version NPB2 MPI; la version NPB3 est apparue et a conservé l’implémentation
  dans MPI vue en NPB2 et a effectué des améliorations afin d’être implémenté dans OpenMP.
@@ -527,12 +527,12 @@ typedef union {
  du modèle de programmation hybride MPI / OpenMP a été publié pour tester l'efficacité des paradigmes ,ainsi que l’allocation de mémoire
  dynamique.
 
- ** Spécification des références
+** Spécification des références
  
   Ils existent plusieurs types de benchmark dont on va citer après. Les types des benchmarks sont différent 
   d’une version à une autre , chaque version a ses propres spécifications.
   
-  **** Cinq noyaux :
+**** Cinq noyaux :
   
   -IS : Il consiste le tri d’entiers et l’accès en mémoire aléatoire.
   -EP : embrassement parallèle : dans le calcul parallèle, une charge de
@@ -546,21 +546,21 @@ typedef union {
    -FT : Transformé de fourrier permet de résoudre les équations
           différentielles partielles en 3D et communication tous à tous.
           
-   **** Trois pseudos applications :
+**** Trois pseudos applications :
    
     Ils existe 3 types de pseudo application pour le NPB:
     - solveur tri_diagonale de blocs (BT) 
     - solveur scalaire pentadiagonale (SP)
     - solveur Gauss Seidel inférieur ou supérieur(LU)
     
-   **** Classes de référence pour le NPB:
+**** Classes de référence pour le NPB:
    
    Ils existent plusieurs classes pour NPB,et que chaque classe a ces propres caractéristiques.
    - Classes A , B , C utilisées pour les problèmes de tests standards.
    - Classes D , E , F utilisée pour les gros problèmes de tests 
    - Classe S pour des tests rapides .
    
-  ** Résultats et discussion
+** Résultats et discussion
   
   Pour les tests, vu que nos machine ne supporte pas les tailles pour les tests standard et gros problème,
   donc on est reste sur la classe "S". Ici on a utilise comme compilateur la nouvelle version de verificarlo,

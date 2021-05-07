@@ -483,7 +483,7 @@ typedef union {
   Les NAS parallèle benchmarks (NPB) sont été développés au centre de la recherche de la NASA. Ce sont une suite de 
   benchmarks améliorées afin d’augmenter et d’améliorer les performances informatique parallèles qui est faible 
   dans les benchmarks traditionnels. Pour definir les NAS, c'est un outil développés et améliorer pour évaluer 
-  la perfomances des super calculateur.
+  la perfomances des supers calculateurs.
   
 ** Evolution des NAS Benchmarks Parallèle
 

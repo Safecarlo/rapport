@@ -372,6 +372,11 @@ typedef union {
      notre programme au dernier cœur de notre processeur pour l'éloigner le plus
      possible du cœur 0 qui est le cœur privilégier du système d'exploitation.
 
+**** Définitions des micro benchmark
+
+      Les micro-benchmark sont les boucles qui font le calcul que l'on mesure,
+      comme l'addition, la soustraction, la multiplication et la division.
+      
 **** Métriques
 
      Nous avons aussi vu les métriques à prendre en compte, comme le temps que
@@ -396,11 +401,6 @@ typedef union {
      condition.
 
 **** Explication du calcul des métriques
-***** Définitions des micro benchmark
-
-      Les micro-benchmark sont les boucles qui font le calcul que l'on mesure,
-      comme l'addition, la soustraction, la multiplication et la division.
-      
 ***** Nombres d'exécutions des micro-benchmark
 
       Le nombre d'exécution des micro-benchmark est choisis arbitrairement. Il

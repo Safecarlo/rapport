@@ -467,7 +467,7 @@ typedef union {
 ** Conclusion de la vectorisation
 * Support de la parallélisation
 
-**Introduction
+** Introduction
 
   Avant de commencer avec les benchmark NAS parallèle avec un peut d’historique .
   Les benchmarks traditionnels existant bien avant les NPB étaient généralement limités
@@ -520,13 +520,13 @@ typedef union {
   
 ***  La version NPB3:
  
- Après l’apparition et l’implémentation de la version NPB2 MPI; la version NPB3 est apparue et a conservé l’implémentation
- dans MPI vue en NPB2 et a effectué des améliorations afin d’être implémenté dans OpenMP.
- Mais en plus de ça des implémentations qui étais en série dans NPB2 , sont amélioré afin d’être en parallèle avec des 
- optimisations supplémentaire. Ainsi que NPB3 a rajouté de nouvelle références tel que : l’ajout d’outils
- de parallélisation multi-niveau et hybrides.et aussi un ensemble de benchmarks multi-zone un ensemble de benchmarks multi-zone tirant parti
- du modèle de programmation hybride MPI / OpenMP a été publié pour tester l'efficacité des paradigmes ,ainsi que l’allocation de mémoire
- dynamique.
+  Après l’apparition et l’implémentation de la version NPB2 MPI; la version NPB3 est apparue et a conservé l’implémentation
+  dans MPI vue en NPB2 et a effectué des améliorations afin d’être implémenté dans OpenMP.
+  Mais en plus de ça des implémentations qui étais en série dans NPB2 , sont amélioré afin d’être en parallèle avec des 
+  optimisations supplémentaire. Ainsi que NPB3 a rajouté de nouvelle références tel que : l’ajout d’outils
+  de parallélisation multi-niveau et hybrides.et aussi un ensemble de benchmarks multi-zone un ensemble de benchmarks multi-zone tirant parti
+  du modèle de programmation hybride MPI / OpenMP a été publié pour tester l'efficacité des paradigmes ,ainsi que l’allocation de mémoire
+  dynamique.
 
 ** Spécification des références
  

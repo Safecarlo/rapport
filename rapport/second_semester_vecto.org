@@ -591,7 +591,6 @@ typedef union {
    Pour bien observer le niveau de véctorisation sur le benchmark BT, on a récuperé une source de benchmark qui est écrit avec
    le langace C et parallèliser avec openmp.
    Les figures suivantes répresenter l'évaluation des véctorisations au niveau du benchmark BT avec 8 threads:
-   
    <<figure 3>>
    #+CAPTION: Vectorisation au niveau u benckmark BT
    #+NAME: fig:Résume BT benchmark

@@ -300,91 +300,168 @@ typedef union {
 
 ** Benchmark
 *** Explication
+**** But
+     
+     Le but du *benchmark* est de tester les performances de notre implémentation
+     vectorielles en les comparant avec la version scalaire. Seul le format
+     simple précision est testé ainsi que les tailes de vecteur pour *SSE* et
+     *AVX* donc les vecteurs de 2, 4 et 8 simple précision. Nous n'avons pas mis
+     le vecteur de 16 simple précision car très peu de processeur le possède et
+     cela nous ferai une case vide pour nos plot si on gardait les mêmes
+     scripts. Pour ce qui est des doubles précisions, c'est aussi pour des
+     raisons de script car le vecteur de 16 double précision n'existe pas
+     vraiment et donc il n'y a que 3 taille de vecteur, contrairement au simple
+     précision qui en a 4.
 
-    Le but du *benchmark* est de tester les performances de notre implémentation
-    vectorielles en les comparant avec la version scalaire. Seul le format
-    simple précision est testé ainsi que les tailes de vecteur pour *SSE* et
-    *AVX* donc les vecteurs de 2, 4 et 8 simple précision. Nous n'avons pas mis
-    le vecteur de 16 simple précision car très peu de processeur le possède et
-    cela nous ferai une case vide pour nos plot si on gardait les mêmes
-    scripts. Pour ce qui est des doubles précisions, c'est aussi pour des
-    raisons de script car le vecteur de 16 double précision n'existe pas
-    vraiment et donc il n'y a que 3 taille de vecteur, contrairement au simple
-    précision qui en a 4.
+**** Backend testé
+     
+     Le benchmark test les backends *ieee* et *vprec*, qui pour ce dernier test
+     le cas où l'opération donne un vecteur avec uniquement des nombres normaux
+     car c'est le cas que nous avons vectorisé et le cas où l'opération donne un
+     vecteur contenant uniquement des nombres dénormaux, qui est un cas non
+     vectorisés. Et nous utilisons le mode par défaut où uniquement le vecteur
+     final est traité spécifiquement par le backend *vprec*.
 
-    Le benchmark test les backends *ieee* et *vprec*, qui pour ce dernier test
-    le cas où l'opération donne un vecteur avec uniquement des nombres normaux
-    car c'est le cas que nous avons vectorisé et le cas où l'opération donne un
-    vecteur contenant uniquement des nombres dénormaux, qui est un cas non
-    vectorisés. Et nous utilisons le mode par défaut où uniquement le vecteur
-    final est traité spécifiquement par le backend *vprec*.
+**** Avant de faire les mesures de performances
+     
+     Nous avons utiliser ce que nous avons appris au premier semestre dans le
+     cours d'Architecture Parallèle pour mesurer les performances. C'est à dire
+     que nous avons changer le gouverneur du processeur en espace utilisateur
+     pour pouvoir affecter la fréquence maximum de notre processeur (sauf pour la
+     machine virtuel ou nous ne pouvons pas mais elle est ici car sur
+     l'ordinateur portable nous n'avons pas *AVX*). De plus nous avons affecter
+     notre programme au dernier coeur de notre processeur pour l'éloigner le plus
+     possible du coeur 0 qui est le coeur privilégier du système d'exploitation.
 
-    Nous avons utiliser ce que nous avons appris au premier semestre dans le
-    cours d'Architecture Parallèle pour mesurer les performances. C'est à dire
-    que nous avons changer le gouverneur du processeur en espace utilisateur
-    pour pouvoir affecter la fréquence maximum de notre processeur (sauf pour la
-    machine virtuel ou nous ne pouvons pas mais elle est ici car sur
-    l'ordinateur portable nous n'avons pas *AVX*). De plus nous avons affecter
-    notre programme au dernier coeur de notre processeur pour l'éloigner le plus
-    possible du coeur 0 qui est le coeur privilégier du système d'exploitation.
+**** Métriques
 
-    Nous avons aussi vu les métriques à prendre en compte, comme le temps que
-    prend notre micro-benchmark. Mais pour s'assurer que le temps ne soit pas
-    faussé il faut calculer la déviation standart qui indique l'écart moyen
-    entre chaque échantillon. Il nous faut donc aussi plusieurs échantillons
-    / executions du micro-benchmark à évaluer. Pour ce qui est du seuil de
-    validation, il est un peu arbitraire. Il faudrai voir selon notre benchmark
-    quelle est le seuil pour lequel on peut dire que la mesure n'est pas faussé
-    mais nous n'avons pas vraiment pris le temps de le faire. Donc le seuil de
-    6% est plus la pour indication.
+     Nous avons aussi vu les métriques à prendre en compte, comme le temps que
+     prend notre micro-benchmark. Mais pour s'assurer que le temps ne soit pas
+     faussé il faut calculer la écart type qui indique l'écart moyen
+     entre chaque échantillon. Il nous faut donc aussi plusieurs échantillons
+     / executions du micro-benchmark à évaluer. Pour ce qui est du seuil de
+     validation, il est un peu arbitraire. Il faudrai voir selon notre benchmark
+     quelle est le seuil pour lequel on peut dire que la mesure n'est pas faussé
+     mais nous n'avons pas vraiment pris le temps de le faire. Donc le seuil de
+     6% est plus la à titre représentatif.
 
-    Nous avons aussi appris qu'il fallait gardé les résultats brut afin de
-    pouvoir comparer avec une autre machine, chose que nous faisons.
+**** Sauvegarde des résultats bruts
+     
+     Nous avons aussi appris qu'il fallait gardé les résultats brut afin de
+     pouvoir comparer avec une autre machine, chose que nous faisons.
 
-    Les résultats espérer avec notre implémentation est à peut près la moitier
-    du maximum possible car beaucoup d'appel de fonction sont fait ainsi que de
-    condition.
+**** Résultat espérer
+ 
+     Les résultats espérer avec notre implémentation est à peut près la moitier
+     du maximum possible car beaucoup d'appel de fonction sont fait ainsi que de
+     condition.
 
-    Les speedups calculés corespondent pour la première barre le speedup de la
-    *version sérial* d'une opération vectorielle par rapport à l'opération
-    scalaire. Pour la deuxième barre le speedup de la *vesion vectorielle* d'une
-    opération vectorielle par rapport à l'opération scalaire. Et pour la
-    dernière barre le speedup de la *version vectorielle* par rapport à la
-    *version sériale* pour la même taille de vecteur.
+**** Explication du calcul des métriques
+***** Définitions des micro benchmark
+
+      Les micro-benchmark sont les boucles qui font le calcul que l'on mesure,
+      comme l'addition, la soustraction, la multiplication et la division.
+      
+***** Nombres d'exécutions des micro-benchmark
+
+      Le nombre d'exécution des micro-benchmark est choisis arbitrairement. Il
+      nous a paru que 30 était suffisant pour évaluer si les mesures était
+      faussé ou non.
+      
+***** Nombres d'opérations
+
+      Le nombre d'opération à été choisis abritrairement de façon à mesurer un
+      temps de calcul raisonnable pour ne pas faussé les mesures de temps de
+      chaque exécution des micro-benchmark.
+
+      Ici nous avons choisis 1.000.000 d'opérations globales, soit 1 MFLOP.
+
+      Pour ce qui est du nombre d'opération pour un vecteur de 1 simple
+      précision, cela ne change pas, il est de 1 MFLOP.
+
+      Par contre, pour les vecteurs de 2, 4 et 8 simple précision nous divison
+      bien évidement par ce nombre le nombre d'opération global. C'est-à-dire
+      que pour un vecteur de 2 nous ferons 500.000 opérations avec des vecteurs
+      de 2 simple précision ce qui nous amène au final à faire 1 MFLOP.
+
+      Nous n'avons pas de soucis de décomposition car le nombre global
+      d'opération est assez grand pour que la division entière donne un nombre
+      entier d'opérations vectorielles.
+
+***** Temps
+
+      Si le temps est faussé, c'est-à-dire que l'on a eu un overflow de
+      l'horloge et donc que le temps de fin est inférieur au temps de départ
+      alors on répète l'exécution.
+
+      Si le temps est bon alors on le stocke dans un tableau qui contiendra les
+      temps de chaque exécution.
+
+      Les temps sont calculé en nano-secondes pour plus de précisions et son
+      rammené en seconde en multipliant par 1.000.000 (10e^9).
+
+      Une fois les temps calculés nous calculons la moyenne de ces temps afin de
+      fournir à l'utilisateur le temps moyens au lieu d'un temps bruts pour
+      évité de faussé les mesures.
+      
+***** Ecart type
+
+      L'écart type est calculé comme dans so formule mathématique c'est à dire
+      la racine carré de la variance. C'est-à-dire la différence au carré de
+      chaque temps moins le temps moyens, divisé par le nombre de l'échantillon,
+      le tout dans une racine carré.
+
+      stddev = sqrt(var) = sqrt((sum((x - m)^2)) / n)
+      
+***** Speedup
+
+      Les speedups calculés corespondent pour la première barre le speedup de la
+      *version sérial* d'une opération vectorielle par rapport à l'opération
+      scalaire. Pour la deuxième barre le speedup de la *vesion vectorielle* d'une
+      opération vectorielle par rapport à l'opération scalaire. Et pour la
+      dernière barre le speedup de la *version vectorielle* par rapport à la
+      *version sériale* pour la même taille de vecteur.
     
 *** Résultat
+**** Ecart type
+     
+     Bien que nous utilisions une machine virtuelle, nous pouvons voir que les
+     résultats sont assez stable exepté 1 ou 2 fois. (voir les figures [[figure 3][3]], [[figure 5][5]] et [[figure 6][6]])
 
-    Bien que nous utilisions une machine virtuelle, nous pouvons voir que les
-    résultats sont assez stable exepté 1 ou 2 fois. (voir les figures [[figure 3][3]], [[figure 5][5]] et [[figure 6][6]])
+**** Backend IEEE
 
-    Pour ce qui concerne le backend *ieee* (voir la figure [[figure 2][2]]),nous avons un
-    speedup d'environ de la moitier du maximum possible et les résultats sont
-    assez semblable suivant le type d'opération.
+     Pour ce qui concerne le backend *ieee* (voir la figure [[figure 2][2]]),nous avons un
+     speedup d'environ de la moitier du maximum possible et les résultats sont
+     assez semblable suivant le type d'opération.
 
-    Pour ce qui concerne le backend *vprec* (voir la figure [[figure 4][4]]), nous pouvons
-    constater que pour une opération où le vecteur final contient que des
-    nombres normaux va beaucoup plus vite à être calculer qu'une opération où le
-    vecteur final contient uniquement des nombres dénormaux. Ce qui est normal
-    car dans le cas où le vecteur final ne contient que des nombres normaux le
-    calcul est vectorisé.
+**** Backend VPREC
 
-    La différence est flagrante mais le calcul des nombres dénormaux va plus
-    vite sur notre branche. On peut se demander si le fait de faire moins
-    d'appel de fonction joue donc un grand rôle sur le gain de notre
-    implémentation. C'est pourquoi nous avons fait une version sérialisé ou on
-    appelle les fonctions qui s'occupe des nombres normaux à partir de notre
-    implémentation pour voir les performances.
+     Pour ce qui concerne le backend *vprec* (voir la figure [[figure 4][4]]), nous pouvons
+     constater que pour une opération où le vecteur final contient que des
+     nombres normaux va beaucoup plus vite à être calculer qu'une opération où le
+     vecteur final contient uniquement des nombres dénormaux. Ce qui est normal
+     car dans le cas où le vecteur final ne contient que des nombres normaux le
+     calcul est vectorisé.
 
-    Nous avons donc mesurer les performances pour cette nouvelle implémentation
-    et l'avons comparé avec la vesrion vectorisé sur le même graphique afin de
-    voir la proportion que prend la réduction des appels dans le gain de temps
-    et on peut dire qu'elle prend environ 1/4 du gain. Donc le gain pur pour la
-    vectorisation est en fait de 3/4 du gain.
+**** Conclusion
 
-    Nous pouvons donc constater que le gain apporté avec notre implémentation
-    est d'environ la moitié de ce que l'on peut espérer en vectorisant des
-    opérations. Il est donc possible de faire une implémentation plus efficace
-    qui sera détaillé dans la conclusion de la vectorisation.
+     La différence est flagrante mais le calcul des nombres dénormaux va plus
+     vite sur notre branche. On peut se demander si le fait de faire moins
+     d'appel de fonction joue donc un grand rôle sur le gain de notre
+     implémentation. C'est pourquoi nous avons fait une version sérialisé ou on
+     appelle les fonctions qui s'occupe des nombres normaux à partir de notre
+     implémentation pour voir les performances.
+
+     Nous avons donc mesurer les performances pour cette nouvelle implémentation
+     et l'avons comparé avec la vesrion vectorisé sur le même graphique afin de
+     voir la proportion que prend la réduction des appels dans le gain de temps
+     et on peut dire qu'elle prend environ 1/4 du gain. Donc le gain pur pour la
+     vectorisation est en fait de 3/4 du gain.
+
+     Nous pouvons donc constater que le gain apporté avec notre implémentation
+     est d'environ la moitié de ce que l'on peut espérer en vectorisant des
+     opérations. Il est donc possible de faire une implémentation plus efficace
+     qui sera détaillé dans la conclusion de la vectorisation.
 
 ** Mise au point sur le non support des tailles de vecteurs plus grandes que celles supportés
 ** Conclusion de la vectorisation

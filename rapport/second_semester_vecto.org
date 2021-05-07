@@ -337,7 +337,7 @@ typedef union {
 
      Nous avons aussi vu les métriques à prendre en compte, comme le temps que
      prend notre micro-benchmark. Mais pour s'assurer que le temps ne soit pas
-     faussé il faut calculer la déviation standart qui indique l'écart moyen
+     faussé il faut calculer la écart type qui indique l'écart moyen
      entre chaque échantillon. Il nous faut donc aussi plusieurs échantillons
      / executions du micro-benchmark à évaluer. Pour ce qui est du seuil de
      validation, il est un peu arbitraire. Il faudrai voir selon notre benchmark
@@ -423,7 +423,7 @@ typedef union {
       *version sériale* pour la même taille de vecteur.
     
 *** Résultat
-**** Déviation standart
+**** Ecart type
      
      Bien que nous utilisions une machine virtuelle, nous pouvons voir que les
      résultats sont assez stable exepté 1 ou 2 fois. (voir les figures [[figure 3][3]], [[figure 5][5]] et [[figure 6][6]])

@@ -469,21 +469,13 @@ typedef union {
 
 ** Introduction
 
-  Avant de commencer avec les benchmark NAS parallèle avec un peut d’historique .
-  Les benchmarks traditionnels existant bien avant les NPB étaient généralement limités
-  pour être spécialisé pour les ordinateurs vectoriels.Du coup malgré leurs capacités ils ont toujours des
-  insuffisances divers empêchant le parallélisme , et aussi des problèmes de
-  tailles et capacités insuffisante , ce qui les rendait inappropriés pour les
-  systèmes purement parallèles,donc cela est considéré comme problème de manque de performances.
-  Par conséquent, les NPB ont été développés afin de remédier au manque à ce manque de performances ainsi que les
-  insuffisances dans les machines hautement parallèles.
-  
-** Définition NAS Benchmarks parallèle
-
-  Les NAS parallèle benchmarks (NPB) sont été développés au centre de la recherche de la NASA. Ce sont une suite de 
-  benchmarks améliorées afin d’augmenter et d’améliorer les performances informatique parallèles qui est faible 
-  dans les benchmarks traditionnels. Pour definir les NAS, c'est un outil développés et améliorer pour évaluer 
-  la perfomances des supers calculateurs.
+  Dans le contexte de  testé la performance des supers calculateurs, ils existent plusieurs outils.
+  Dans notre cas on va prendre le NAS parallèle benchmark (NPB). Le NPB est une suite de benchmarks 
+  améliorées afin d’augmenter et d’améliorer les performances informatique parallèles. Cette outil a 
+  été développer et améliorer au centre de la recherche NASA. Ils existent plusieurs versions de la NPB 
+  dont ont va citer dans cette partie. Pour pouvoir réaliser notre analyser, on a évaluer les différentes 
+  benchmark existant et de donne le paramètre qui différencie une version à une autre. A la fin on va 
+  détaille les tests qu'on a fait localement sur nos machines.
   
 ** Evolution des NAS Benchmarks Parallèle
 
@@ -496,23 +488,24 @@ typedef union {
   
 *** La version NPB1:
   
-  Cette version est la première version appliquée, ces spécifications sont implémentées en utilisant des algorithmes et des
-  modèles de programmation adaptés à leurs différentes machines.Dans cette version, ils ont utilises des algorithmes 
-  spécifier pour l’ensemble des problèmes rencontrés a des points de référence qui puissent assurer :
+  Cette version est la première version appliquée, ces spécifications sont implémentées en 
+  utilisant des algorithmes et des modèles de programmation. Dans cette version, ils ont 
+  utilises des algorithmes spécifier pour l’ensemble des problèmes rencontrés a des points 
+  de référence qui puissent assurer :
+  
   -l’implémentation de nouveau algorithmes et fonctions compatibles au parallélisme
   - vérification de la performance ainsi que l’exactitude des résultats retournés par l’exécution
-  -Faciliter de travailler et de s’adapter avec les systèmes multicœurs fiable ,ainsi que la facilité de la distribution
-  et communication multicœurs.
+  -Faciliter de travailler et de s’adapter avec les systèmes multicœurs fiable ,ainsi 
+  que la facilité de la distribution et communication multicœurs.
   
 *** La version NPB2:
   
   Après avoir utilisé la version NPB1 , des problèmes de performances ainsi que du parallélisme sont résolus, 
-  d’un autre coté des problèmes et faiblesses nouveaux sont rencontrés. La majorité des implémentations NPB 
-  n’ont pas entaient a la porté du grand public qui veut travailler dessus, en cachant leurs techniques d’optimisations 
-  sur ce dernier.ainsi que vu l’évolution des supercalculateur,l’implémentation du NPB1 a un retard et évolue pas avec 
-  ces derniers, c’est pour cela ils ont optes pour la version NPB2 afin d’améliorer et de régler ses soucis rencontrés 
-  en apportant des implémentation de codes sources pour les benchmark 
-  implémentés dans NPB1.donc la spécification NPB2 complète les spécifications du NPB1 et nous a permis :
+  d’un autre coté des problèmes et faiblesses nouveaux sont rencontrés.  Ainsi que vu l’évolution 
+  des supercalculateur,l’implémentation du NPB1 a un retard,c’est pour cela que la version NPB2 a été crée afin 
+  d’améliorer et de régler les soucis rencontrés en apportant des implémentation de code source pour 
+  les benchmark implémentés dans NPB1. Donc la spécification NPB2 complète les spécifications du NPB1 et a permis de :
+  
   -modifier les règles de soumise des résultats de l’analyse comparative
   - Disponibilité des fichiers source et des scripts des construction afin d’assurer la disponibilité publique des 
   modification des résultats.
@@ -520,13 +513,11 @@ typedef union {
   
 ***  La version NPB3:
  
-  Après l’apparition et l’implémentation de la version NPB2 MPI; la version NPB3 est apparue et a conservé l’implémentation
-  dans MPI vue en NPB2 et a effectué des améliorations afin d’être implémenté dans OpenMP.
+  Après l’apparition et l’implémentation de la version NPB2 MPI; la version NPB3 a conservé l’implémentation
+  de MPI vue en NPB2 et a effectué des améliorations afin d’être implémenté dans OpenMP.
   Mais en plus de ça des implémentations qui étais en série dans NPB2 , sont amélioré afin d’être en parallèle avec des 
-  optimisations supplémentaire. Ainsi que NPB3 a rajouté de nouvelle références tel que : l’ajout d’outils
-  de parallélisation multi-niveau et hybrides.et aussi un ensemble de benchmarks multi-zone un ensemble de benchmarks multi-zone tirant parti
-  du modèle de programmation hybride MPI / OpenMP a été publié pour tester l'efficacité des paradigmes ,ainsi que l’allocation de mémoire
-  dynamique.
+  optimisations supplémentaires. Ainsi que NPB3 a rajouté de nouvelle références, qui sont des programmes hybride et qui
+  est parallèliser avec openmp/mpi.
 
 ** Spécification des références
  

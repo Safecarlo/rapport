@@ -476,13 +476,14 @@ typedef union {
   tailles et capacités insuffisante , ce qui les rendait inappropriés pour les
   systèmes purement parallèles,donc cela est considéré comme problème de manque de performances.
   Par conséquent, les NPB ont été développés afin de remédier au manque à ce manque de performances ainsi que les
-  insuffisances dans les machines hautement parallèles.donc c’est quoi les NPB et quels sont ses avantages ?
+  insuffisances dans les machines hautement parallèles.
   
 ** Définition NAS Benchmarks parallèle
-  Les NAS parallèle benchmarks, sont été développés au centre de la recherche de la NASA.  
-  Les NAS parallèle Benchmarks sont une suite de benchmarks améliorées afin d’augmenter et d’améliorer les 
-  performances informatique parallèles qui est faible dans les benchmarks traditionnels.
-  Pour definir les NAS, c'est un outil développés et améliorer pour évaluer la perfomances des super calculateur.
+
+  Les NAS parallèle benchmarks (NPB) sont été développés au centre de la recherche de la NASA. Ce sont une suite de 
+  benchmarks améliorées afin d’augmenter et d’améliorer les performances informatique parallèles qui est faible 
+  dans les benchmarks traditionnels. Pour definir les NAS, c'est un outil développés et améliorer pour évaluer 
+  la perfomances des super calculateur.
   
 ** Evolution des NAS Benchmarks Parallèle
 
@@ -495,7 +496,7 @@ typedef union {
   
 *** La version NPB1:
   
-  NPB1 est la première version appliquée, ces spécifications sont implémentées en utilisant des algorithmes et des
+  Cette version est la première version appliquée, ces spécifications sont implémentées en utilisant des algorithmes et des
   modèles de programmation adaptés à leurs différentes machines.Dans cette version, ils ont utilises des algorithmes 
   spécifier pour l’ensemble des problèmes rencontrés a des points de référence qui puissent assurer :
   -l’implémentation de nouveau algorithmes et fonctions compatibles au parallélisme

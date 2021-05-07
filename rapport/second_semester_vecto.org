@@ -545,7 +545,7 @@ typedef union {
         courte et longue distance. Donc L'idée principale du multi grille est
          d'accélérer la convergence d'une méthode itérative de base.
    -FT : Transformé de fourrier permet de résoudre les équations
-          différentielles partielles en 3D et communication tous à tous.
+         différentielles partielles en 3D et communication tous à tous.
           
 **** Trois pseudos applications :
    

@@ -598,6 +598,12 @@ typedef union {
    [[../ressources/vcopenmp.png]]
    
 * Conclusion
+
+  Le test que nous avons fait à montrer que les opérations vont plus vite avec la véctorisation. A cause de manque de ressource 
+  sur nos machine, on a été obligé de se limité à des tests minimun. Mais ce qui serai été intéressant c'est de pouvoir faire 
+  des tests sur des supércalculateurs avec les différents classe de benchmark et de bien évaluer la pérformance de la machine ainsi
+  que d'observer les niveaux de véctorisation sur une grande taille de calcul.
+  
 * Référence
 
   <<stdieee>>

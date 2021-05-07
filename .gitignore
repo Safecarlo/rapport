@@ -1,6 +1,10 @@
 *~
-*.tex
-*.pdf
 *.o
 *.a
 *.asm
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc

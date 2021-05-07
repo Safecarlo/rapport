@@ -497,20 +497,27 @@ typedef union {
      accélération si on utilise des vecteurs de 8 flottants simple précision
      avec ce backend.
 
-**** Conclusion
+**** Remarque sur les résultats du backends VPREC et nouveaux test
 
-     La différence est flagrante mais le calcul des nombres dénormaux va plus
-     vite sur notre branche. On peut se demander si le fait de faire moins
-     d'appel de fonction joue donc un grand rôle sur le gain de notre
-     implémentation. C'est pourquoi nous avons fait une version sérialisée ou on
-     appelle les fonctions qui s'occupe des nombres normaux à partir de notre
-     implémentation pour voir les performances.
+     La différence entre le calcul avec des vecteurs de nombres normaux et du
+     calcul avec des vecteurs de nombres dénormaux est flagrante mais le calcul
+     des nombres dénormaux va plus vite sur notre branche (environ 1 MFLOP ce
+     qui n'est pas beaucoup comparé au gain des nombres normaux).
+
+     On peut se demander si le fait de faire moins d'appel de fonction joue
+     un grand rôle sur le gain de notre implémentation. C'est pourquoi nous
+     avons fait une version sérialisée ou on appelle les fonctions qui s'occupe
+     des nombres normaux à partir de notre implémentation pour voir les
+     performances.
 
      Nous avons donc mesuré les performances pour cette nouvelle implémentation
      et l'avons comparé avec la version vectorisé sur le même graphique afin de
      voir la proportion que prend la réduction des appels dans le gain de temps
      et on peut dire qu'elle prend environ 1/4 du gain. Donc le gain pur pour la
-     vectorisation est en fait de 3/4 du gain.
+     vectorisation est en fait de 3/4 du gain pour les vecteurs contenant que
+     des nombres normaux.
+
+**** Conclusion
 
      Nous pouvons donc constater que le gain apporté avec notre implémentation
      est d'environ la moitié de ce que l'on peut espérer en vectorisant des

@@ -554,114 +554,143 @@ typedef union {
 * Support de la parallélisation
 ** Introduction
 
-   Avant de commencer avec les benchmarks NAS parallèle avec un peut
-   d’historique. Les benchmarks traditionnels existant bien avant les NPB étaient
-   généralement limités pour être spécialisé pour les ordinateurs vectoriels. Du
-   coup malgré leurs capacités ils ont toujours des insuffisances divers
-   empêchant le parallélisme , et aussi des problèmes de tailles et capacités
-   insuffisante , ce qui les rendait inappropriés pour les systèmes purement
-   parallèles, donc cela est considéré comme problème de manque de performances.
-   Par conséquent, les NPB ont été développés afin de remédier au manque à ce
-   manque de performances ainsi que les insuffisances dans les machines
-   hautement parallèles. Donc c’est quoi les NPB et quels sont ses avantages ?
+  Dans le contexte de  testé la performance des supers calculateurs, ils existent plusieurs outils.
+  Dans notre cas on va prendre le NAS parallèle benchmark (NPB). "Le NPB est une suite de benchmarks 
+  améliorées afin d’augmenter et d’améliorer les performances informatique parallèles". Cette outil a 
+  été développer et améliorer au centre de la recherche NASA. Ils existent plusieurs versions de la NPB 
+  dont ont va citer dans cette partie. Pour pouvoir réaliser notre analyser, on a évaluer les différentes 
+  benchmark existant et de donne le paramètre qui différencie une version à une autre. A la fin on va 
+  détaille les tests qu'on a fait localement sur nos machines.
   
-** Définition NAS Benchmarks parallèle
+** Différentes types de NAS Benchmarks Parallèle
 
-   Les NAS parallèle benchmarks, sont été développés au centre de la recherche
-   de la NASA.  Les NAS parallèle Benchmarks sont une suite de benchmarks
-   améliorées afin d’augmenter et d’améliorer les performances informatique
-   parallèles qui est faible dans les benchmarks traditionnels.  Pour définir
-   les NAS, c'est un outil développés et améliorer pour évaluer la performances
-   des super calculateur.
+  Il existe des versions antérieures pour les NPB, dont les sources ne sont pas accessibles à
+  tous le monde. Actuellement, il existe plusieurs versions du NPB, qui sont versées améliores 
+  et construits à partir des besoins. Dans la suite, on va élaborer les trois versées de NPB dont
+  les sources sont accessibles au grand public.
   
-** Evolution des NAS Benchmarks Parallèle
-
-   Comme tous les outils et programmes, le NPB pendant son évolution et
-   développement est passé par plusieurs phase et plusieurs versions amélioré
-   avec le temps et dépendant des besoins et problème rencontrés ; pour cela
-   dans ce qui suit on a détaillé les trois version du NPB , tel que chaque
-   spécification a des référence plus améliorées par rapport à l’ancienne
-   version.
+*** La version NPB1:
   
-*** La version NPB1
-
-    NPB1 est la première version appliquée, ces spécifications sont implémentées
-    en utilisant des algorithmes et des modèles de programmation adaptés à leurs
-    différentes machines. Dans cette version, ils ont utilises des algorithmes
-    spécifier pour l’ensemble des problèmes rencontrés a des points de référence
-    qui puissent assurer :
-    - l’implémentation de nouveau algorithmes et fonctions compatibles au parallélisme
-    - vérification de la performance ainsi que l’exactitude des résultats retournés par l’exécution
-    - faciliter de travailler et de s’adapter avec les systèmes multicœurs fiable ,ainsi que la facilité de la distribution
-    et communication multicœurs.
+  Cette version est la première version appliquée, Elle a été construit en 
+  utilisant des algorithmes et des modèles de programmation. Dans cette version, ils ont 
+  utilises des algorithmes spécifier pour assurer :
   
-*** La version NPB2
-
-    Après avoir utilisé la version NPB1 , des problèmes de performances ainsi
-    que du parallélisme sont résolus, d’un autre coté des problèmes et
-    faiblesses nouveaux sont rencontrés. La majorité des implémentations NPB
-    n’ont pas entaient a la porté du grand public qui veut travailler dessus, en
-    cachant leurs techniques d’optimisations sur ce dernier. Ainsi que vu
-    l’évolution des supercalculateur, l’implémentation du NPB1 a un retard et
-    évolue pas avec ces derniers, c’est pour cela ils ont optes pour la version
-    NPB2 afin d’améliorer et de régler ses soucis rencontrés en apportant des
-    implémentation de codes sources pour les benchmark implémentés dans
-    NPB1.donc la spécification NPB2 complète les spécifications du NPB1 et nous
-    a permis : -modifier les règles de soumise des résultats de l’analyse
-    comparative
-    - Disponibilité des fichiers source et des scripts des construction afin d’assurer la disponibilité publique des 
-    modification des résultats.
-    - Et enfin la version NPB2 a permis d’être implémenter des codes basé sur MPI .
-
+  - "l’implémentation de nouveau algorithmes et fonctions compatibles au parallélisme"
+  - "vérification de la performance ainsi que l’exactitude des résultats retournés par l’exécution"
+  - "Faciliter de travailler et de s’adapter avec les systèmes multicœurs fiable ,ainsi 
+  que la facilité de la distribution et communication multicœurs."
+  
+*** La version NPB2:
+  
+  En vue dans le contexte d'évolution des supers calculateurs, la version 1 du NPB n'était plus 
+  suffisante. Et aussi face à d'autre problèmes, ça nécessite une nouvelle implémentation pour les NPB.
+  Par rapport à la première version, la version 2 a permis de:
+  
+  - "modifier les règles de soumise des résultats de l’analyse comparative"
+  - "Disponibilité des fichiers source et des scripts des construction afin d’assurer la disponibilité publique des 
+  modification des résultats."
+  - "Et enfin la version NPB2 a permis d’être implémenter des codes basé sur MPI".
+  
 ***  La version NPB3:
+ 
+  La version 3 du NPB est une version améliorer de la seconde. Tout ce qui est dans la version 2 du côté 
+  parallélisme avec MPI a été garde sur la version 3. LA nouvelle implémentation sur la version 3 est 
+  celle de la parallélisation avec openmp. La NPB3 possède aussi des nouveaux implémentations, 
+  qui sont des programmes hybride et qui est parallèliser avec openmp/mpi. Ces programmes on les appels 
+  des "NPB-Multi-Zone" ou "NPB-MZ".
 
-    Après l’apparition et l’implémentation de la version NPB2 MPI; la version
-    NPB3 est apparue et a conservé l’implémentation dans MPI vue en NPB2 et a
-    effectué des améliorations afin d’être implémenté dans OpenMP.  Mais en plus de
-    ça des implémentations qui étais en série dans NPB2 , sont amélioré afin d’être
-    en parallèle avec des optimisations supplémentaire. Ainsi que NPB3 a rajouté de
-    nouvelle références tel que : l’ajout d’outils de parallélisation multi-niveau
-    et hybrides.et aussi un ensemble de benchmarks multizone un ensemble de
-    benchmarks multizone tirant parti du modèle de programmation hybride MPI /
-    OpenMP a été publié pour tester l'efficacité des paradigmes, ainsi que
-    l’allocation de mémoire dynamique.
-
-** Spécification des références
-
-   Ils existent plusieurs types de benchmark dont on va citer après. Les types
-   des benchmarks sont différent d’une version à une autre , chaque version a ses propres spécifications.
+** Différentes types de benchmark
+ 
+  Pour les types de benchmark, on a garde la déscription qui est détaillé dans le site
+  officiel du NAS parallèle benchmark.
   
-**** Cinq noyaux
-
-     -IS : Il consiste le tri d’entiers et l’accès en mémoire aléatoire.
-     -EP : embrassement parallèle : dans le calcul parallèle, une charge de
-     travail où un problème est parallèlement embarrassant ou parfaitement
-     parallèle est celui ou peu d’effort est nécessaire pour séparer le problème
-     en un certain nombre de taches parallèles.
-     -CG : gradient conjugué , veut dire l’accès irrégulier à la mémoire .
-     -MG : multi-grille ,sur une séquence de maillage , la communication
-     courte et longue distance. Donc L'idée principale du multi grille est
-     d'accélérer la convergence d'une méthode itérative de base.
-     -FT : Transformé de fourrier permet de résoudre les équations
-     différentielles partielles en 3D et communication tous à tous.
-          
-**** Trois pseudos applications :
-
-     Ils existe 3 types de pseudo application pour le NPB:
-     - solveur tri_diagonale de blocs (BT) 
-     - solveur scalaire pentadiagonale (SP)
-     - solveur Gauss Seidel inférieur ou supérieur(LU)
-
-**** Classes de référence pour le NPB:
-
-     Ils existent plusieurs classes pour NPB,et que chaque classe a ces propres
-     caractéristiques.
-     - Classes A , B , C utilisées pour les problèmes de tests standards.
-     - Classes D , E , F utilisée pour les gros problèmes de tests 
-     - Classe S pour des tests rapides .
+  - IS : "Integer Sort": C'est une methode de tri pour les entiers avec des accès de mémoire aléatoire.
+  
+  - EP : " Embarrassingly Parallel": Celui-ci permet d'avoir des variant aléatoire de type Gaussienne.
+        
+  - CG : "Conjugate Gradient" , La méthode des gradient conjugue permet de déterrminer la valeur 
+  propre d'une grande matrice définie positif.
+  
+  - MG : "Multi-Grid", Ce type de benchmark permet de faire une approximation de l'équation du 
+  Poisson par la méthode des maillage.
+         
+   - FT : "Fourier Transform", La transformation de Fourier permet de résoudre une équation différentielle
+   partielle à trois dimensions.
+         
+    - BT: "Block Tri-diagonal solver", Ce type de benchmark permet la résolution des équation différentiells
+    non linéaire.
+    
+    - SP: "Scalar Penta-diagonal solver", Ce type de benchmark permet la résolution des équation différentiells
+    non linéaire.
+    
+    - LU: "Lower-Upper Gauss-Seidel solver":Ce type de benchmark permet la résolution des équation différentiells
+    non linéaire. La méthode utilisé ici est la factorisation "LU".
+    
+** Classes de référence pour le NPB:
+   
+   Ils existent plusieurs classes pour NPB,et que chaque classe a ces propres caractéristiques.
+   Chaque classe a sa propre tailles.
+   - Classes A , B , C :Ces classes sont pour les problèmes des tests standards.
+   - Classes D , E , F : Ces classes sont réserver aux gros problèmes
+   - Classe S : Cette classe est de taille minimum pour avoir des résultats rapides.
    
 ** Résultats et discussion
+  
+  Pour les tests, vu que nos machines ne supportent pas les tailles pour les tests standards et gros problème,
+  donc on est restés sur la classe "S". Comme compilateur, on a utiliser la nouvelle version de verificarlo, 
+  c'est à dire la version vectorisée.
+
+*** Problème
+
+  Pendant l’expérience, que nous avons menée sur nos machines sur les NPB, on a été confronté à une erreur de 
+  dimension sept pour les tableaux. Ce problème a été lié aux différences de compilateur entre open mpi et vérificarlo.
+  
+*** Solution
+  Pour résoudre le problème, on a dû recompilé "open mpi" avec les mêmes compilateur que nous avons utilisés 
+  pour vérificarlo. À titre indicatif, on a utilisé la version sept de clang pour remplacer les compilateurs 
+  de gnu. Pour celle de fortran on a compilé avec flang.
+  
+*** Test
+  
+  On a pris comme exemple de test le benchmark "BT" et de classe "S". Pour pouvoir exécuter le benchmark, il nous
+  demandé un nombre de cœurs qui représente le carré d'un nombre. La figure suivant représente le résumé 
+  de la compilation du benchmark BT:
+  
+  
+   <<figure a>>
+   #+CAPTION: Rappel des cas spéciaux
+   #+NAME: fig:Résume BT benchmark
+   #+ATTR_LATEX: :width 500px
+   [[../ressources/btcompleted.png]]
+   
+   Après avoir compilé et exécute le benchmark BT, la vectorisation au niveau du programme est représentée
+   dans la figure suivante:
+   
+    <<figure b>>
+   #+CAPTION: Vectorisation au niveau du benckmark BT
+   #+NAME: fig:Résume BT benchmark
+   #+ATTR_LATEX: :width 500px
+   [[../ressources/vect1.png]]
+   
+   Le benchmark que nous avons testé est écrit avec le langage fotran et parallélisé avec MPI. Du coup on peut constater
+   sur cette figure que le niveau de vectorisation est nul. Celle-ci peut être dû à la différence de syntaxe du langage entre
+   le langage C et fortran. 
+   Pour bien observer le niveau de vectorisation sur le benchmark BT, on a récupéré une source de benchmarks qui est écrit avec
+   le langage C et parallélisé avec OpenMP.
+   Les figures suivantes représentent l'évaluation de la vectorisation au niveau du benchmark BT avec 8 threads:
+   <<figure c>>
+   #+CAPTION: Vectorisation au niveau u benckmark BT
+   #+NAME: fig:Résume BT benchmark
+   #+ATTR_LATEX: :width 500px
+   [[../ressources/vcopenmp.png]]
+   
 * Conclusion
+
+  Pour conclure les tests que nous avons fait a montré que les opérations vont plus vite avec la vectorisation.
+  À cause du manque de ressources sur nos machines, on a été obligé de se limiter à des tests minimums. 
+  Mais ce qui serai intéressant est de pouvoir faire des tests sur des supercalculateurs avec les différentes 
+  classe de benchmarks et de bien évaluer la performance de la machine ainsi que d'observer les niveaux de 
+  vectorisation sur une grande taille de calcul.
 * Référence
 
   <<stdieee>>

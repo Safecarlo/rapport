@@ -466,7 +466,6 @@ typedef union {
 ** Mise au point sur le non support des tailles de vecteurs plus grandes que celles supportés
 ** Conclusion de la vectorisation
 * Support de la parallélisation
-
 ** Introduction
 
   Dans le contexte de  testé la performance des supers calculateurs, ils existent plusieurs outils.

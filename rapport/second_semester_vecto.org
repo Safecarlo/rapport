@@ -701,19 +701,35 @@ typedef union {
    Pour bien observer le niveau de vectorisation sur le benchmark BT, on a récupéré une source de benchmarks qui est écrit avec
    le langage C et parallélisé avec OpenMP.
    Les figures suivantes représentent l'évaluation de la vectorisation au niveau du benchmark BT avec 8 threads:
+
    <<figure c>>
    #+CAPTION: Vectorisation au niveau u benckmark BT
    #+NAME: fig:Résume BT benchmark
    #+ATTR_LATEX: :width 500px
    [[../ressources/vcopenmp.png]]
    
+** Conclusion
+
+   Pour conclure, les tests que nous avons fait ont montrés que les opérations
+   flottantes vectoriels vont plus vite avec notre implémentation.
+
+* Ce que nous aurions pu faire sur le supercalculateur
+
+  Pour la partie vectorisation, si le supercalculateur aurait eu les
+  instructions *AVX512* d'intel qui supporte les vecteurs de 512 bits,
+  c'est-à-dire 16 flottants simple précision et 8 flottants double précision,
+  nous aurions pu évaluer les performances pour ces tailles de vecteurs.
+
+  Pour la partie parallélisation, à cause du manque de ressources sur nos
+  machines, nous avons été obligés de se limiter à des tests minimums. Mais ce
+  qui serai intéressant est de pouvoir faire des tests sur des supercalculateurs
+  avec les différentes classe de benchmarks et de bien évaluer la performance de
+  la machine ainsi que d'observer les niveaux de vectorisation sur une grande
+  taille de calcul.
+
 * Conclusion
 
-  Pour conclure les tests que nous avons fait a montré que les opérations vont plus vite avec la vectorisation.
-  À cause du manque de ressources sur nos machines, on a été obligé de se limiter à des tests minimums. 
-  Mais ce qui serai intéressant est de pouvoir faire des tests sur des supercalculateurs avec les différentes 
-  classe de benchmarks et de bien évaluer la performance de la machine ainsi que d'observer les niveaux de 
-  vectorisation sur une grande taille de calcul.
+  
 
 * Référence
 

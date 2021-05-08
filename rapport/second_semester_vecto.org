@@ -161,7 +161,8 @@ operations count:
     Nous avons aussi ajouté des tests plus approfondis pour ce backend avec des
     nombres aléatoirement choisis de sorte à avoir des nombres négatif, des
     nombres avec un exposant négatif ou bien même des nombre avec un exposant
-    positif afin de s'assurer que l'implémentation fonctionne.
+    positif dans le même vecteur afin de s'assurer que l'implémentation
+    fonctionne.
     
 ** Vectorisation du backend *vprec*
 
@@ -567,7 +568,7 @@ typedef union {
    16 au total). Mais avec cela nous testons la taille du vecteur dans des
    conditions pour appeler les bonnes fonctions avec les bon types
    vectoriels. C'est pourquoi nous pensons que le fait de rajouter une fonction
-   dans l'interface pour chaque taille nous fera gagné du temps.
+   dans l'interface pour chaque taille nous fera gagner du temps.
 
    Grâce à notre effort, les utilisateurs pourront bénéficier d'un gain en
    performance sur leurs code de calcul en activant la vectorisation à la

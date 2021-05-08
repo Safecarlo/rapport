@@ -614,6 +614,7 @@ typedef union {
     https://clang.llvm.org/docs/LanguageExtensions.html#vectors-and-extended-vectors
    - NAS Parallel Benchmark
       https://www.nas.nasa.gov/publications/npb.html
+      
       https://github.com/benchmark-subsetting/NPB3.0-omp-C
 
 * Annexe

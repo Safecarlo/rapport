@@ -1,6 +1,6 @@
 #+TITLE: Rapport du Second Semestre sur le support de la Vectorisation et de la Parallèlisation dans Verificarlo
-#+AUTHOR: Groupe 7
-#+DATE: 2021
+#+AUTHOR: Groupe 7, Hery ANDRIANANTANAINA, Nicolas BOUTON, Ali LAKBAL
+#+DATE: Mai 2021
 
 * Introduction
 
@@ -10,21 +10,25 @@
 
   Nous rappelons tout de même qu'il faut configurer *verificarlo* avec *clang*
   car nous utilisons les types vectoriels qu'il propose afin d'éviter les
-  intrinsics. (ref: [[clang][2]])
+  intrinsics qui seraient dépendantes de l'architecture. (ref: [[clang][2]])
 
   Les sources sont toujours disponibles sur notre Organisation github:
+
   https://github.com/Safecarlo
 
   Notamment les sources pour le support de la vectorisation qui se trouvent sur
   la branche *vectorisation* de notre fork:
+
   https://github.com/Safecarlo/verificarlo/tree/vectorization
 
   Un autre répertoire important est celui du benchmark que nous avons utilisé
   pour évaluer l'efficacité de notre implémentation vectorielle:
+
   https://github.com/Safecarlo/benchmark
 
   Un dernier répertoire qui affiche les flottants simple et double précision
   sous différents formats:
+
   https://github.com/Safecarlo/print_floating_point
 
 * Support de la vectorisation
@@ -168,7 +172,7 @@ operations count:
     est:
     (-1)^S * 2^(E - (2^(e - 1) - 1)) * (1 + P / 2^p)
     - *plus petit normal:* 0
-    - *plus grand normal:* 1,75 (2^1 * (7 / 8))
+    - *plus grand normal:* 1,75
     - *plus petit dénormal:* 0,125
     - *plus grand dénormal:* 0,875
     - *infini*: nombre supérieur à 1,75 ou inférieur à 0,125
@@ -180,6 +184,7 @@ operations count:
      Nous avons aussi écrit un mini code qui permet de visualiser sous différent
      format les flottants simple et double précision, ce qui nous à aidé à
      vérifier si nos calcul était juste pour créer cette partie et ce schéma.
+
      https://github.com/Safecarlo/print_floating_point
 
      Les résultats affichés sont sous le format *IEEE754*. Donc si on utilise
@@ -677,15 +682,14 @@ typedef union {
 * Conclusion
 * Référence
 
-  <<stdieee>>
-  - Aide Mémoire sur le standard IEEE754, Pablo de Oliveira Castro,
+
+  1. <<stdieee>> Aide Mémoire sur le standard IEEE754, Pablo de Oliveira Castro,
     https://sifflez.org/lectures/archi-ord/AideMemoireIEEE754.pdf
-  <<clang>>
-  - Extension des vecteurs de Clang, Clang / LLVM,
+  2. <<clang>> Extension des vecteurs de Clang, Clang / LLVM,
     https://clang.llvm.org/docs/LanguageExtensions.html#vectors-and-extended-vectors
-  - Benchmark de NAS Parallèle avec MPI et OpenMP en fortran, NASA
+  3. Benchmark de NAS Parallèle avec MPI et OpenMP en fortran, NASA
     https://www.nas.nasa.gov/publications/npb.html
-  - Benchmark de NAS Parallèle avec OpenMP en C,
+  4. Benchmark de NAS Parallèle avec OpenMP en C,
     https://github.com/benchmark-subsetting/NPB3.0-omp-C
 
 * Annexe

@@ -1,6 +1,6 @@
 #+TITLE: Rapport du Second Semestre sur le support de la Vectorisation et de la Parallèlisation dans Verificarlo
-#+AUTHOR: Groupe 7
-#+DATE: 2021
+#+AUTHOR: Groupe 7, Hery ANDRIANANTANAINA, Nicolas BOUTON, Ali LAKBAL
+#+DATE: Mai 2021
 
 * Introduction
 
@@ -8,19 +8,27 @@
   rapport doivent donc être comprises afin de pouvoir comprendre la suite du
   rapport.
 
+  Nous rappelons tout de même qu'il faut configurer *verificarlo* avec *clang*
+  car nous utilisons les types vectoriels qu'il propose afin d'éviter les
+  intrinsics qui seraient dépendantes de l'architecture. (ref: [[clang][2]])
+
   Les sources sont toujours disponibles sur notre Organisation github:
+
   https://github.com/Safecarlo
 
   Notamment les sources pour le support de la vectorisation qui se trouvent sur
-  la branche vectorisation de notre fork:
+  la branche *vectorisation* de notre fork:
+
   https://github.com/Safecarlo/verificarlo/tree/vectorization
 
   Un autre répertoire important est celui du benchmark que nous avons utilisé
   pour évaluer l'efficacité de notre implémentation vectorielle:
+
   https://github.com/Safecarlo/benchmark
 
   Un dernier répertoire qui affiche les flottants simple et double précision
   sous différents formats:
+
   https://github.com/Safecarlo/print_floating_point
 
 * Support de la vectorisation
@@ -28,7 +36,7 @@
 *** Rebasage
     
     Durant le semestre, des modifications ont été apportées sur la branche master
-    du répertoire public *verificarlo* qui est disponnible sur la fore
+    du répertoire public *verificarlo* qui est disponnible sur la forge
     *Github*. Pour ne pas être trop éloigné de la version scalaire de
     cette branche nous avons donc décidés de rapatrier les modifications de la
     branche master de *verificarlo* vers notre branche master de notre fork
@@ -132,13 +140,15 @@ operations count:
    Le problème avec cette dernière version est qu'elle est moins lisible que
    la précédente où toutes les informations sont alignés.
 
-   Cette fonctionnalité supplémentaire pourra permettre aux utilisateur de
-   pouvoir très simplement voir si leurs code est vectorisé sans passé par le
-   code assembleur. De plus les outils qui permettents d'évaluer le taux de
-   vectorisation des opérations dans un code mélange les opérations sur les
-   entiers avec celles des opérations flottantes. D'où un intérêt particulier
-   d'utiliser cette fonctionnalité sur un code de calcul utilisant des nombres
-   flottants.
+**** Apport de cette modification
+     
+     Cette fonctionnalité supplémentaire pourra permettre aux utilisateur de
+     pouvoir très simplement voir si leurs code est vectorisé sans passé par le
+     code assembleur. De plus les outils qui permettents d'évaluer le taux de
+     vectorisation des opérations dans un code mélange les opérations sur les
+     entiers avec celles des opérations flottantes. D'où un intérêt particulier
+     d'utiliser cette fonctionnalité sur un code de calcul utilisant des nombres
+     flottants.
    
 *** Tests
 
@@ -162,7 +172,7 @@ operations count:
     est:
     (-1)^S * 2^(E - (2^(e - 1) - 1)) * (1 + P / 2^p)
     - *plus petit normal:* 0
-    - *plus grand normal:* 1,75 (2^1 * (7 / 8))
+    - *plus grand normal:* 1,75
     - *plus petit dénormal:* 0,125
     - *plus grand dénormal:* 0,875
     - *infini*: nombre supérieur à 1,75 ou inférieur à 0,125
@@ -174,6 +184,7 @@ operations count:
      Nous avons aussi écrit un mini code qui permet de visualiser sous différent
      format les flottants simple et double précision, ce qui nous à aidé à
      vérifier si nos calcul était juste pour créer cette partie et ce schéma.
+
      https://github.com/Safecarlo/print_floating_point
 
      Les résultats affichés sont sous le format *IEEE754*. Donc si on utilise
@@ -454,6 +465,13 @@ typedef union {
       
 ***** Accélération
 
+      La formule pour calculé l'accélération est la suivante:
+      temps de référence / temps calculé
+
+      Ici comme nous utilisons les temps comme métrique pour calculer
+      l'accélération, le temps de référence (la baseline) est en haut de la
+      fraction.
+
       Les accélérations calculées correspondent:
       - pour la première barre à l’accélération de la
         *version sérial* d'une opération vectorielle, c'est-à-dire une opération
@@ -481,7 +499,7 @@ typedef union {
      accélération d'environ de la moitié du maximum possible et les résultats sont
      assez semblable suivant le type d'opération.
 
-     Le gain de vitesse obtenu peut atteindre jusqu'à 4 si nous utilisons des
+     Le gain de vitesse obtenu peut atteindre jusqu'à *4* si nous utilisons des
      vecteurs de 8 flottants simple précision avec ce backend.
 
 **** Backend VPREC
@@ -493,9 +511,9 @@ typedef union {
      car dans le cas où le vecteur final ne contient que des nombres normaux le
      calcul est vectorisé.
 
-     Comme pour le backends *ieee*, nous pouvons atteindre un gain de 4 en
+     Comme pour le backends *ieee*, nous pouvons atteindre un gain de *4* en
      accélération si on utilise des vecteurs de 8 flottants simple précision
-     avec ce backend.
+     avec ce backend avec uniquement des nombres normaux.
 
 **** Remarque sur les résultats du backends VPREC et nouveaux test
 
@@ -517,7 +535,7 @@ typedef union {
      vectorisation est en fait de 3/4 du gain pour les vecteurs contenant que
      des nombres normaux.
 
-**** Conclusion
+**** Conclusion des résultats
 
      Nous pouvons donc constater que le gain apporté avec notre implémentation
      est d'environ la moitié de ce que l'on peut espérer en vectorisant des
@@ -547,8 +565,8 @@ typedef union {
 
    Grâce à notre effort, les utilisateurs pourront bénéficier d'un gain en
    performance sur leurs code de calcul en activant la vectorisation à la
-   compilation. Ils pourront bénéficier d'un gain jusqu'à 4 fois moins de temps
-   si ils utilisent des vecteurs de 8 nombres flottant simple précision. Ce qui
+   compilation. Ils pourront bénéficier d'un gain jusqu'à 4 sur leurs temps de calcul
+   si ils utilisent des vecteurs de 8 nombres flottants simple précision. Ce qui
    permettra de réduire le temps, les ressources et l'énergie consommé.
 
 * Support de la parallélisation
@@ -664,14 +682,14 @@ typedef union {
 * Conclusion
 * Référence
 
-  <<stdieee>>
-  - Aide Mémoire sur le standard IEEE754, Pablo de Oliveira Castro,
+
+  1. <<stdieee>> Aide Mémoire sur le standard IEEE754, Pablo de Oliveira Castro,
     https://sifflez.org/lectures/archi-ord/AideMemoireIEEE754.pdf
-  - Extension des vecteurs de Clang, Clang / LLVM,
+  2. <<clang>> Extension des vecteurs de Clang, Clang / LLVM,
     https://clang.llvm.org/docs/LanguageExtensions.html#vectors-and-extended-vectors
-  - Benchmark de NAS Parallèle avec MPI et OpenMP en fortran, NASA
+  3. Benchmark de NAS Parallèle avec MPI et OpenMP en fortran, NASA
     https://www.nas.nasa.gov/publications/npb.html
-  - Benchmark de NAS Parallèle avec OpenMP en C,
+  4. Benchmark de NAS Parallèle avec OpenMP en C,
     https://github.com/benchmark-subsetting/NPB3.0-omp-C
 
 * Annexe

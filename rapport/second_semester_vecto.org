@@ -465,7 +465,16 @@ typedef union {
       chaque temps moins le temps moyens, divisé par le nombre de l'échantillon,
       le tout dans une racine carré.
 
-      stddev = sqrt(var) = sqrt((sum((x - m)^2)) / n)
+      ~stddev = sqrt(var) = sqrt((sum((x_i - m)^2)) / n)~
+
+      Où:
+      - *stddev* est l'écart type
+      - *var* est la variance
+      - *sqrt* est la racine carré
+      - *sum* est le symbole somme en mathématique
+      - *x_i* est l'élément i du tableau
+      - *m* est la moyenne
+      - *n* est la taille du tableau
       
 ***** Accélération
 

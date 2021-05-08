@@ -319,9 +319,6 @@ typedef union {
     vecteur de 8 flottants simple précision. Alors on reparcours le vecteur
     pour gérer les 7 nombres normaux qui n'ont pas encore été traités.
 
-    ici exemple cas 1 dénormal et 7 normal
-    ici exemple cas full normal
-
     _Complexité en terme d'accès aux éléments:_
     - cas *size* nombres infini : O(n)
     - cas *size* nombres dénormal : O(n)
@@ -677,37 +674,19 @@ typedef union {
   
 *** Test
   
-  On a pris comme exemple de test le benchmark "BT" et de classe "S". Pour pouvoir exécuter le benchmark, il nous
-  demandé un nombre de cœurs qui représente le carré d'un nombre. La figure suivant représente le résumé 
-  de la compilation du benchmark BT:
+    On a pris comme exemple de test le benchmark "BT" et de classe "S". Pour pouvoir exécuter le benchmark, il nous
+    demandé un nombre de cœurs qui représente le carré d'un nombre. La figure suivant représente le résumé 
+    de la compilation du benchmark BT. (voir la [[figure a][figure 8]])
   
-   <<figure a>>
-   #+CAPTION: Rappel des cas spéciaux
-   #+NAME: fig:Résume BT benchmark
-   #+ATTR_LATEX: :width 450px
-   [[../ressources/btcompleted.png]]
+    Après avoir compilé et exécute le benchmark BT, la vectorisation au niveau du programme est représentée
+    dans la figure suivante. (voir la [[figure b][figure 9]])
    
-   Après avoir compilé et exécute le benchmark BT, la vectorisation au niveau du programme est représentée
-   dans la figure suivante:
-   
-    <<figure b>>
-   #+CAPTION: Vectorisation au niveau du benckmark BT
-   #+NAME: fig:Résume BT benchmark
-   #+ATTR_LATEX: :width 450px
-   [[../ressources/vect1.png]]
-   
-   Le benchmark que nous avons testé est écrit avec le langage fotran et parallélisé avec MPI. Du coup on peut constater
-   sur cette figure que le niveau de vectorisation est nul. Celle-ci peut être dû à la différence de syntaxe du langage entre
-   le langage C et fortran. 
-   Pour bien observer le niveau de vectorisation sur le benchmark BT, on a récupéré une source de benchmarks qui est écrit avec
-   le langage C et parallélisé avec OpenMP.
-   Les figures suivantes représentent l'évaluation de la vectorisation au niveau du benchmark BT avec 8 threads:
-
-   <<figure c>>
-   #+CAPTION: Vectorisation au niveau u benckmark BT
-   #+NAME: fig:Résume BT benchmark
-   #+ATTR_LATEX: :width 450px
-   [[../ressources/vcopenmp.png]]
+    Le benchmark que nous avons testé est écrit avec le langage fotran et parallélisé avec MPI. Du coup on peut constater
+    sur cette figure que le niveau de vectorisation est nul. Celle-ci peut être dû à la différence de syntaxe du langage entre
+    le langage C et fortran. 
+    Pour bien observer le niveau de vectorisation sur le benchmark BT, on a récupéré une source de benchmarks qui est écrit avec
+    le langage C et parallélisé avec OpenMP.
+    Les figures suivantes représentent l'évaluation de la vectorisation au niveau du benchmark BT avec 8 threads. (voir la [[figure c][figure 10]])
    
 ** Conclusion
 
@@ -755,50 +734,63 @@ typedef union {
     https://github.com/benchmark-subsetting/NPB3.0-omp-C
 
 * Annexe
-** Rappel des cas spéciaux
 
-    <<figure 1>>
-   #+CAPTION: Rappel des cas spéciaux
-   #+NAME: fig:rappel_des_cas_speciaux
-   #+ATTR_LATEX: :width 450px
-   [[../ressources/special_case.png]]
+  <<figure 1>>
+  #+CAPTION: Rappel des cas spéciaux
+  #+NAME: fig:rappel_des_cas_speciaux
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/special_case.png]]
 
-** Résultat
-*** Sur une machine virtuelle
+  <<figure 2>>
+  #+CAPTION: Résultat du backend IEEE
+  #+NAME: fig:res_vm_ieee
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/vm_ieee.png]]
 
-    <<figure 2>>
-    #+CAPTION: Résultat du backend IEEE
-    #+NAME: fig:res_vm_ieee
-    #+ATTR_LATEX: :width 450px
-    [[../ressources/vm_ieee.png]]
+  <<figure 3>>
+  #+CAPTION: Ecart type du backend IEEE
+  #+NAME: fig:stddev_vm_ieee
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/vm_ieee_stddev.png]]
 
-    <<figure 3>>
-    #+CAPTION: Dérivation standard du backend IEEE
-    #+NAME: fig:stddev_vm_ieee
-    #+ATTR_LATEX: :width 450px
-    [[../ressources/vm_ieee_stddev.png]]
+  <<figure 4>>
+  #+CAPTION: Résultat du backend VPREC
+  #+NAME: fig:res_vm_vprec
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/vm_vprec.png]]
 
-    <<figure 4>>
-    #+CAPTION: Résultat du backend VPREC
-    #+NAME: fig:res_vm_vprec
-    #+ATTR_LATEX: :width 450px
-    [[../ressources/vm_vprec.png]]
+  <<figure 5>>
+  #+CAPTION: Ecart type du backend VPREC avec des nombres normaux
+  #+NAME: fig:stddev_vm_vprec_normal_stddev
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/vm_vprec_normal_stddev.png]]
 
-    <<figure 5>>
-    #+CAPTION: Dérivation standard du backend VPREC avec des nombres normaux
-    #+NAME: fig:stddev_vm_vprec_normal_stddev
-    #+ATTR_LATEX: :width 450px
-    [[../ressources/vm_vprec_normal_stddev.png]]
+  <<figure 6>>
+  #+CAPTION: Ecart type du backend VPREC avec des nombres dénormaux
+  #+NAME: fig:stddev_vm_vprec_denormal_stddev
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/vm_vprec_denormal_stddev.png]]
 
-    <<figure 6>>
-    #+CAPTION: Dérivation standard du backend VPREC avec des nombres dénormaux
-    #+NAME: fig:stddev_vm_vprec_denormal_stddev
-    #+ATTR_LATEX: :width 450px
-    [[../ressources/vm_vprec_denormal_stddev.png]]
+  <<figure 7>>
+  #+CAPTION: Résultat du backend VPREC entre l'implémentation sérial et l'implémentation vectorielle des nombres normaux
+  #+NAME: fig:res_vm_vprec_vs
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/vm_vprec_serial_vs_vector.png]]
 
-    <<figure 7>>
-    #+CAPTION: Résultat du backend VPREC entre l'implémentation sérial et l'implémentation vectorielle des nombres normaux
-    #+NAME: fig:res_vm_vprec_vs
-    #+ATTR_LATEX: :width 450px
-    [[../ressources/vm_vprec_serial_vs_vector.png]]
-
+  <<figure a>>
+  #+CAPTION: Rappel des cas spéciaux
+  #+NAME: fig:Résume BT benchmark
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/btcompleted.png]]
+   
+  <<figure b>>
+  #+CAPTION: Vectorisation au niveau du benckmark BT
+  #+NAME: fig:Résume BT benchmark
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/vect1.png]]
+   
+  <<figure c>>
+  #+CAPTION: Vectorisation au niveau du benckmark BT
+  #+NAME: fig:Résume BT benchmark
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/vcopenmp.png]]

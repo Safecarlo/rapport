@@ -570,6 +570,7 @@ typedef union {
   demandé un nombre de cœurs qui représente le carré d'un nombre. La figure suivant représente le résumé 
   de la compilation du benchmark BT:
   
+  
    <<figure a>>
    #+CAPTION: Rappel des cas spéciaux
    #+NAME: fig:Résume BT benchmark
@@ -613,6 +614,7 @@ typedef union {
   - Extension des vecteurs de Clang, Clang / LLVM,
     https://clang.llvm.org/docs/LanguageExtensions.html#vectors-and-extended-vectors
    - NAS Parallel Benchmark
+   
       https://www.nas.nasa.gov/publications/npb.html
       
       https://github.com/benchmark-subsetting/NPB3.0-omp-C

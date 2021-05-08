@@ -613,11 +613,10 @@ typedef union {
     https://sifflez.org/lectures/archi-ord/AideMemoireIEEE754.pdf
   - Extension des vecteurs de Clang, Clang / LLVM,
     https://clang.llvm.org/docs/LanguageExtensions.html#vectors-and-extended-vectors
-   - NAS Parallel Benchmark
-   
-      https://www.nas.nasa.gov/publications/npb.html
-      
-      https://github.com/benchmark-subsetting/NPB3.0-omp-C
+  - Benchmark de NAS Parallèle avec MPI et OpenMP en fortran, NASA
+    https://www.nas.nasa.gov/publications/npb.html
+  - Benchmark de NAS Parallèle avec OpenMP en C,
+    https://github.com/benchmark-subsetting/NPB3.0-omp-C
 
 * Annexe
 ** Rappel des cas spéciaux

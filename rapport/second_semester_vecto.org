@@ -549,16 +549,29 @@ typedef union {
 ** Classes de référence pour le NPB:
    
    Ils existent plusieurs classes pour NPB,et que chaque classe a ces propres caractéristiques.
-   - Classes A , B , C utilisées pour les problèmes de tests standards.
+   - Classes A , B , C utilisées pour les problèmes des tests standards.
    - Classes D , E , F utilisée pour les gros problèmes de tests 
    - Classe S pour des tests rapides .
    
 ** Résultats et discussion
   
   Pour les tests, vu que nos machines ne supportent pas les tailles pour les tests standards et gros problème,
-  donc on est restés sur la classe "S". Donc comme vous le voyez ici on a utilisé comme compilateur la nouvelle 
-  version de verificarlo, c'est à dire la version vectorisée.
-  On a pris comme exemple le benchmark "BT" et de classe "S". Pour pouvoir exécuter le benchmark, il nous
+  donc on est restés sur la classe "S". Comme compilateur, on a utiliser la nouvelle version de verificarlo, 
+  c'est à dire la version vectorisée.
+
+*** Problème
+
+  Pendant l’expérience, que nous avons menée sur nos machines sur les NPB, on a été confronté à une erreur de 
+  dimension sept pour les tableaux. Ce problème a été lié aux différences de compilateur entre open mpi et vérificarlo.
+  
+*** Solution
+  Pour résoudre le problème, on a dû recompilé "open mpi" avec les mêmes compilateur que nous avons utilisés 
+  pour vérificarlo. À titre indicatif, on a utilisé la version sept de clang pour remplacer les compilateurs 
+  de gnu. Pour celle de fortran on a compilé avec flang.
+  
+*** Test
+  
+  On a pris comme exemple de test le benchmark "BT" et de classe "S". Pour pouvoir exécuter le benchmark, il nous
   demandé un nombre de cœurs qui représente le carré d'un nombre. La figure suivant représente le résumé 
   de la compilation du benchmark BT:
   
@@ -578,7 +591,7 @@ typedef union {
    [[../ressources/vect1.png]]
    
    Le benchmark que nous avons testé est écrit avec le langage fotran et parallélisé avec MPI. Du coup on peut constater
-   sur cette figure que le niveau de vectorisation est nul. Celle-ci peut être dû à la différence de la syntaxe du langage entre
+   sur cette figure que le niveau de vectorisation est nul. Celle-ci peut être dû à la différence de syntaxe du langage entre
    le langage C et fortran. 
    Pour bien observer le niveau de vectorisation sur le benchmark BT, on a récupéré une source de benchmarks qui est écrit avec
    le langage C et parallélisé avec OpenMP.

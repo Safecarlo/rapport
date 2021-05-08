@@ -729,10 +729,20 @@ typedef union {
 
 * Conclusion
 
-  
+  Pour conclure, ce projet nous a permis d'approfondir nos connaissance acquise
+  avec certains module du master comme:
+  - Le module de Calcul Numérique sur la précision numérique qui est un des sujets
+    principales de *verificarlo*.
+  - Le module d'Architecture Parralèle et de Technique d'Optimisation Parallèle
+    pour les mesures de performances et les benchmarks.
+  - Ainsi que les modules traitant la parallélisation avec MPI et OpenMP comme
+    Algotithme de ProgrammationParallèle et Technique d'Optimisation Parallèle.
+
+  Les nouvelles fonctionnalités qu'apporte le support de la vectorisation va
+  permettre de proposer aux utilisateurs de nouvelles analyses et un gain en
+  performance pour les backends *ieee* et *vprec*.
 
 * Référence
-
 
   1. <<stdieee>> Aide Mémoire sur le standard IEEE754, Pablo de Oliveira Castro,
     https://sifflez.org/lectures/archi-ord/AideMemoireIEEE754.pdf

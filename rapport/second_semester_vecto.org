@@ -31,6 +31,12 @@
 
   https://github.com/Safecarlo/print_floating_point
 
+* Partage des tâches
+
+  Ce semestre nous avons décidés de répartir les tâches de la façon suivante:
+  - Nicolas sur le support de la Vectorisation
+  - Hery et Ali sur le support de la Parallélisation
+  
 * Support de la vectorisation
 ** Point git
 *** Rebasage
@@ -673,7 +679,6 @@ typedef union {
   On a pris comme exemple de test le benchmark "BT" et de classe "S". Pour pouvoir exécuter le benchmark, il nous
   demandé un nombre de cœurs qui représente le carré d'un nombre. La figure suivant représente le résumé 
   de la compilation du benchmark BT:
-  
   
    <<figure a>>
    #+CAPTION: Rappel des cas spéciaux

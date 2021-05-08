@@ -265,10 +265,10 @@ typedef union {
 
 **** Pour la version vectorielle
 
-      Comme nous ne pouvons pas faire des conditions de *prétraitement* dans les
-      *macros* nous avons englobé nos *macros* dans les conditions de
-      * prétraitement * afin de pouvoir définir les structures pour toutes les
-      tailles de vecteur.
+     Comme nous ne pouvons pas faire des conditions de *prétraitement* dans les
+     *macros* nous avons englobé nos *macros* dans les conditions de
+     *prétraitement* afin de pouvoir définir les structures pour toutes les
+     tailles de vecteur.
 
 *** Types vectorielles
 
@@ -454,7 +454,7 @@ typedef union {
       temps de chaque exécution.
 
       Les temps sont calculés en nanosecondes pour plus de précisions et son
-      ramené en seconde en multipliant par 1.000.000 (10e^9).
+      ramené en seconde en multipliant par 1.000.000 (1.0e+9).
 
       Une fois les temps calculés nous calculons la moyenne de ces temps afin de
       fournir à l'utilisateur le temps moyens au lieu d'un temps bruts pour
@@ -602,7 +602,7 @@ typedef union {
   - "l’implémentation de nouveau algorithmes et fonctions compatibles au parallélisme"
   - "vérification de la performance ainsi que l’exactitude des résultats retournés par l’exécution"
   - "Faciliter de travailler et de s’adapter avec les systèmes multicœurs fiable ,ainsi 
-  que la facilité de la distribution et communication multicœurs."
+    que la facilité de la distribution et communication multicœurs."
   
 *** La version NPB2:
   
@@ -612,7 +612,7 @@ typedef union {
   
   - "modifier les règles de soumise des résultats de l’analyse comparative"
   - "Disponibilité des fichiers source et des scripts des construction afin d’assurer la disponibilité publique des 
-  modification des résultats."
+    modification des résultats."
   - "Et enfin la version NPB2 a permis d’être implémenter des codes basé sur MPI".
   
 ***  La version NPB3:
@@ -633,21 +633,21 @@ typedef union {
   - EP : " Embarrassingly Parallel": Celui-ci permet d'avoir des variant aléatoire de type Gaussienne.
         
   - CG : "Conjugate Gradient" , La méthode des gradient conjugue permet de déterrminer la valeur 
-  propre d'une grande matrice définie positif.
+    propre d'une grande matrice définie positif.
   
   - MG : "Multi-Grid", Ce type de benchmark permet de faire une approximation de l'équation du 
-  Poisson par la méthode des maillage.
+    Poisson par la méthode des maillage.
          
-   - FT : "Fourier Transform", La transformation de Fourier permet de résoudre une équation différentielle
+  - FT : "Fourier Transform", La transformation de Fourier permet de résoudre une équation différentielle
    partielle à trois dimensions.
          
-    - BT: "Block Tri-diagonal solver", Ce type de benchmark permet la résolution des équation différentiells
+  - BT: "Block Tri-diagonal solver", Ce type de benchmark permet la résolution des équation différentiells
     non linéaire.
     
-    - SP: "Scalar Penta-diagonal solver", Ce type de benchmark permet la résolution des équation différentiells
+  - SP: "Scalar Penta-diagonal solver", Ce type de benchmark permet la résolution des équation différentiells
     non linéaire.
     
-    - LU: "Lower-Upper Gauss-Seidel solver":Ce type de benchmark permet la résolution des équation différentiells
+  - LU: "Lower-Upper Gauss-Seidel solver":Ce type de benchmark permet la résolution des équation différentiells
     non linéaire. La méthode utilisé ici est la factorisation "LU".
     
 ** Classes de référence pour le NPB:
@@ -683,7 +683,7 @@ typedef union {
    <<figure a>>
    #+CAPTION: Rappel des cas spéciaux
    #+NAME: fig:Résume BT benchmark
-   #+ATTR_LATEX: :width 500px
+   #+ATTR_LATEX: :width 450px
    [[../ressources/btcompleted.png]]
    
    Après avoir compilé et exécute le benchmark BT, la vectorisation au niveau du programme est représentée
@@ -692,7 +692,7 @@ typedef union {
     <<figure b>>
    #+CAPTION: Vectorisation au niveau du benckmark BT
    #+NAME: fig:Résume BT benchmark
-   #+ATTR_LATEX: :width 500px
+   #+ATTR_LATEX: :width 450px
    [[../ressources/vect1.png]]
    
    Le benchmark que nous avons testé est écrit avec le langage fotran et parallélisé avec MPI. Du coup on peut constater
@@ -705,7 +705,7 @@ typedef union {
    <<figure c>>
    #+CAPTION: Vectorisation au niveau u benckmark BT
    #+NAME: fig:Résume BT benchmark
-   #+ATTR_LATEX: :width 500px
+   #+ATTR_LATEX: :width 450px
    [[../ressources/vcopenmp.png]]
    
 ** Conclusion
@@ -759,7 +759,7 @@ typedef union {
     <<figure 1>>
    #+CAPTION: Rappel des cas spéciaux
    #+NAME: fig:rappel_des_cas_speciaux
-   #+ATTR_LATEX: :width 500px
+   #+ATTR_LATEX: :width 450px
    [[../ressources/special_case.png]]
 
 ** Résultat
@@ -768,36 +768,36 @@ typedef union {
     <<figure 2>>
     #+CAPTION: Résultat du backend IEEE
     #+NAME: fig:res_vm_ieee
-    #+ATTR_LATEX: :width 500px
+    #+ATTR_LATEX: :width 450px
     [[../ressources/vm_ieee.png]]
 
     <<figure 3>>
     #+CAPTION: Dérivation standard du backend IEEE
     #+NAME: fig:stddev_vm_ieee
-    #+ATTR_LATEX: :width 500px
+    #+ATTR_LATEX: :width 450px
     [[../ressources/vm_ieee_stddev.png]]
 
     <<figure 4>>
     #+CAPTION: Résultat du backend VPREC
     #+NAME: fig:res_vm_vprec
-    #+ATTR_LATEX: :width 500px
+    #+ATTR_LATEX: :width 450px
     [[../ressources/vm_vprec.png]]
 
     <<figure 5>>
     #+CAPTION: Dérivation standard du backend VPREC avec des nombres normaux
     #+NAME: fig:stddev_vm_vprec_normal_stddev
-    #+ATTR_LATEX: :width 500px
+    #+ATTR_LATEX: :width 450px
     [[../ressources/vm_vprec_normal_stddev.png]]
 
     <<figure 6>>
     #+CAPTION: Dérivation standard du backend VPREC avec des nombres dénormaux
     #+NAME: fig:stddev_vm_vprec_denormal_stddev
-    #+ATTR_LATEX: :width 500px
+    #+ATTR_LATEX: :width 450px
     [[../ressources/vm_vprec_denormal_stddev.png]]
 
     <<figure 7>>
     #+CAPTION: Résultat du backend VPREC entre l'implémentation sérial et l'implémentation vectorielle des nombres normaux
     #+NAME: fig:res_vm_vprec_vs
-    #+ATTR_LATEX: :width 500px
+    #+ATTR_LATEX: :width 450px
     [[../ressources/vm_vprec_serial_vs_vector.png]]
 

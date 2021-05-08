@@ -469,54 +469,49 @@ typedef union {
 ** Introduction
 
   Dans le contexte de  testé la performance des supers calculateurs, ils existent plusieurs outils.
-  Dans notre cas on va prendre le NAS parallèle benchmark (NPB). Le NPB est une suite de benchmarks 
-  améliorées afin d’augmenter et d’améliorer les performances informatique parallèles. Cette outil a 
+  Dans notre cas on va prendre le NAS parallèle benchmark (NPB). "Le NPB est une suite de benchmarks 
+  améliorées afin d’augmenter et d’améliorer les performances informatique parallèles". Cette outil a 
   été développer et améliorer au centre de la recherche NASA. Ils existent plusieurs versions de la NPB 
   dont ont va citer dans cette partie. Pour pouvoir réaliser notre analyser, on a évaluer les différentes 
   benchmark existant et de donne le paramètre qui différencie une version à une autre. A la fin on va 
   détaille les tests qu'on a fait localement sur nos machines.
   
-** Evolution des NAS Benchmarks Parallèle
+** Différentes types de NAS Benchmarks Parallèle
 
-  Comme tous les outils et programmes, le NPB pendant son évolution et
-  développement est passé par plusieurs phase et plusieurs versions amélioré
-  avec le temps et dépendant des besoins et problème rencontrés ; pour cela
-  dans ce qui suit on a détaillé les trois version du NPB , tel que chaque
-  spécification a des référence plus améliorées par rapport à l’ancienne
-  version.
+  Il existe des versions antérieures pour les NPB, dont les sources ne sont pas accessibles à
+  tous le monde. Actuellement, il existe plusieurs versions du NPB, qui sont versées améliores 
+  et construits à partir des besoins. Dans la suite, on va élaborer les trois versées de NPB dont
+  les sources sont accessibles au grand public.
   
 *** La version NPB1:
   
-  Cette version est la première version appliquée, ces spécifications sont implémentées en 
+  Cette version est la première version appliquée, Elle a été construit en 
   utilisant des algorithmes et des modèles de programmation. Dans cette version, ils ont 
-  utilises des algorithmes spécifier pour l’ensemble des problèmes rencontrés a des points 
-  de référence qui puissent assurer :
+  utilises des algorithmes spécifier pour assurer :
   
-  -l’implémentation de nouveau algorithmes et fonctions compatibles au parallélisme
-  - vérification de la performance ainsi que l’exactitude des résultats retournés par l’exécution
-  -Faciliter de travailler et de s’adapter avec les systèmes multicœurs fiable ,ainsi 
-  que la facilité de la distribution et communication multicœurs.
+  - "l’implémentation de nouveau algorithmes et fonctions compatibles au parallélisme"
+  - "vérification de la performance ainsi que l’exactitude des résultats retournés par l’exécution"
+  - "Faciliter de travailler et de s’adapter avec les systèmes multicœurs fiable ,ainsi 
+  que la facilité de la distribution et communication multicœurs."
   
 *** La version NPB2:
   
-  Après avoir utilisé la version NPB1 , des problèmes de performances ainsi que du parallélisme sont résolus, 
-  d’un autre coté des problèmes et faiblesses nouveaux sont rencontrés.  Ainsi que vu l’évolution 
-  des supercalculateur,l’implémentation du NPB1 a un retard,c’est pour cela que la version NPB2 a été crée afin 
-  d’améliorer et de régler les soucis rencontrés en apportant des implémentation de code source pour 
-  les benchmark implémentés dans NPB1. Donc la spécification NPB2 complète les spécifications du NPB1 et a permis de :
+  En vue dans le contexte d'évolution des supers calculateurs, la version 1 du NPB n'était plus 
+  suffisante. Et aussi face à d'autre problèmes, ça nécessite une nouvelle implémentation pour les NPB.
+  Par rapport à la première version, la version 2 a permis de:
   
-  -modifier les règles de soumise des résultats de l’analyse comparative
-  - Disponibilité des fichiers source et des scripts des construction afin d’assurer la disponibilité publique des 
-  modification des résultats.
-  - Et enfin la version NPB2 a permis d’être implémenter des codes basé sur MPI .
+  - "modifier les règles de soumise des résultats de l’analyse comparative"
+  - "Disponibilité des fichiers source et des scripts des construction afin d’assurer la disponibilité publique des 
+  modification des résultats."
+  - "Et enfin la version NPB2 a permis d’être implémenter des codes basé sur MPI".
   
 ***  La version NPB3:
  
-  Après l’apparition et l’implémentation de la version NPB2 MPI; la version NPB3 a conservé l’implémentation
-  de MPI vue en NPB2 et a effectué des améliorations afin d’être implémenté dans OpenMP.
-  Mais en plus de ça des implémentations qui étais en série dans NPB2 , sont amélioré afin d’être en parallèle avec des 
-  optimisations supplémentaires. Ainsi que NPB3 a rajouté de nouvelle références, qui sont des programmes hybride et qui
-  est parallèliser avec openmp/mpi. Ces programmes on les appels des "NPB-Multi-Zone" ou "NPB-MZ".
+  La version 3 du NPB est une version améliorer de la seconde. Tout ce qui est dans la version 2 du côté 
+  parallélisme avec MPI a été garde sur la version 3. LA nouvelle implémentation sur la version 3 est 
+  celle de la parallélisation avec openmp. La NPB3 possède aussi des nouveaux implémentations, 
+  qui sont des programmes hybride et qui est parallèliser avec openmp/mpi. Ces programmes on les appels 
+  des "NPB-Multi-Zone" ou "NPB-MZ".
 
 ** Différentes types de benchmark
  
@@ -527,11 +522,11 @@ typedef union {
   
   - EP : " Embarrassingly Parallel": Celui-ci permet d'avoir des variant aléatoire de type Gaussienne.
         
-  - CG : "Conjugate Gradient" , La méthode des gradient conjugue permet de déterrminer la valeur propre
-  d'une grande matrice définie positif.
+  - CG : "Conjugate Gradient" , La méthode des gradient conjugue permet de déterrminer la valeur 
+  propre d'une grande matrice définie positif.
   
-  - MG : "Multi-Grid", Ce type de benchmark permet de faire une approximation de l'équation du Poisson
-  par la méthode des maillage.
+  - MG : "Multi-Grid", Ce type de benchmark permet de faire une approximation de l'équation du 
+  Poisson par la méthode des maillage.
          
    - FT : "Fourier Transform", La transformation de Fourier permet de résoudre une équation différentielle
    partielle à trois dimensions.
@@ -548,9 +543,10 @@ typedef union {
 ** Classes de référence pour le NPB:
    
    Ils existent plusieurs classes pour NPB,et que chaque classe a ces propres caractéristiques.
-   - Classes A , B , C utilisées pour les problèmes des tests standards.
-   - Classes D , E , F utilisée pour les gros problèmes de tests 
-   - Classe S pour des tests rapides .
+   Chaque classe a sa propre tailles.
+   - Classes A , B , C :Ces classes sont pour les problèmes des tests standards.
+   - Classes D , E , F : Ces classes sont réserver aux gros problèmes
+   - Classe S : Cette classe est de taille minimum pour avoir des résultats rapides.
    
 ** Résultats et discussion
   

@@ -1,5 +1,5 @@
 #+TITLE: Rapport du Second Semestre sur le support de la Vectorisation et de la Parallèlisation dans Verificarlo
-#+AUTHOR: Groupe 7, Hery ANDRIANANTANAINA, Nicolas BOUTON, Ali LAKBAL
+#+AUTHOR: Groupe 7, Hery ANDRIANANTENAINA, Nicolas BOUTON, Ali LAKBAL
 #+DATE: Mai 2021
 
 * Introduction

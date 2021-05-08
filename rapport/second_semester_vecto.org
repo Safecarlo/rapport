@@ -709,7 +709,7 @@ typedef union {
   Mais ce qui serai intéressant est de pouvoir faire des tests sur des supercalculateurs avec les différentes 
   classe de benchmarks et de bien évaluer la performance de la machine ainsi que d'observer les niveaux de 
   vectorisation sur une grande taille de calcul.
-  
+
 * Référence
 
 

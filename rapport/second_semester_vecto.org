@@ -33,7 +33,7 @@
 
 * Partage des tâches
 
-  Ce semestre nous avons décidés de répartir les tâches de la façon suivante:
+  Ce semestre nous avons décidé de répartir les tâches de la façon suivante:
   - Nicolas sur le support de la Vectorisation
   - Hery et Ali sur le support de la Parallélisation
   
@@ -44,7 +44,7 @@
     Durant le semestre, des modifications ont été apportées sur la branche master
     du répertoire public *verificarlo* qui est disponible sur la forge
     *Github*. Pour ne pas être trop éloigné de la version scalaire de
-    cette branche nous avons donc décidés de rapatrier les modifications de la
+    cette branche nous avons donc décidé de rapatrier les modifications de la
     branche master de *verificarlo* vers notre branche master de notre fork
     *Safecarlo*.
 
@@ -66,7 +66,7 @@
     Des pull requests ont été fait sur verificarlo, notamment pour nettoyer le
     répertoire de tests qui n'était pas nettoyer par la cible "clean" du
     makefile. Comme verificarlo utilise les *autotools*, la cible n'est pas
-    directement disponible et nous avons du utiliser une dépendance de la cible
+    directement disponible et nous avons dû utiliser une dépendance de la cible
     "clean" des *autotools* qui est "clean-local". Et avec cette cible nous
     appelons notre cible, qui nettoie le répertoire ~tests/~, en la mettant
     comme dépendance de la cible "clean-local".
@@ -205,7 +205,7 @@ operations count:
 
     Tout d'abord comme pour le premier semestre nous avons ajouté des tests pour
     tester notre implémentations vectorielles des opérations vectorielles. Nous
-    avons choisis de faire des tests simple c'est pourquoi nous avons modifié
+    avons choisi de faire des tests simple c'est pourquoi nous avons modifié
     le test *tests_vprec_backend_simple*.
 
     Pour ce faire nous avons "copié/collé" les entrées scalaires car nous étions
@@ -383,7 +383,7 @@ typedef union {
      que nous avons changé le gouverneur du processeur en espace utilisateur
      pour pouvoir affecter la fréquence maximum de notre processeur (sauf pour la
      machine virtuel ou nous ne pouvons pas mais elle est ici car sur
-     l'ordinateur portable nous n'avons pas *AVX*). De plus nous avons affecter
+     l'ordinateur portable nous n'avons pas *AVX*). De plus nous avons affecté
      notre programme au dernier cœur de notre processeur pour l'éloigner le plus
      possible du cœur 0 qui est le cœur privilégier du système d'exploitation.
 
@@ -428,7 +428,7 @@ typedef union {
       temps de calcul raisonnable pour ne pas faussé les mesures de temps de
       chaque exécution des micro-benchmark.
 
-      Ici nous avons choisis 1.000.000 d'opérations globales, soit 1 MFLOP.
+      Ici nous avons choisi 1.000.000 d'opérations globales, soit 1 MFLOP.
 
       Pour ce qui est du nombre d'opération pour un vecteur de 1 simple
       précision, cela ne change pas, il est de 1 MFLOP.
@@ -460,7 +460,7 @@ typedef union {
       
 ***** Ecart type
 
-      L'écart type est calculé comme dans sa formule mathématique c'est à dire
+      L'écart type est calculé comme dans sa formule mathématiques c'est à dire
       la racine carré de la variance. C'est-à-dire la différence au carré de
       chaque temps moins le temps moyens, divisé par le nombre de l'échantillon,
       le tout dans une racine carré.
@@ -471,7 +471,7 @@ typedef union {
       - *stddev* est l'écart type
       - *var* est la variance
       - *sqrt* est la racine carré
-      - *sum* est le symbole somme en mathématique
+      - *sum* est le symbole somme en mathématiques
       - *x_i* est l'élément i du tableau
       - *m* est la moyenne
       - *n* est la taille du tableau

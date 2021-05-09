@@ -1,4 +1,4 @@
-% Created 2021-05-08 sam. 23:16
+% Created 2021-05-09 dim. 15:33
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt, letterpaper]{article}
          \usepackage[document]{ragged2e}
@@ -15,11 +15,11 @@
 \usepackage{amssymb}
 \usepackage{capt-of}
 \usepackage{hyperref}
-\author{Groupe 7, Hery ANDRIANANTENAINA, Nicolas BOUTON, Ali LAKBAL}
+\author{Groupe 7: Hery ANDRIANANTENAINA, Nicolas BOUTON, Ali LAKBAL}
 \date{Mai 2021}
 \title{Rapport du Second Semestre sur le support de la Vectorisation et de la Parallèlisation dans Verificarlo}
 \hypersetup{
- pdfauthor={Groupe 7, Hery ANDRIANANTENAINA, Nicolas BOUTON, Ali LAKBAL},
+ pdfauthor={Groupe 7: Hery ANDRIANANTENAINA, Nicolas BOUTON, Ali LAKBAL},
  pdftitle={Rapport du Second Semestre sur le support de la Vectorisation et de la Parallèlisation dans Verificarlo},
  pdfkeywords={},
  pdfsubject={},
@@ -32,7 +32,7 @@
 
 
 \section{Introduction}
-\label{sec:orgdb3c3d0}
+\label{sec:org73549da}
 
 Ce rapport fait suite au précédent. Les informations rédigées sur le précédent
 rapport doivent donc être comprises afin de pouvoir comprendre la suite du
@@ -40,7 +40,7 @@ rapport.
 
 Nous rappelons tout de même qu'il faut configurer \textbf{verificarlo} avec \textbf{clang}
 car nous utilisons les types vectoriels qu'il propose afin d'éviter les
-intrinsèques qui seraient dépendantes de l'architecture. (réf: \hyperref[org9e56591]{2})
+intrinsèques qui seraient dépendantes de l'architecture. (réf: \hyperref[orgb824849]{2})
 
 Les sources sont toujours disponibles sur notre organisation Github:
 
@@ -62,25 +62,25 @@ sous différents formats:
 \url{https://github.com/Safecarlo/print\_floating\_point}
 
 \section{Partage des tâches}
-\label{sec:orga7cf6ef}
+\label{sec:orgee78af0}
 
-Ce semestre nous avons décidés de répartir les tâches de la façon suivante:
+Ce semestre nous avons décidé de répartir les tâches de la façon suivante:
 \begin{itemize}
 \item Nicolas sur le support de la Vectorisation
 \item Hery et Ali sur le support de la Parallélisation
 \end{itemize}
 
 \section{Support de la vectorisation}
-\label{sec:orgb80a6ba}
+\label{sec:org9031b1b}
 \subsection{Point git}
-\label{sec:org9858b01}
+\label{sec:orgdd333d7}
 \subsubsection{Rebasage}
-\label{sec:org6aae736}
+\label{sec:org491a855}
 
 Durant le semestre, des modifications ont été apportées sur la branche master
 du répertoire public \textbf{verificarlo} qui est disponible sur la forge
 \textbf{Github}. Pour ne pas être trop éloigné de la version scalaire de
-cette branche nous avons donc décidés de rapatrier les modifications de la
+cette branche nous avons donc décidé de rapatrier les modifications de la
 branche master de \textbf{verificarlo} vers notre branche master de notre fork
 \textbf{Safecarlo}.
 
@@ -98,12 +98,12 @@ modifications (commits) pour éviter de les éparpiller dans nos modifications
 (commits).
 
 \subsubsection{Pull requests sur verificarlo}
-\label{sec:org3caeb5a}
+\label{sec:orgcbd01fa}
 
 Des pull requests ont été fait sur verificarlo, notamment pour nettoyer le
 répertoire de tests qui n'était pas nettoyer par la cible "clean" du
 makefile. Comme verificarlo utilise les \textbf{autotools}, la cible n'est pas
-directement disponible et nous avons du utiliser une dépendance de la cible
+directement disponible et nous avons dû utiliser une dépendance de la cible
 "clean" des \textbf{autotools} qui est "clean-local". Et avec cette cible nous
 appelons notre cible, qui nettoie le répertoire \texttt{tests/}, en la mettant
 comme dépendance de la cible "clean-local".
@@ -124,9 +124,9 @@ configuration qui apparaissaient dans la liste des fichiers possible à
 indexer (\texttt{git status}).
 
 \subsection{Mise à jour du backend \textbf{ieee}}
-\label{sec:org14accde}
+\label{sec:orgb95dd98}
 \subsubsection{Ajout du compte des opérations flottantes vectorielles dans le backend \textbf{ieee}}
-\label{sec:org3775cc0}
+\label{sec:orgf47144b}
 
 Lors de la mise à jour de notre branche master, nous nous sommes rendus
 comptes que des changements ont été apportés au backend \textbf{ieee}. Notamment
@@ -187,7 +187,7 @@ la précédente où toutes les informations sont alignés.
 
 \begin{enumerate}
 \item Apport de cette modification
-\label{sec:org2d7d755}
+\label{sec:org790ca8a}
 
 Cette fonctionnalité supplémentaire pourra permettre aux utilisateurs de
 pouvoir très simplement voir si leurs code est vectorisé sans passé par le
@@ -199,7 +199,7 @@ flottants.
 \end{enumerate}
 
 \subsubsection{Tests}
-\label{sec:org9e21243}
+\label{sec:orga9b22db}
 
 Nous avons aussi ajouté des tests plus approfondis pour ce backend avec des
 nombres aléatoirement choisis de sorte à avoir des nombres négatif, des
@@ -208,7 +208,7 @@ positif dans le même vecteur afin de s'assurer que l'implémentation
 fonctionne.
 
 \subsection{Vectorisation du backend \textbf{vprec}}
-\label{sec:orgb4667c7}
+\label{sec:org73c8fa0}
 
 Ce backend permet de gérer les cas des nombres spéciaux comme les nombres
 \textbf{dénormaux} et les nombres \textbf{infinis}. Cependant ces cas restent rares dans les
@@ -216,11 +216,11 @@ codes de calculs. C'est pourquoi nous avons décidé de prioriser la
 vectorisation pour les cas des nombres \textbf{normaux}.
 
 \subsubsection{Petit rappel des cas spéciaux}
-\label{sec:org10decfe}
+\label{sec:orged519e5}
 
 Prenons comme exemple une précision de 3 et une portée de 2 pour un type
 flottant simple précision (donc nous avons 1 bit de signe, 2 bit d'exposant
-et 3 bit de pseudo-mantisse). Prenons \hyperref[orgba3d930]{la formule du standard \textbf{IEEE754}} qui
+et 3 bit de pseudo-mantisse). Prenons \hyperref[org6f58747]{la formule du standard \textbf{IEEE754}} qui
 est:
 (-1)\^{}S * 2\^{}(E - (2\^{}(e - 1) - 1)) * (1 + P / 2\^{}p)
 \begin{itemize}
@@ -231,11 +231,11 @@ est:
 \item \textbf{infini}: nombre supérieur à 1,75 ou inférieur à 0,125
 \end{itemize}
 
-Voir la \hyperref[org6f8975f]{figure 1}.
+Voir la \hyperref[orgf991456]{figure 1}.
 
 \begin{enumerate}
 \item Parenthèse sur notre mini code pour afficher les flottants sous différents formats
-\label{sec:org0020b3e}
+\label{sec:org6bc0c21}
 
 Nous avons aussi écrit un mini code qui permet de visualiser sous différent
 format les flottants simple et double précision, ce qui nous a aidé à
@@ -252,11 +252,11 @@ format \textbf{IEEE754}.
 \end{enumerate}
 
 \subsubsection{Tests}
-\label{sec:org74944f3}
+\label{sec:orgdcb5bfd}
 
 Tout d'abord comme pour le premier semestre nous avons ajouté des tests pour
 tester notre implémentations vectorielles des opérations vectorielles. Nous
-avons choisis de faire des tests simple c'est pourquoi nous avons modifié
+avons choisi de faire des tests simple c'est pourquoi nous avons modifié
 le test \textbf{tests\_vprec\_backend\_simple}.
 
 Pour ce faire nous avons "copié/collé" les entrées scalaires car nous étions
@@ -280,7 +280,7 @@ avions un problème avec le retour du script qui calcul avec la librairie
 \textbf{mpfr}.
 
 \subsubsection{Structures}
-\label{sec:orgc94887e}
+\label{sec:org620bc6c}
 
 Tout d'abord nous avons remarqué que le backend utilise des structures pour
 faciliter la compréhension des calculs. Or les structures comportent des
@@ -289,7 +289,7 @@ vectoriels que propose \textbf{clang}.
 
 \begin{enumerate}
 \item Code de la version scalaire pour les flottants
-\label{sec:org5b384d1}
+\label{sec:org0bfc592}
 
 \begin{verbatim}
 typedef union {
@@ -319,7 +319,7 @@ typedef union {
 \end{verbatim}
 
 \item Pour la version vectorielle
-\label{sec:org8ff4d55}
+\label{sec:orgc993d63}
 
 Comme nous ne pouvons pas faire des conditions de \textbf{prétraitement} dans les
 \textbf{macros} nous avons englobé nos \textbf{macros} dans les conditions de
@@ -328,7 +328,7 @@ tailles de vecteur.
 \end{enumerate}
 
 \subsubsection{Types vectoriels}
-\label{sec:org205d6ea}
+\label{sec:orgbb43921}
 
 Cependant au cours de l'écriture des structures vectorielles nous nous somme
 rendu compte qu'il nous fallait des vecteurs d'entiers signés de 64 bits
@@ -343,7 +343,7 @@ Cependant nous n'avons pas réussis à introduire se fichier dans les
 fichier \textbf{interflop.h} car il est inclus dans le fichier final des wrappers.
 
 \subsubsection{Fonctions}
-\label{sec:orga82d081}
+\label{sec:org23adce7}
 
 Il nous restait à vectoriser les fonctions du backends.
 
@@ -352,7 +352,7 @@ scalaires. Il faut donc créer des fonctions utilisant les types vectoriels.
 
 \begin{enumerate}
 \item Fonction principale
-\label{sec:org6d41bd5}
+\label{sec:org704da0a}
 
 Comme nous passons la taille du vecteur en paramètre il faut donc que l'on
 appelle la bonne fonction suivant la taille du vecteur. Le plus optimal
@@ -363,7 +363,7 @@ Pour ce qu'il est du calcul de l'opération originale, c'est le même procédé
 que pour le backend \textbf{ieee}.
 
 \item Gestion des arrondis
-\label{sec:orgadbe81e}
+\label{sec:org7f5931b}
 
 Ici commence la vectorisation du backend.
 
@@ -393,16 +393,16 @@ nombres normaux, une avec le calcul d'une erreur absolue et l'autre sans. Il
 faut donc vectoriser ces 2 fonctions.
 
 \item Cas des nombres normaux
-\label{sec:org2aef10e}
+\label{sec:org4619bdd}
 \begin{enumerate}
 \item Cas des nombres normaux
-\label{sec:org13f12f1}
+\label{sec:orga1655ba}
 
 Pour vectoriser la fonction qui calcul les arrondis pour les nombres normaux
 il suffisait d'utiliser les opérations avec des types vectoriels de \textbf{clang}.
 
 \item Cas des nombres normaux avec erreurs absolue
-\label{sec:org66646fc}
+\label{sec:orgba52f9a}
 
 Ici aussi on a opté pour la même technique de vectorisation. Comme on ne
 peut vectoriser le calcul que si tous les éléments du vecteurs ont le même
@@ -424,12 +424,12 @@ O(2n)
 \end{enumerate}
 
 \subsection{Benchmark}
-\label{sec:org671c56f}
+\label{sec:orgf348580}
 \subsubsection{Explication}
-\label{sec:org72f10cb}
+\label{sec:org6f24b6a}
 \begin{enumerate}
 \item But
-\label{sec:org0732b49}
+\label{sec:org6614962}
 
 Le but du \textbf{benchmark} est de tester les performances de notre implémentation
 vectorielle en les comparant avec la version scalaire. Seul le format
@@ -443,7 +443,7 @@ vraiment et donc il n'y a que 3 taille de vecteur, contrairement au simple
 précision qui en a 4.
 
 \item Backend testé
-\label{sec:orgb911297}
+\label{sec:orga235b81}
 
 Le benchmark test les backends \textbf{ieee} et \textbf{vprec}, qui pour ce dernier test
 le cas où l'opération donne un vecteur avec uniquement des nombres normaux
@@ -453,25 +453,25 @@ vectorisé. Et nous utilisons le mode par défaut où uniquement le vecteur
 final est traité spécifiquement par le backend \textbf{vprec}.
 
 \item Avant de faire les mesures de performances
-\label{sec:orgf031fa9}
+\label{sec:orgad9e4ae}
 
 Nous avons utilisé ce que nous avons appris au premier semestre dans le
 cours d'Architecture Parallèle pour mesurer les performances. C'est à dire
 que nous avons changé le gouverneur du processeur en espace utilisateur
 pour pouvoir affecter la fréquence maximum de notre processeur (sauf pour la
 machine virtuel ou nous ne pouvons pas mais elle est ici car sur
-l'ordinateur portable nous n'avons pas \textbf{AVX}). De plus nous avons affecter
+l'ordinateur portable nous n'avons pas \textbf{AVX}). De plus nous avons affecté
 notre programme au dernier cœur de notre processeur pour l'éloigner le plus
 possible du cœur 0 qui est le cœur privilégier du système d'exploitation.
 
 \item Définitions des micro benchmark
-\label{sec:org1fc8464}
+\label{sec:org950ca97}
 
 Les micro-benchmark sont les boucles qui font le calcul que l'on mesure,
 comme l'addition, la soustraction, la multiplication et la division.
 
 \item Métriques
-\label{sec:org15a7d17}
+\label{sec:org41d8ce8}
 
 Nous avons aussi vu les métriques à prendre en compte, comme le temps que
 prend notre micro-benchmark. Mais pour s'assurer que le temps ne soit pas
@@ -484,36 +484,36 @@ Pour approfondir, sur des benchmarks plus compliqués il faudra bien
 identifié le seuil. Ici le seuil de 6\% est à titre représentatif.
 
 \item Sauvegarde des résultats bruts
-\label{sec:orgf5ca3cd}
+\label{sec:orgad98826}
 
 Nous avons aussi appris qu'il fallait garder les résultats bruts afin de
 pouvoir comparer avec une autre machine, chose que nous faisons.
 
 \item Résultat espérer
-\label{sec:org0a8c5dc}
+\label{sec:org763ac07}
 
 Les résultats espérer avec notre implémentation est à peu près la moitié
 du maximum possible car beaucoup d'appel de fonction sont fait ainsi que de
 condition.
 
 \item Explication du calcul des métriques
-\label{sec:org8616773}
+\label{sec:org2044c6e}
 \begin{enumerate}
 \item Nombres d'exécutions des micro-benchmark
-\label{sec:orge256b5e}
+\label{sec:org33d273c}
 
 Le nombre d'exécution des micro-benchmark est choisis arbitrairement. Il
 nous a paru que 30 était suffisant pour évaluer si les mesures était
 faussé ou non.
 
 \item Nombres d'opérations
-\label{sec:org5decd47}
+\label{sec:org3f8f8e5}
 
 Le nombre d'opération à été choisis arbitrairement de façon à mesurer un
 temps de calcul raisonnable pour ne pas faussé les mesures de temps de
 chaque exécution des micro-benchmark.
 
-Ici nous avons choisis 1.000.000 d'opérations globales, soit 1 MFLOP.
+Ici nous avons choisi 1.000.000 d'opérations globales, soit 1 MFLOP.
 
 Pour ce qui est du nombre d'opération pour un vecteur de 1 simple
 précision, cela ne change pas, il est de 1 MFLOP.
@@ -528,7 +528,7 @@ d'opération est assez grand pour que la division entière donne un nombre
 entier d'opérations vectorielles.
 
 \item Temps
-\label{sec:orgf680051}
+\label{sec:orgbeeb98a}
 
 Si le temps est faussé, c'est-à-dire que l'on a eu un débordement de
 l'horloge et donc que le temps de fin est inférieur au temps de départ
@@ -545,9 +545,9 @@ fournir à l'utilisateur le temps moyens au lieu d'un temps bruts pour
 évité de faussé les mesures.
 
 \item Ecart type
-\label{sec:org2f2d94a}
+\label{sec:org0dbd9ab}
 
-L'écart type est calculé comme dans sa formule mathématique c'est à dire
+L'écart type est calculé comme dans sa formule mathématiques c'est à dire
 la racine carré de la variance. C'est-à-dire la différence au carré de
 chaque temps moins le temps moyens, divisé par le nombre de l'échantillon,
 le tout dans une racine carré.
@@ -559,14 +559,14 @@ Où:
 \item \textbf{stddev} est l'écart type
 \item \textbf{var} est la variance
 \item \textbf{sqrt} est la racine carré
-\item \textbf{sum} est le symbole somme en mathématique
+\item \textbf{sum} est le symbole somme en mathématiques
 \item \textbf{x\_i} est l'élément i du tableau
 \item \textbf{m} est la moyenne
 \item \textbf{n} est la taille du tableau
 \end{itemize}
 
 \item Accélération
-\label{sec:org07cb5b6}
+\label{sec:orgbde64fd}
 
 La formule pour calculé l'accélération est la suivante:
 temps de référence / temps calculé
@@ -595,18 +595,18 @@ flottants pour les 2 versions puis de 4 etc\ldots{}
 \end{enumerate}
 
 \subsubsection{Résultat}
-\label{sec:org95d528e}
+\label{sec:org3119592}
 \begin{enumerate}
 \item Ecart type
-\label{sec:orgc6e895b}
+\label{sec:org2ad9aac}
 
 Bien que nous utilisions une machine virtuelle, nous pouvons voir que les
-résultats sont assez stable excepté 3 ou 4 fois. (voir les figures \hyperref[orgc57cb74]{3}, \hyperref[org5cfc884]{5} et \hyperref[orga9b5c1a]{6})
+résultats sont assez stable excepté 3 ou 4 fois. (voir les figures \hyperref[org307795b]{3}, \hyperref[org045e625]{5} et \hyperref[org42c2a54]{6})
 
 \item Backend IEEE
-\label{sec:org1629d79}
+\label{sec:orge8b04ed}
 
-Pour ce qui concerne le backend \textbf{ieee} (voir la figure \hyperref[orgad030cd]{2}), nous avons une
+Pour ce qui concerne le backend \textbf{ieee} (voir la figure \hyperref[org2d4bfc0]{2}), nous avons une
 accélération d'environ de la moitié du maximum possible et les résultats sont
 assez semblable suivant le type d'opération.
 
@@ -614,9 +614,9 @@ Le gain de vitesse obtenu peut atteindre jusqu'à \textbf{4} si nous utilisons d
 vecteurs de 8 flottants simple précision avec ce backend.
 
 \item Backend VPREC
-\label{sec:org6d657e6}
+\label{sec:orga629fd7}
 
-Pour ce qui concerne le backend \textbf{vprec} (voir la figure \hyperref[orga5e0d31]{4}), nous pouvons
+Pour ce qui concerne le backend \textbf{vprec} (voir la figure \hyperref[org46bc9dd]{4}), nous pouvons
 constater que pour une opération où le vecteur final contient que des
 nombres normaux va beaucoup plus vite à être calculer qu'une opération où le
 vecteur final contient uniquement des nombres dénormaux. Ce qui est normal
@@ -628,7 +628,7 @@ accélération si on utilise des vecteurs de 8 flottants simple précision
 avec ce backend avec uniquement des nombres normaux.
 
 \item Remarque sur les résultats du backends VPREC et nouveaux tests
-\label{sec:org9db52e2}
+\label{sec:orgf2ea0cf}
 
 La différence entre le calcul avec des vecteurs de nombres normaux et du
 calcul avec des vecteurs de nombres dénormaux est flagrante mais le calcul
@@ -649,7 +649,7 @@ vectorisation est en fait de 3/4 du gain pour les vecteurs contenant que
 des nombres normaux.
 
 \item Conclusion des résultats
-\label{sec:orgd0a59f0}
+\label{sec:org8409bf1}
 
 Nous pouvons donc constater que le gain apporté par notre implémentation
 est d'environ la moitié de ce que l'on peut espérer avec le maximal
@@ -661,7 +661,7 @@ conclusion.
 \end{enumerate}
 
 \subsection{Conclusion de la vectorisation}
-\label{sec:org2dbf847}
+\label{sec:org022861e}
 
 Pour conclure, les résultats obtenus correspondent à nos attentes bien qu'il
 reste une marge de gain potentiel. Effectivement comme dis précédemment il est
@@ -686,9 +686,9 @@ si ils utilisent des vecteurs de 8 nombres flottants simple précision. Ce qui
 permettra de réduire le temps, les ressources et l'énergie consommé.
 
 \section{Support de la parallélisation}
-\label{sec:orge47d6bf}
+\label{sec:org5c257ae}
 \subsection{Introduction}
-\label{sec:org482c7e9}
+\label{sec:orgce9c253}
 
 Dans le contexte de  testé la performance des supers calculateurs, ils existent plusieurs outils.
 Dans notre cas on va prendre le NAS parallèle benchmark (NPB). "Le NPB est une suite de benchmarks 
@@ -699,7 +699,7 @@ benchmark existant et de donne le paramètre qui différencie une version à une
 détaille les tests qu'on a fait localement sur nos machines.
 
 \subsection{Différentes types de NAS Benchmarks Parallèle}
-\label{sec:org8807949}
+\label{sec:org441204d}
 
 Il existe des versions antérieures pour les NPB, dont les sources ne sont pas accessibles à
 tous le monde. Actuellement, il existe plusieurs versions du NPB, qui sont versées améliores 
@@ -707,7 +707,7 @@ et construits à partir des besoins. Dans la suite, on va élaborer les trois ve
 les sources sont accessibles au grand public.
 
 \subsubsection{La version NPB1:}
-\label{sec:org89bda26}
+\label{sec:org22cba06}
 
 Cette version est la première version appliquée, Elle a été construit en 
 utilisant des algorithmes et des modèles de programmation. Dans cette version, ils ont 
@@ -721,7 +721,7 @@ que la facilité de la distribution et communication multicœurs."
 \end{itemize}
 
 \subsubsection{La version NPB2:}
-\label{sec:orgebfeae0}
+\label{sec:org9543459}
 
 En vue dans le contexte d'évolution des supers calculateurs, la version 1 du NPB n'était plus 
 suffisante. Et aussi face à d'autre problèmes, ça nécessite une nouvelle implémentation pour les NPB.
@@ -735,7 +735,7 @@ modification des résultats."
 \end{itemize}
 
 \subsubsection{La version NPB3:}
-\label{sec:orgd1773ab}
+\label{sec:org045b8c0}
 
 La version 3 du NPB est une version améliorer de la seconde. Tout ce qui est dans la version 2 du côté 
 parallélisme avec MPI a été garde sur la version 3. LA nouvelle implémentation sur la version 3 est 
@@ -744,7 +744,7 @@ qui sont des programmes hybride et qui est parallèliser avec openmp/mpi. Ces pr
 des "NPB-Multi-Zone" ou "NPB-MZ".
 
 \subsection{Différentes types de benchmark}
-\label{sec:org5c8b8fb}
+\label{sec:org8d5246c}
 
 Pour les types de benchmark, on a garde la déscription qui est détaillé dans le site
 officiel du NAS parallèle benchmark.
@@ -774,7 +774,7 @@ non linéaire. La méthode utilisé ici est la factorisation "LU".
 \end{itemize}
 
 \subsection{Classes de référence pour le NPB:}
-\label{sec:orgf44a189}
+\label{sec:org449b28d}
 
 Ils existent plusieurs classes pour NPB,et que chaque classe a ces propres caractéristiques.
 Chaque classe a sa propre tailles.
@@ -785,49 +785,51 @@ Chaque classe a sa propre tailles.
 \end{itemize}
 
 \subsection{Résultats et discussion}
-\label{sec:org8ca56b4}
+\label{sec:org4d72d24}
 
 Pour les tests, vu que nos machines ne supportent pas les tailles pour les tests standards et gros problème,
 donc on est restés sur la classe "S". Comme compilateur, on a utiliser la nouvelle version de verificarlo, 
 c'est à dire la version vectorisée.
 
 \subsubsection{Problème}
-\label{sec:org77a4c41}
+\label{sec:orgd349692}
 
 Pendant l’expérience, que nous avons menée sur nos machines sur les NPB, on a été confronté à une erreur de 
 dimension sept pour les tableaux. Ce problème a été lié aux différences de compilateur entre open mpi et vérificarlo.
 
 \subsubsection{Solution}
-\label{sec:org5a643ef}
+\label{sec:org411dcb8}
 Pour résoudre le problème, on a dû recompilé "open mpi" avec les mêmes compilateur que nous avons utilisés 
 pour vérificarlo. À titre indicatif, on a utilisé la version sept de clang pour remplacer les compilateurs 
 de gnu. Pour celle de fortran on a compilé avec flang.
 
 \subsubsection{Test}
-\label{sec:org2cdad4c}
+\label{sec:orgd83149c}
 
 On a pris comme exemple de test le benchmark "BT" et de classe "S". Pour pouvoir exécuter le benchmark, il nous
 demandé un nombre de cœurs qui représente le carré d'un nombre. La figure suivant représente le résumé 
-de la compilation du benchmark BT. (voir la \hyperref[orge2f1e37]{figure 8})
+de la compilation du benchmark BT. (voir la \hyperref[org6e99874]{figure 8})
 
 Après avoir compilé et exécute le benchmark BT, la vectorisation au niveau du programme est représentée
-dans la figure suivante. (voir la \hyperref[org6e782ee]{figure 9})
+dans la figure suivante. (voir la \hyperref[orged7d9d3]{figure 9})
 
 Le benchmark que nous avons testé est écrit avec le langage fotran et parallélisé avec MPI. Du coup on peut constater
 sur cette figure que le niveau de vectorisation est nul. Celle-ci peut être dû à la différence de syntaxe du langage entre
 le langage C et fortran. 
 Pour bien observer le niveau de vectorisation sur le benchmark BT, on a récupéré une source de benchmarks qui est écrit avec
 le langage C et parallélisé avec OpenMP.
-Les figures suivantes représentent l'évaluation de la vectorisation au niveau du benchmark BT avec 8 threads. (voir la \hyperref[orgbed6e6d]{figure 10})
+Les figures suivantes représentent l'évaluation de la vectorisation au niveau du benchmark BT avec 8 threads. (voir la \hyperref[org7a56fc0]{figure 10})
 
 \subsection{Conclusion}
-\label{sec:org1785040}
+\label{sec:orgb2c860e}
 
-Pour conclure, les tests que nous avons fait ont montrés que les opérations
-flottantes vectoriels vont plus vite avec notre implémentation.
+Pour conclure, on a vu les différentes types de NAS parallel benchmark, ainsi que 
+la différence entre les versions. On a énumerer les types de benchmark et les classes
+existantes. A la fin on a fait les tests sur nos machine,les tests que nous avons fait 
+ont montrés que les opérations flottantes vectoriels vont plus vite avec notre implémentation. 
 
 \section{Ce que nous aurions pu faire sur le supercalculateur}
-\label{sec:org5a4ae0a}
+\label{sec:orgc293ce8}
 
 Pour la partie vectorisation, si le supercalculateur aurait eu les
 instructions \textbf{AVX512} d'Intel qui supporte les vecteurs de 512 bits,
@@ -842,7 +844,7 @@ la machine ainsi que d'observer les niveaux de vectorisation sur une grande
 taille de calcul.
 
 \section{Conclusion}
-\label{sec:org4b8e0be}
+\label{sec:orge531294}
 
 Pour conclure, ce projet nous a permis d'approfondir nos connaissances acquises
 avec certains module du master comme:
@@ -860,12 +862,12 @@ permettre de proposer aux utilisateurs de nouvelles analyses et un gain en
 performance pour les backends \textbf{ieee} et \textbf{vprec}.
 
 \section{Référence}
-\label{sec:orga1013cc}
+\label{sec:org1c5b291}
 
 \begin{enumerate}
-\item \label{orgba3d930} Aide Mémoire sur le standard IEEE754, Pablo de Oliveira Castro,
+\item \label{org6f58747} Aide Mémoire sur le standard IEEE754, Pablo de Oliveira Castro,
 \url{https://sifflez.org/lectures/archi-ord/AideMemoireIEEE754.pdf}
-\item \label{org9e56591} Extension des vecteurs de Clang, Clang / LLVM,
+\item \label{orgb824849} Extension des vecteurs de Clang, Clang / LLVM,
 \url{https://clang.llvm.org/docs/LanguageExtensions.html\#vectors-and-extended-vectors}
 \item Benchmark de NAS Parallèle avec MPI et OpenMP en fortran, NASA
 \url{https://www.nas.nasa.gov/publications/npb.html}
@@ -874,75 +876,75 @@ performance pour les backends \textbf{ieee} et \textbf{vprec}.
 \end{enumerate}
 
 \section{Annexe}
-\label{sec:orgeeaefde}
+\label{sec:org741ada1}
 
-\label{org6f8975f}
+\label{orgf991456}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=450px]{../ressources/special_case.png}
-\caption{\label{fig:org8de9cef}Rappel des cas spéciaux}
+\caption{\label{fig:org7e5d64a}Rappel des cas spéciaux}
 \end{figure}
 
-\label{orgad030cd}
+\label{org2d4bfc0}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=450px]{../ressources/vm_ieee.png}
-\caption{\label{fig:orgb7913e0}Résultat du backend IEEE}
+\caption{\label{fig:org84116da}Résultat du backend IEEE}
 \end{figure}
 
-\label{orgc57cb74}
+\label{org307795b}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=450px]{../ressources/vm_ieee_stddev.png}
-\caption{\label{fig:org640132e}Ecart type du backend IEEE}
+\caption{\label{fig:org73ee624}Ecart type du backend IEEE}
 \end{figure}
 
-\label{orga5e0d31}
+\label{org46bc9dd}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=450px]{../ressources/vm_vprec.png}
-\caption{\label{fig:org0a7cb67}Résultat du backend VPREC}
+\caption{\label{fig:org6c49f49}Résultat du backend VPREC}
 \end{figure}
 
-\label{org5cfc884}
+\label{org045e625}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=450px]{../ressources/vm_vprec_normal_stddev.png}
-\caption{\label{fig:org7987481}Ecart type du backend VPREC avec des nombres normaux}
+\caption{\label{fig:orgc6deb19}Ecart type du backend VPREC avec des nombres normaux}
 \end{figure}
 
-\label{orga9b5c1a}
+\label{org42c2a54}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=450px]{../ressources/vm_vprec_denormal_stddev.png}
-\caption{\label{fig:orgfeea797}Ecart type du backend VPREC avec des nombres dénormaux}
+\caption{\label{fig:orgf5d0688}Ecart type du backend VPREC avec des nombres dénormaux}
 \end{figure}
 
-\label{org5b01409}
+\label{org91783ed}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=450px]{../ressources/vm_vprec_serial_vs_vector.png}
-\caption{\label{fig:org7ac0a1f}Résultat du backend VPREC entre l'implémentation sérial et l'implémentation vectorielle des nombres normaux}
+\caption{\label{fig:org1298293}Résultat du backend VPREC entre l'implémentation sérial et l'implémentation vectorielle des nombres normaux}
 \end{figure}
 
-\label{orge2f1e37}
+\label{org6e99874}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=450px]{../ressources/btcompleted.png}
-\caption{\label{fig:orge7d9a48}Rappel des cas spéciaux}
+\caption{\label{fig:org12023dc}Rappel des cas spéciaux}
 \end{figure}
 
-\label{org6e782ee}
+\label{orged7d9d3}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=450px]{../ressources/vect1.png}
-\caption{\label{fig:org39b646b}Vectorisation au niveau du benckmark BT}
+\caption{\label{fig:orgdd7c55a}Vectorisation au niveau du benckmark BT}
 \end{figure}
 
-\label{orgbed6e6d}
+\label{org7a56fc0}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=450px]{../ressources/vcopenmp.png}
-\caption{\label{fig:orgd8607c3}Vectorisation au niveau du benckmark BT}
+\caption{\label{fig:org85e30bb}Vectorisation au niveau du benckmark BT}
 \end{figure}
 \end{document}

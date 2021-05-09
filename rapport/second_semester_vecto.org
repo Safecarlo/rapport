@@ -1,5 +1,5 @@
 #+TITLE: Rapport du Second Semestre sur le support de la Vectorisation et de la Parallèlisation dans Verificarlo
-#+AUTHOR: Groupe 7, Hery ANDRIANANTENAINA, Nicolas BOUTON, Ali LAKBAL
+#+AUTHOR: Groupe 7: Hery ANDRIANANTENAINA, Nicolas BOUTON, Ali LAKBAL
 #+DATE: Mai 2021
 
 * Introduction
@@ -699,7 +699,7 @@ typedef union {
    
 ** Conclusion
 
-   Pour conclure, On a vu les différentes types de NAS parallel benchmark, ainsi que 
+   Pour conclure, on a vu les différentes types de NAS parallel benchmark, ainsi que 
    la différence entre les versions. On a énumerer les types de benchmark et les classes
    existantes. A la fin on a fait les tests sur nos machine,les tests que nous avons fait 
    ont montrés que les opérations flottantes vectoriels vont plus vite avec notre implémentation. 

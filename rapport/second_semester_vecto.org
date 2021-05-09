@@ -732,7 +732,7 @@ typedef union {
   Pour conclure, ce projet nous a permis d'approfondir nos connaissances acquises
   avec certains module du master comme:
   - Le module de Calcul Numérique sur la précision numérique qui est un des sujets
-    principales de *verificarlo*.
+    principaux de *verificarlo*.
   - Le module d'Architecture Parallèle et de Technique d'Optimisation Parallèle
     pour les mesures de performances et les benchmarks.
   - Ainsi que les modules traitant la parallélisation avec MPI et OpenMP comme
@@ -804,13 +804,13 @@ typedef union {
   [[../ressources/btcompleted.png]]
    
   <<figure b>>
-  #+CAPTION: Vectorisation au niveau du benckmark BT
+  #+CAPTION: Vectorisation au niveau du benchmark BT
   #+NAME: fig:Résume BT benchmark
   #+ATTR_LATEX: :width 450px
   [[../ressources/vect1.png]]
    
   <<figure c>>
-  #+CAPTION: Vectorisation au niveau du benckmark BT
+  #+CAPTION: Vectorisation au niveau du benchmark BT
   #+NAME: fig:Résume BT benchmark
   #+ATTR_LATEX: :width 450px
   [[../ressources/vcopenmp.png]]

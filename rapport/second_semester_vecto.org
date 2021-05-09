@@ -699,8 +699,10 @@ typedef union {
    
 ** Conclusion
 
-   Pour conclure, les tests que nous avons fait ont montrés que les opérations
-   flottantes vectoriels vont plus vite avec notre implémentation.
+   Pour conclure, On a vu les différentes types de NAS parallel benchmark, ainsi que 
+   la différence entre les versions. On a énumerer les types de benchmark et les classes
+   existantes. A la fin on a fait les tests sur nos machine,les tests que nous avons fait 
+   ont montrés que les opérations flottantes vectoriels vont plus vite avec notre implémentation. 
 
 * Ce que nous aurions pu faire sur le supercalculateur
 

@@ -501,10 +501,19 @@ typedef union {
         flottants pour les 2 versions puis de 4 etc...
     
 *** Résultat
+
+    Voir les [[figure 11][figures 11 et +]] pour les résultats de la machine qui tourne sur un
+    Linux Natif.
+     
 **** Ecart type
      
      Bien que nous utilisions une machine virtuelle, nous pouvons voir que les
-     résultats sont assez stable excepté 3 ou 4 fois. (voir les figures [[figure 3][3]], [[figure 5][5]] et [[figure 6][6]])
+     résultats sont assez stable excepté 3 ou 4 fois. (voir les figures [[figure 3][3]], [[figure 5][5]] et [[figure
+     6][6]])
+
+     Alors que pour un *Linux Natif*, qui ne supporte pas **AVX** au passage,
+     nous pouvons voir que les mesures sont relativement stables. (en dessous de
+     1% sauf 1 fois)
 
 **** Backend IEEE
 
@@ -805,3 +814,34 @@ typedef union {
   #+NAME: fig:Résume BT benchmark
   #+ATTR_LATEX: :width 450px
   [[../ressources/vcopenmp.png]]
+
+  <<figure 11>>
+  #+CAPTION: Résultat du backend IEEE (Linux Natif)
+  #+NAME: fig:res_laptop_ieee
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/laptop_ieee.png]]
+
+  #+CAPTION: Ecart type du backend IEEE (Linux Natif)
+  #+NAME: fig:stddev_laptop_ieee
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/laptop_ieee_stddev.png]]
+
+  #+CAPTION: Résultat du backend VPREC (Linux Natif)
+  #+NAME: fig:res_laptop_vprec
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/laptop_vprec.png]]
+
+  #+CAPTION: Ecart type du backend VPREC avec des nombres normaux (Linux Natif)
+  #+NAME: fig:stddev_laptop_vprec_normal_stddev
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/laptop_vprec_normal_stddev.png]]
+
+  #+CAPTION: Ecart type du backend VPREC avec des nombres dénormaux (Linux Natif)
+  #+NAME: fig:stddev_laptop_vprec_denormal_stddev
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/laptop_vprec_denormal_stddev.png]]
+
+  #+CAPTION: Résultat du backend VPREC entre l'implémentation sérial et l'implémentation vectorielle des nombres normaux (Linux Natif)
+  #+NAME: fig:res_laptop_vprec_vs
+  #+ATTR_LATEX: :width 450px
+  [[../ressources/laptop_vprec_serial_vs_vector.png]]

@@ -753,37 +753,37 @@ typedef union {
   [[../ressources/special_case.png]]
 
   <<figure 2>>
-  #+CAPTION: Résultat du backend IEEE
+  #+CAPTION: Résultat du backend IEEE (Machine Virtuelle)
   #+NAME: fig:res_vm_ieee
   #+ATTR_LATEX: :width 450px
   [[../ressources/vm_ieee.png]]
 
   <<figure 3>>
-  #+CAPTION: Ecart type du backend IEEE
+  #+CAPTION: Ecart type du backend IEEE (Machine Virtuelle)
   #+NAME: fig:stddev_vm_ieee
   #+ATTR_LATEX: :width 450px
   [[../ressources/vm_ieee_stddev.png]]
 
   <<figure 4>>
-  #+CAPTION: Résultat du backend VPREC
+  #+CAPTION: Résultat du backend VPREC (Machine Virtuelle)
   #+NAME: fig:res_vm_vprec
   #+ATTR_LATEX: :width 450px
   [[../ressources/vm_vprec.png]]
 
   <<figure 5>>
-  #+CAPTION: Ecart type du backend VPREC avec des nombres normaux
+  #+CAPTION: Ecart type du backend VPREC avec des nombres normaux (Machine Virtuelle)
   #+NAME: fig:stddev_vm_vprec_normal_stddev
   #+ATTR_LATEX: :width 450px
   [[../ressources/vm_vprec_normal_stddev.png]]
 
   <<figure 6>>
-  #+CAPTION: Ecart type du backend VPREC avec des nombres dénormaux
+  #+CAPTION: Ecart type du backend VPREC avec des nombres dénormaux (Machine Virtuelle)
   #+NAME: fig:stddev_vm_vprec_denormal_stddev
   #+ATTR_LATEX: :width 450px
   [[../ressources/vm_vprec_denormal_stddev.png]]
 
   <<figure 7>>
-  #+CAPTION: Résultat du backend VPREC entre l'implémentation sérial et l'implémentation vectorielle des nombres normaux
+  #+CAPTION: Résultat du backend VPREC entre l'implémentation sérial et l'implémentation vectorielle des nombres normaux (Machine Virtuelle)
   #+NAME: fig:res_vm_vprec_vs
   #+ATTR_LATEX: :width 450px
   [[../ressources/vm_vprec_serial_vs_vector.png]]

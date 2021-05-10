@@ -88,101 +88,91 @@
 
 % Ali
 \begin{frame}{Benchmark}
-    \begin{block}{But}
-      \begin{itemize}
-          \item Tester les performances de l'implementation vectorielle par rapport à la version scalaire. 
-          
-      \end{itemize}
-    \end{block}
-  \begin{block}{Utilisation}
- 
-        \begin{itemize}
-            \item Les backends IEEE et VPREC
-            \item Les jeux d'instructions SSE et AVX
-            \item Le type simple précision.
-        \end{itemize}
+  
+  \begin{block}{But}
+    \begin{itemize}
+    \item Tester les performances de l'implementation vectorielle par rapport à la version scalaire. 
+    \end{itemize}
   \end{block}
+
+  \begin{block}{Utilisation}
+    \begin{itemize}
+    \item Les backends IEEE et VPREC.
+    \item Les jeux d'instructions SSE et AVX.
+    \item Les flottants simple précision.
+    \end{itemize}
+  \end{block}
+
 \end{frame}
 
-
-
 \begin{frame}{Benchmark}
-    \begin{block}{Micro-benchmark}
-      \begin{itemize}
-          \item Les boucles qui font les calculs que l'on mesure 
-          
-      \end{itemize}
-    \end{block}
-  \begin{block}{Metriques prises en compte}
- 
-        \begin{itemize}
 
-            
-            \item Le temps.
-            \item L'écart type.
-            \item L'accelération.
-           
-        \end{itemize}
+  \begin{block}{Micro-benchmark}
+    \begin{itemize}
+    \item Les boucles qui font les calculs que l'on mesure 
+    \end{itemize}
   \end{block}
+
+  \begin{block}{Métriques prises en compte}
+    \begin{itemize}
+      
+    \item Le temps.
+    \item L'écart type.
+    \item L'accelération.
+      
+    \end{itemize}
+  \end{block}
+  
 \end{frame}
 
 \begin{frame}{Tests et résultats}
 
   \begin{block}{Tests}
- 
-        \begin{itemize}
+    
+    \begin{itemize}
 
-            \item Plusieurs tentatives d'execution.
-            \item Machine virtuelle : accepte AVX
-            \item Linux natif : n'accepte pas AVX.
-           
-           
-        \end{itemize}
+    \item Plusieurs tentatives d'exécution.
+    \item Machine virtuelle: supporte AVX.
+    \item Linux natif: ne supporte pas AVX.
+      
+      
+    \end{itemize}
   \end{block}
+
 \end{frame}
 
-
-
-\begin{frame}{VPREC : Ecart type sur machine virtuelle}
-    
-
-   
- \centering\includegraphics[width=200px]{../ressources/vm_vprec_normal_stddev.png}
+\begin{frame}{VPREC : Ecart type sur une Machine Virtuelle}
+  
+  \centering\includegraphics[width=200px]{../ressources/vm_vprec_normal_stddev.png}
   \centering\includegraphics[width=200px]{../ressources/vm_vprec_denormal_stddev.png}
-    
+  
 \end{frame}
 
-\begin{frame}{VPREC : Ecart type sur Linux natif}
+\begin{frame}{VPREC: Ecart type sur un Linux natif}
 
-
- \centering\includegraphics[width=220px]{../ressources/laptop_vprec_normal_stddev.png}
- \centering\includegraphics[width=220px]{../ressources/laptop_vprec_denormal_stddev.png}
-    
+  \centering\includegraphics[width=220px]{../ressources/laptop_vprec_normal_stddev.png}
+  \centering\includegraphics[width=220px]{../ressources/laptop_vprec_denormal_stddev.png}
+  
 \end{frame}
 
+\begin{frame}{VPREC: Résultat d'accélération normaux/dénormaux}
 
-
-\begin{frame}{VPREC : Résultat d'accélération normaux/dénormaux}
-
- \centering\includegraphics[width=340px]{../ressources/vm_vprec.png}
-   
+  \centering\includegraphics[width=340px]{../ressources/vm_vprec.png}
+  
 \end{frame}
 
-\begin{frame}{IEEE : Ecart type}
-   
+\begin{frame}{IEEE: Ecart type}
 
- \centering\includegraphics[width=300px]{../ressources/vm_ieee_stddev.png}
-    
-
+  \centering\includegraphics[width=300px]{../ressources/vm_ieee_stddev.png}
+  
 \end{frame}
 
-\begin{frame}{IEEE : Accélération}
-   
+\begin{frame}{IEEE: Accélération}
 
- \centering\includegraphics[width=350px]{../ressources/vm_ieee.png}
-    
-    
+  \centering\includegraphics[width=350px]{../ressources/vm_ieee.png}
+  
 \end{frame}
+
 % Hery
 \begin{frame}{Support de la parallélisation}
 

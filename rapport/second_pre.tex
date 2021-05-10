@@ -143,44 +143,55 @@
 
 
 
-\begin{frame}{VPREC : Ecart type sur machine virtuelle}
-    
-
-   
- \centering\includegraphics[width=200px]{../ressources/vm_vprec_normal_stddev.png}
-  \centering\includegraphics[width=200px]{../ressources/vm_vprec_denormal_stddev.png}
-    
+\begin{frame}{Tests et résultats}
+    \begin{block}{VPREC}
+    \begin{itemize}
+        \item écart type sur la VM 
+    \end{itemize}
+ \centering\includegraphics[width=160px]{../ressources/vm_vprec_normal_stddev.png}
+  \centering\includegraphics[width=160px]{../ressources/vm_vprec_denormal_stddev.png}
+    \end{block}
 \end{frame}
 
-\begin{frame}{VPREC : Ecart type sur Linux natif}
-
-
- \centering\includegraphics[width=220px]{../ressources/laptop_vprec_normal_stddev.png}
- \centering\includegraphics[width=220px]{../ressources/laptop_vprec_denormal_stddev.png}
-    
+\begin{frame}{Tests et résultats}
+    \begin{block}{VPREC}
+    \begin{itemize}
+        \item écart type sur Linux natif
+    \end{itemize}
+ \centering\includegraphics[width=160px]{../ressources/laptop_vprec_normal_stddev.png}
+ 
+  \centering\includegraphics[width=160px]{../ressources/laptop_vprec_denormal_stddev.png}
+    \end{block}
 \end{frame}
 
 
 
-\begin{frame}{VPREC : Résultat d'accélération normaux/dénormaux}
-
- \centering\includegraphics[width=340px]{../ressources/vm_vprec.png}
-   
+\begin{frame}{Tests et résultats}
+    \begin{block}{VPREC}
+    \begin{itemize}
+        \item Résultat d'accélération normaux/dénormaux
+    \end{itemize}
+ \centering\includegraphics[width=300px]{../ressources/vm_vprec.png}
+    \end{block}
 \end{frame}
 
-\begin{frame}{IEEE : Ecart type}
-   
-
+\begin{frame}{Tests et résultats}
+    \begin{block}{IEEE}
+    \begin{itemize}
+        \item écart type
+    \end{itemize}
  \centering\includegraphics[width=300px]{../ressources/vm_ieee_stddev.png}
-    
+    \end{block}
 
 \end{frame}
 
-\begin{frame}{IEEE : Accélération}
-   
-
- \centering\includegraphics[width=350px]{../ressources/vm_ieee.png}
-    
+\begin{frame}{Tests et résultats}
+    \begin{block}{IEEE}
+    \begin{itemize}
+        \item accélération
+    \end{itemize}
+ \centering\includegraphics[width=300px]{../ressources/vm_ieee.png}
+    \end{block}
     
 \end{frame}
 % Hery
@@ -197,23 +208,23 @@
 
   \begin{block}{NPB1}
     \begin{itemize}
-    \item Introduction des fonctions qui va facilité les parallélismes
-    \item Vérification de la cohérence des résultats et de la performance
-    \item Adaptation avec les systèmes à plusieurs coeurs.
+    \item Fonction
+    \item Résultats et performance
+    \item Systèmes à plusieurs coeurs.
     \end{itemize}
   \end{block}
   
   \begin{block}{NPB2}
     \begin{itemize}
-    \item Modification des règles sur les analyses comparative
-    \item Accès aux codes sources pour le grand public
-    \item Version parallélisé avec MPI
+    \item Analyses comparative
+    \item Codes sources
+    \item Parallélisme  MPI
     \end{itemize}
   \end{block}
   
   \begin{block}{NPB3}
     \begin{itemize}
-    \item Version parallélisé avec openmp
+    \item Parallélisme OPENMP
     \item Version hybride ou "Multi-zone" 
     \end{itemize}
   \end{block}
@@ -224,13 +235,8 @@
 
   \begin{block}{Types}
     \begin{itemize}
-    \item IS : "Integer Sort"
-    \item EP : " Embarrassingly Parallel"
     \item CG : "Conjugate Gradient" 
-    \item MG : "Multi-Grid"
-    \item FT : "Fourier Transform"
     \item BT: "Block Tri-diagonal solver"
-    \item SP: "Scalar Penta-diagonal solver"
     \item LU: "Lower-Upper Gauss-Seidel solver"
     \end{itemize}
   \end{block}
@@ -292,14 +298,6 @@
     \begin{itemize}
     \item Évaluation de la vectorisation sur le jeu d'instruction AVX512
     \item Faire des tests sur les problèmes de tailles standards ou les gros problèmes
-    \end{itemize}
-  \end{block}
-  
-  \begin{block}{Conclusion générale}
-    \begin{itemize}
-    \item Le module de Calcul Numérique sur la précision numérique qui est un des sujets principaux de verificarlo.
-    \item Le module d’Architecture Parallèle et de Technique d’Optimisation Parallèle pour les mesures de performances et les benchmarks.
-    \item Les modules traitant la parallélisation avec MPI et OpenMP comme Algorithme de Programmation Parallèle 
     \end{itemize}
   \end{block}
   

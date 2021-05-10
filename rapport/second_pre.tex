@@ -88,109 +88,112 @@
 
 % Ali
 \begin{frame}{Benchmark}
-  \begin{block}{But}
-    \begin{itemize}
-    \item Tester les performances de l'implementation vectorielle par rapport à la version scalaire. 
-    \end{itemize}
-  \end{block}
-
+    \begin{block}{But}
+      \begin{itemize}
+          \item Tester les performances de l'implementation vectorielle par rapport à la version scalaire. 
+          
+      \end{itemize}
+    \end{block}
   \begin{block}{Utilisation}
-    \begin{itemize}
-    \item Les backends IEEE et VPREC
-    \item Les jeux d'instructions SSE et AVX
-    \item Le type simple précision.
-    \end{itemize}
+ 
+        \begin{itemize}
+            \item Les backends IEEE et VPREC
+            \item Les jeux d'instructions SSE et AVX
+            \item Le type simple précision.
+        \end{itemize}
   \end{block}
-  
 \end{frame}
 
+
+
 \begin{frame}{Benchmark}
-
-  \begin{block}{Micro-benchmark}
-    \begin{itemize}
-    \item Les boucles qui font les calculs que l'on mesure 
-    \end{itemize}
-  \end{block}
-
+    \begin{block}{Micro-benchmark}
+      \begin{itemize}
+          \item Les boucles qui font les calculs que l'on mesure 
+          
+      \end{itemize}
+    \end{block}
   \begin{block}{Metriques prises en compte}
-    \begin{itemize}
-    \item Le temps.
-    \item L'écart type.
-    \item L'accelération.
-    \end{itemize}
-  \end{block}
+ 
+        \begin{itemize}
 
+            
+            \item Le temps.
+            \item L'écart type.
+            \item L'accelération.
+           
+        \end{itemize}
+  \end{block}
 \end{frame}
 
 \begin{frame}{Tests et résultats}
 
   \begin{block}{Tests}
-    \begin{itemize}
-    \item Plusieurs tentatives d'execution.
-    \item Machine virtuelle : accepte AVX
-    \item Linux natif : n'accepte pas AVX.
-    \end{itemize}
+ 
+        \begin{itemize}
+
+            \item Plusieurs tentatives d'execution.
+            \item Machine virtuelle : accepte AVX
+            \item Linux natif : n'accepte pas AVX.
+           
+           
+        \end{itemize}
   \end{block}
+\end{frame}
+
+
+
+\begin{frame}{Tests et résultats}
+    \begin{block}{VPREC}
+    \begin{itemize}
+        \item écart type sur la VM 
+    \end{itemize}
+ \centering\includegraphics[width=160px]{../ressources/vm_vprec_normal_stddev.png}
+  \centering\includegraphics[width=160px]{../ressources/vm_vprec_denormal_stddev.png}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Tests et résultats}
+    \begin{block}{VPREC}
+    \begin{itemize}
+        \item écart type sur Linux natif
+    \end{itemize}
+ \centering\includegraphics[width=160px]{../ressources/laptop_vprec_normal_stddev.png}
+ 
+  \centering\includegraphics[width=160px]{../ressources/laptop_vprec_denormal_stddev.png}
+    \end{block}
+\end{frame}
+
+
+
+\begin{frame}{Tests et résultats}
+    \begin{block}{VPREC}
+    \begin{itemize}
+        \item Résultat d'accélération normaux/dénormaux
+    \end{itemize}
+ \centering\includegraphics[width=300px]{../ressources/vm_vprec.png}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Tests et résultats}
+    \begin{block}{IEEE}
+    \begin{itemize}
+        \item écart type
+    \end{itemize}
+ \centering\includegraphics[width=300px]{../ressources/vm_ieee_stddev.png}
+    \end{block}
 
 \end{frame}
 
 \begin{frame}{Tests et résultats}
-
-  \begin{block}{VPREC}
+    \begin{block}{IEEE}
     \begin{itemize}
-    \item écart type sur la VM 
+        \item accélération
     \end{itemize}
-    \centering\includegraphics[scale=0.14]{../ressources/vm_vprec_normal_stddev.png}
-    \centering\includegraphics[scale=0.125]{../ressources/vm_vprec_denormal_stddev.png}
-  \end{block}
-
+ \centering\includegraphics[width=300px]{../ressources/vm_ieee.png}
+    \end{block}
+    
 \end{frame}
-
-\begin{frame}{Tests et résultats}
-
-  \begin{block}{VPREC}
-    \begin{itemize}
-    \item écart type sur Linux natif
-    \end{itemize}
-    \centering\includegraphics[scale=0.2]{../ressources/laptop_vprec_normal_stddev.png}
-    \centering\includegraphics[scale=0.2]{../ressources/laptop_vprec_denormal_stddev.png}
-  \end{block}
-
-\end{frame}
-
-\begin{frame}{Tests et résultats}
-
-  \begin{block}{VPREC}
-    \begin{itemize}
-    \item Résultat d'accélération normaux/dénormaux
-    \end{itemize}
-    \centering\includegraphics[scale=0.23]{../ressources/vm_vprec.png}
-  \end{block}
-
-\end{frame}
-
-\begin{frame}{Tests et résultats}
-
-  \begin{block}{IEEE}
-    \begin{itemize}
-    \item écart type
-    \end{itemize}
-    \centering\includegraphics[scale=0.2]{../ressources/vm_ieee_stddev.png}
-  \end{block}
-
-\end{frame}
-
-\begin{frame}{Tests et résultats}
-
-  \begin{block}{IEEE}
-    \begin{itemize}
-    \item accélération
-    \end{itemize}
-    \centering\includegraphics[scale=0.27]{../ressources/a.jpeg}
-  \end{block}
-  
-\end{frame}
-
 % Hery
 \begin{frame}{Support de la parallélisation}
 
